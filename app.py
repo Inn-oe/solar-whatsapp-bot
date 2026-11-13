@@ -229,6 +229,26 @@ def home():
     return jsonify(status="ok", service="solar-whatsapp-bot")
 
 
+@app.get("/privacy")
+def privacy():
+    c = CATALOG
+    return (
+        f"<!doctype html><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+        f"<title>Privacy Policy - {c['company']}</title>"
+        "<body style='font-family:system-ui,sans-serif;max-width:700px;margin:2rem auto;padding:0 1rem;line-height:1.6'>"
+        f"<h1>Privacy Policy</h1><p><b>{c['company']}</b> operates a WhatsApp assistant that answers questions "
+        "about solar products and prepares quotations.</p>"
+        "<h2>What we collect</h2><p>Your WhatsApp number, profile name and the messages you send us, "
+        "including the name, location and requirements you give when requesting a quotation.</p>"
+        "<h2>How we use it</h2><p>Only to reply to you, prepare quotations and contact you about your enquiry. "
+        "We do not sell your data.</p>"
+        "<h2>Sharing and retention</h2><p>Messages are processed through Meta's WhatsApp Business Platform. "
+        "We keep enquiry details only as long as needed to serve you.</p>"
+        f"<h2>Your rights</h2><p>To see or delete your data, contact us at {c['email']} or {c['phone']}.</p>"
+        "</body>"
+    )
+
+
 @app.get("/_health")
 def health():
     return "ok"
