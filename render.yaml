@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: solar-whatsapp-bot
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 app:app
+    healthCheckPath: /_health
+    envVars:
+      - key: VERIFY_TOKEN
+        generateValue: true
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: PHONE_NUMBER_ID
+        sync: false
+      - key: APP_SECRET
+        sync: false

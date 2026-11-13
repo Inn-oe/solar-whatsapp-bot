@@ -1,0 +1,65 @@
+{
+  "company": "Your Solar Company",
+  "currency": "USD",
+  "phone": "+000 000 000 000",
+  "email": "info@example.com",
+  "address": "Your address, City",
+  "hours": "Mon-Fri 8:00-17:00, Sat 8:00-13:00",
+  "note": "SAMPLE DATA - edit prices, packages and FAQs below to match your business, then redeploy.",
+  "packages": [
+    {
+      "id": "1",
+      "name": "Starter 1kW",
+      "price": 650,
+      "powers": "Lights, phone charging, TV, laptop, small fridge (not all at once)",
+      "includes": "1kW inverter, 1 x 100Ah battery, 2 x 550W panels, mounting kit and installation",
+      "daily_kwh": 3
+    },
+    {
+      "id": "2",
+      "name": "Home 3kW",
+      "price": 1800,
+      "powers": "Lights, TV, fridge, freezer, laptop, small appliances, borehole pump (small)",
+      "includes": "3kW inverter, 2 x 200Ah lithium batteries, 6 x 550W panels, mounting kit and installation",
+      "daily_kwh": 8
+    },
+    {
+      "id": "3",
+      "name": "Family 5kW",
+      "price": 3200,
+      "powers": "Whole-house lighting, fridge, freezer, TV, washing machine, microwave, geyser (timed)",
+      "includes": "5kW inverter, 5kWh lithium battery, 10 x 550W panels, mounting kit and installation",
+      "daily_kwh": 15
+    },
+    {
+      "id": "4",
+      "name": "Business 10kW",
+      "price": 6500,
+      "powers": "Shops, small offices, workshops and clinics with heavier loads",
+      "includes": "10kW inverter, 10kWh lithium battery, 18 x 550W panels, mounting kit and installation",
+      "daily_kwh": 30
+    }
+  ],
+  "faqs": [
+    {
+      "keys": ["warranty", "guarantee"],
+      "answer": "Panels: 10-25 year warranty. Inverters: 2-5 years. Batteries: 2-10 years depending on type. Installation workmanship: 12 months."
+    },
+    {
+      "keys": ["install", "installation", "how long"],
+      "answer": "Installation usually takes 1-2 days after a site visit. A technician confirms panel placement, wiring and the right system size before we start."
+    },
+    {
+      "keys": ["pay", "payment", "finance", "instalment", "installment", "deposit"],
+      "answer": "We accept a deposit to book (typically 50-70%) with the balance on installation. Ask our team about payment plans."
+    },
+    {
+      "keys": ["maintenance", "service", "clean"],
+      "answer": "Solar needs very little care: rinse panels now and then and have the system checked once a year. We offer service plans."
+    },
+    {
+      "keys": ["night", "cloud", "rain"],
+      "answer": "Batteries store power for the night and cloudy periods. Panels still make some power on cloudy days, just less."
+    }
+  ]
+}
