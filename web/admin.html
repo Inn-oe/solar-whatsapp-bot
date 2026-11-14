@@ -6,26 +6,39 @@
 <meta name="robots" content="noindex">
 <title>Admin</title>
 <style>
-  :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2433;--muted:#5d6678;--line:#dfe3ea;--accent:#f59e0b;--accent-ink:#1d1300;--ok:#16a34a;--bad:#dc2626;--me:#fde7b0;--them:#eef1f5}
-  @media (prefers-color-scheme:dark){:root{--bg:#12141a;--card:#1b1e26;--ink:#eceef3;--muted:#98a0b0;--line:#2d313c;--me:#5a4410;--them:#262a35}}
+  :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2433;--muted:#5d6678;--line:#dfe3ea;--accent:#0f7b5a;--accent-ink:#fff;--ok:#16a34a;--bad:#dc2626;--me:#dcf3e8;--staff:#dfeefb;--them:#eef1f5}
+  @media (prefers-color-scheme:dark){:root{--bg:#12141a;--card:#1b1e26;--ink:#eceef3;--muted:#98a0b0;--line:#2d313c;--me:#173b2e;--staff:#1b3350;--them:#262a35}}
   *{box-sizing:border-box}
   body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
-  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  .wrap{max-width:1200px;margin:0 auto;padding:16px}
   header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
   nav{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
   button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 14px;cursor:pointer}
   button.on,button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+  button:disabled{opacity:.5;cursor:not-allowed}
   input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto}
   table{border-collapse:collapse;width:100%;min-width:760px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600;font-size:.85rem}
-  .muted{color:var(--muted)}.ok{color:var(--ok)}.bad{color:var(--bad)}
-  .badge{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--them)}
-  .split{display:grid;grid-template-columns:300px 1fr;gap:12px}
-  @media(max-width:760px){.split{grid-template-columns:1fr}}
-  .conv{padding:9px;border-bottom:1px solid var(--line);cursor:pointer}.conv:hover,.conv.on{background:var(--them)}
+  .muted{color:var(--muted)}.ok{color:var(--ok)}.bad{color:var(--bad)}.small{font-size:.85rem}
+  .badge{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--them);white-space:nowrap}
+  .split{display:grid;grid-template-columns:380px 1fr;gap:12px;align-items:start}
+  @media(max-width:860px){.split{grid-template-columns:1fr}}
+  .conv,.client{padding:10px;border-bottom:1px solid var(--line);cursor:pointer}.conv:hover,.conv.on,.client:hover,.client.on{background:var(--them)}
+  .client .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
   .msg{max-width:80%;padding:7px 11px;border-radius:12px;margin:6px 0;white-space:pre-wrap;word-wrap:break-word}
-  .msg.in{background:var(--them)}.msg.out{background:var(--me);margin-left:auto}
+  .msg.in{background:var(--them)}.msg.out{background:var(--me);margin-left:auto}.msg.staff{background:var(--staff);margin-left:auto}
+  .msg .who{display:block;font-size:.7rem;color:var(--muted);margin-bottom:2px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:120px}
+  .stat b{display:block;font-size:1.4rem}
+  .action{background:#fff7e0;border:1px solid #f1d58a;color:#5c4300;border-radius:10px;padding:10px 12px;margin:10px 0}
+  @media (prefers-color-scheme:dark){.action{background:#3a2f12;border-color:#6b5520;color:#f3e2b3}}
+  .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--accent)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+  label{display:block;font-size:.8rem;color:var(--muted);margin-top:8px}
+  label input,label select,label textarea{width:100%;margin-top:2px}
   textarea#cat{width:100%;height:60vh;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  ul.reasons{margin:6px 0 0;padding-left:18px}
   [hidden]{display:none!important}
 </style>
 </head>
@@ -38,18 +51,34 @@
   </div>
 
   <div id="app" hidden>
-    <header><h2 style="margin:0">Admin</h2><button id="logout">Log out</button></header>
+    <header><h2 style="margin:0">WhatsApp sales desk</h2><button id="logout">Log out</button></header>
     <nav>
-      <button data-tab="leads" class="on">Leads</button>
-      <button data-tab="chats">Conversations</button>
+      <button data-tab="clients" class="on">Potential clients</button>
+      <button data-tab="leads">Quote requests</button>
+      <button data-tab="chats">All conversations</button>
       <button data-tab="settings">Prices &amp; settings</button>
     </nav>
 
-    <section id="leads">
-      <p><select id="filter"><option value="">All leads</option><option>new</option><option>contacted</option><option>won</option><option>lost</option></select>
+    <section id="clients">
+      <div class="stats" id="stats"></div>
+      <p style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="q" placeholder="Search name, number, need…" style="flex:1;min-width:180px">
+        <select id="fTemp"><option value="">All temperatures</option><option value="hot">Hot</option><option value="warm">Warm</option><option value="cold">Cold</option></select>
+        <select id="fStage"><option value="">All stages</option></select>
+        <label style="margin:0;display:flex;align-items:center;gap:6px;color:var(--ink)"><input type="checkbox" id="fDue" style="width:auto;margin:0">Follow-ups due</label>
+        <button id="reloadClients">Refresh</button>
+      </p>
+      <div class="split">
+        <div class="card" id="clientList" style="max-height:75vh;padding:0"></div>
+        <div class="card" id="clientDetail"><span class="muted">Select a client to see why they are rated, what to do next, and their chat.</span></div>
+      </div>
+    </section>
+
+    <section id="leads" hidden>
+      <p><select id="filter"><option value="">All requests</option><option>new</option><option>contacted</option><option>won</option><option>lost</option></select>
       <button id="refresh">Refresh</button></p>
       <div class="card"><table><thead><tr><th>Date</th><th>Via</th><th>Name</th><th>Phone</th><th>Location</th><th>Need</th><th>Status</th><th>Notes</th><th></th></tr></thead><tbody id="rows"></tbody></table>
-      <p id="empty" class="muted" hidden>No leads yet.</p></div>
+      <p id="empty" class="muted" hidden>No quote requests yet.</p></div>
     </section>
 
     <section id="chats" hidden>
@@ -69,7 +98,7 @@
 
 <script>
 const $ = s => document.querySelector(s);
-const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids); return e; };
+const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids.filter(k => k !== null && k !== undefined)); return e; };
 async function api(path, opts = {}) {
   const r = await fetch(path, {...opts, headers: {"Content-Type":"application/json","X-Requested-With":"fetch"}, body: opts.body ? JSON.stringify(opts.body) : undefined});
   const j = await r.json().catch(() => ({}));
@@ -78,6 +107,16 @@ async function api(path, opts = {}) {
   return j;
 }
 const fmtDate = s => s ? new Date(s).toLocaleString() : "";
+const ago = s => {
+  if (!s) return "never";
+  const m = Math.round((Date.now() - new Date(s).getTime()) / 60000);
+  if (m < 60) return m + " min ago";
+  if (m < 60 * 24) return Math.round(m / 60) + " h ago";
+  return Math.round(m / 1440) + " days ago";
+};
+const TEMP = { hot: ["Hot", "#b42318", "#fde8e6"], warm: ["Warm", "#8a5a00", "#fdf0cf"], cold: ["Cold", "#475467", "#eceff3"] };
+const tempBadge = t => el("span", {className: "badge", textContent: TEMP[t][0], style: `background:${TEMP[t][2]};color:${TEMP[t][1]};font-weight:600`});
+const label = c => c.name || (c.who.startsWith("web:") ? "Website visitor " + c.who.slice(4, 10) : "+" + c.who);
 
 function show(loggedIn, enabled = true) {
   $("#login").hidden = loggedIn; $("#app").hidden = !loggedIn;
@@ -85,19 +124,105 @@ function show(loggedIn, enabled = true) {
 }
 $("#loginForm").addEventListener("submit", async e => {
   e.preventDefault();
-  try { await api("/admin/login", {method:"POST", body:{password:$("#pw").value}}); $("#pw").value = ""; show(true); loadLeads(); }
+  try { await api("/admin/login", {method:"POST", body:{password:$("#pw").value}}); $("#pw").value = ""; show(true); loadClients(); }
   catch (err) { $("#loginMsg").className = "bad"; $("#loginMsg").textContent = err.message; }
 });
 $("#logout").onclick = async () => { await api("/admin/logout", {method:"POST"}).catch(()=>{}); show(false); };
 
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
   document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
-  ["leads","chats","settings"].forEach(t => $("#" + t).hidden = t !== b.dataset.tab);
-  if (b.dataset.tab === "leads") loadLeads();
-  if (b.dataset.tab === "chats") loadConvs();
-  if (b.dataset.tab === "settings") loadCatalog();
+  ["clients","leads","chats","settings"].forEach(t => $("#" + t).hidden = t !== b.dataset.tab);
+  ({clients: loadClients, leads: loadLeads, chats: loadConvs, settings: loadCatalog})[b.dataset.tab]();
 });
 
+/* ---------------- potential clients ---------------- */
+let clients = [], stages = [], openWho = null;
+
+async function loadClients() {
+  const j = await api("/admin/api/clients");
+  clients = j.clients; stages = j.stages;
+  if ($("#fStage").options.length === 1) stages.forEach(s => $("#fStage").append(el("option", {value: s, textContent: s})));
+  const count = t => clients.filter(c => c.temperature === t && !["won","lost"].includes(c.stage)).length;
+  const stat = (n, t, color) => el("div", {className: "stat"}, el("b", {textContent: n, style: color ? `color:${color}` : ""}), el("span", {className: "muted small", textContent: t}));
+  $("#stats").replaceChildren(
+    stat(clients.length, "people chatted"), stat(count("hot"), "hot leads", "#b42318"), stat(count("warm"), "warm leads", "#8a5a00"),
+    stat(count("cold"), "cold"), stat(clients.filter(c => c.follow_up_due).length, "follow-ups due"), stat(clients.filter(c => c.stage === "won").length, "won", "#16a34a"));
+  renderClients();
+  if (openWho) openClient(openWho, false);
+}
+
+function renderClients() {
+  const q = $("#q").value.trim().toLowerCase(), t = $("#fTemp").value, st = $("#fStage").value, due = $("#fDue").checked;
+  const rows = clients.filter(c => (!t || c.temperature === t) && (!st || c.stage === st) && (!due || c.follow_up_due)
+    && (!q || [c.name, c.who, c.signals.need, c.signals.location, c.signals.recommended, c.notes].some(v => String(v || "").toLowerCase().includes(q))));
+  if (!rows.length) { $("#clientList").replaceChildren(el("p", {className: "muted", textContent: clients.length ? "No clients match the filters." : "No one has chatted yet.", style: "padding:14px"})); return; }
+  $("#clientList").replaceChildren(...rows.map(c => {
+    const d = el("div", {className: "client" + (c.who === openWho ? " on" : ""), onclick: () => openClient(c.who)},
+      el("div", {className: "top"}, el("b", {textContent: label(c)}), tempBadge(c.temperature)),
+      el("div", {className: "small muted", textContent: `${c.stage} · score ${c.score} · last message ${ago(c.last_inbound)}` + (c.bot_paused ? " · bot paused" : "")}),
+      el("div", {className: "bar"}, el("i", {style: `width:${c.score}%`})),
+      c.follow_up_due ? el("div", {className: "small bad", textContent: "Follow-up due " + c.follow_up}) : null,
+      el("div", {className: "small", textContent: c.next_action.split(" Note:")[0], style: "margin-top:4px"}));
+    return d;
+  }));
+}
+["#q", "#fTemp", "#fStage", "#fDue"].forEach(s => $(s).addEventListener("input", renderClients));
+$("#reloadClients").onclick = loadClients;
+
+async function openClient(who, scroll = true) {
+  openWho = who;
+  renderClients();
+  const { client: c, messages, requests } = await api("/admin/api/clients/" + encodeURIComponent(who));
+  const digits = c.is_whatsapp ? c.who.replace(/\D/g, "") : (c.signals.contact || "").replace(/\D/g, "");
+  const msg = el("span", {className: "small"});
+
+  const stage = el("select"); stages.forEach(s => stage.append(el("option", {value: s, textContent: s, selected: s === c.stage})));
+  const follow = el("input", {type: "date", value: c.follow_up || ""});
+  const assigned = el("input", {value: c.assigned, placeholder: "Who is handling this?"});
+  const notes = el("textarea", {rows: 3, value: c.notes, placeholder: "e.g. Wants 5kW, budget $3,000, call after 5pm"});
+  const paused = el("input", {type: "checkbox", checked: c.bot_paused, style: "width:auto;margin:0"});
+  const save = el("button", {className: "primary", textContent: "Save", onclick: async () => {
+    try { await api("/admin/api/clients/" + encodeURIComponent(who), {method: "PATCH", body: {stage: stage.value, follow_up: follow.value, assigned: assigned.value, notes: notes.value, bot_paused: paused.checked}});
+      msg.className = "small ok"; msg.textContent = " Saved"; loadClients(); }
+    catch (e) { msg.className = "small bad"; msg.textContent = " " + e.message; }
+  }});
+
+  const thread = el("div", {style: "max-height:45vh;overflow:auto;border-top:1px solid var(--line);margin-top:12px;padding-top:8px"},
+    ...messages.map(m => el("div", {className: "msg " + (m.sender === "staff" ? "staff" : m.direction), title: fmtDate(m.created)},
+      el("span", {className: "who", textContent: (m.sender === "staff" ? "Staff" : m.direction === "in" ? "Client" : "Bot") + " · " + fmtDate(m.created)}), m.text)));
+
+  const replyBox = el("textarea", {rows: 2, placeholder: c.window_open ? "Type a reply to send on WhatsApp…" : "Replies are only possible within 24 hours of their last message.", disabled: !c.window_open, style: "width:100%"});
+  const replyMsg = el("span", {className: "small"});
+  const send = el("button", {className: "primary", textContent: "Send on WhatsApp", disabled: !c.window_open, onclick: async () => {
+    try { await api(`/admin/api/clients/${encodeURIComponent(who)}/reply`, {method: "POST", body: {text: replyBox.value}});
+      replyBox.value = ""; replyMsg.className = "small ok"; replyMsg.textContent = " Sent"; openClient(who); loadClients(); }
+    catch (e) { replyMsg.className = "small bad"; replyMsg.textContent = " " + e.message; }
+  }});
+
+  $("#clientDetail").replaceChildren(
+    el("div", {style: "display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"},
+      el("h3", {textContent: label(c), style: "margin:0"}),
+      el("span", {}, tempBadge(c.temperature), el("span", {className: "badge", textContent: "score " + c.score, style: "margin-left:6px"}))),
+    el("div", {className: "small muted"}, c.is_whatsapp ? "WhatsApp +" + c.who : "Website chat",
+      " · first seen " + fmtDate(c.first_seen) + " · " + c.inbound_count + " messages",
+      digits ? el("span", {}, " · ", el("a", {href: "https://wa.me/" + digits, target: "_blank", rel: "noopener", textContent: "Open in WhatsApp"})) : null),
+    el("div", {className: "action"}, el("b", {textContent: "What to do next: "}), c.next_action),
+    el("div", {className: "small"}, el("b", {textContent: "Why this rating"}),
+      c.reasons.length ? el("ul", {className: "reasons"}, ...c.reasons.map(r => el("li", {textContent: r}))) : el("div", {className: "muted", textContent: "No buying signals yet."})),
+    requests.length ? el("div", {className: "small", style: "margin-top:8px"}, el("b", {textContent: "Quote requests"}),
+      el("ul", {className: "reasons"}, ...requests.map(r => el("li", {textContent: `${fmtDate(r.created)}: ${r.kind === "callback" ? "asked for a call" : (r.need || "quote")}${r.location ? " in " + r.location : ""}`})))) : null,
+    el("div", {className: "grid2"}, el("label", {}, "Stage", stage), el("label", {}, "Follow-up date", follow)),
+    el("label", {}, "Handled by", assigned),
+    el("label", {}, "Notes", notes),
+    el("label", {style: "display:flex;gap:8px;align-items:center;color:var(--ink)"}, paused, "Pause the bot (a person is handling this chat)"),
+    el("p", {}, save, msg),
+    thread,
+    c.is_whatsapp ? el("div", {style: "margin-top:8px"}, replyBox, el("p", {style: "margin:6px 0 0"}, send, replyMsg)) : null);
+  thread.scrollTop = thread.scrollHeight;
+  if (scroll && window.innerWidth < 860) $("#clientDetail").scrollIntoView({behavior: "smooth"});
+}
+
+/* ---------------- quote requests ---------------- */
 async function loadLeads() {
   const f = $("#filter").value;
   const {leads} = await api("/admin/api/leads" + (f ? "?status=" + f : ""));
@@ -120,6 +245,7 @@ async function loadLeads() {
 }
 $("#filter").onchange = loadLeads; $("#refresh").onclick = loadLeads;
 
+/* ---------------- conversations ---------------- */
 async function loadConvs() {
   const {conversations} = await api("/admin/api/conversations");
   $("#convs").replaceChildren(...(conversations.length ? conversations.map(c => {
@@ -133,10 +259,11 @@ async function loadConvs() {
 async function openThread(who, node) {
   document.querySelectorAll(".conv").forEach(x => x.classList.toggle("on", x === node));
   const {messages} = await api("/admin/api/conversations/" + encodeURIComponent(who));
-  $("#thread").replaceChildren(...messages.map(m => el("div", {className:"msg " + m.direction, textContent:m.text, title:fmtDate(m.created)})));
+  $("#thread").replaceChildren(...messages.map(m => el("div", {className:"msg " + (m.sender === "staff" ? "staff" : m.direction), textContent:m.text, title:fmtDate(m.created)})));
   $("#thread").scrollTop = $("#thread").scrollHeight;
 }
 
+/* ---------------- settings ---------------- */
 async function loadCatalog() {
   const {catalog} = await api("/admin/api/catalog");
   $("#cat").value = JSON.stringify(catalog, null, 2); $("#catMsg").textContent = "";
@@ -148,7 +275,7 @@ $("#saveCat").onclick = async () => {
   catch (e) { m.className = "bad"; m.textContent = e.message; }
 };
 
-fetch("/admin/api/me").then(r => r.json()).then(j => { show(j.loggedIn, j.enabled); if (j.loggedIn) loadLeads(); });
+fetch("/admin/api/me").then(r => r.json()).then(j => { show(j.loggedIn, j.enabled); if (j.loggedIn) loadClients(); });
 </script>
 </body>
 </html>

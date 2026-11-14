@@ -3,9 +3,10 @@
 SQLite file by default; set DATABASE_URL (PostgreSQL) to keep data across restarts on Render.
 """
 import datetime as dt
+import json
 import os
 
-from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine, desc, func, select
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, create_engine, desc, func, select
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 _url = os.getenv("DATABASE_URL", "sqlite:///data.db")
@@ -44,7 +45,25 @@ class Message(Base):
     created = Column(DateTime(timezone=True), default=_now, index=True)
     who = Column(String(80), index=True)     # phone number, or "web:<session>"
     direction = Column(String(3))            # in | out
+    sender = Column(String(10), default='')  # customer | bot | staff
     text = Column(Text)
+
+
+class Contact(Base):
+    """One row per person who has chatted: what they did, where they are in the sale, and notes."""
+    __tablename__ = "contacts"
+    who = Column(String(80), primary_key=True)
+    name = Column(String(200), default="")
+    first_seen = Column(DateTime(timezone=True), default=_now)
+    last_inbound = Column(DateTime(timezone=True))
+    last_outbound = Column(DateTime(timezone=True))
+    inbound_count = Column(Integer, default=0)
+    signals = Column(Text, default="{}")      # JSON of things the person did in the chat
+    stage = Column(String(20), default="new")
+    notes = Column(Text, default="")
+    follow_up = Column(String(10), default="")  # YYYY-MM-DD
+    assigned = Column(String(100), default="")
+    bot_paused = Column(Boolean, default=False)
 
 
 class Setting(Base):
@@ -57,7 +76,10 @@ Base.metadata.create_all(engine)
 
 
 def _iso(d):
-    return d.isoformat() if d else None
+    """ISO time with a UTC offset (SQLite returns naive values, which browsers would read as local time)."""
+    if not d:
+        return None
+    return (d if d.tzinfo else d.replace(tzinfo=dt.timezone.utc)).isoformat()
 
 
 def _lead(r):
@@ -96,10 +118,102 @@ def update_lead(lead_id, status=None, notes=None):
         return _lead(row)
 
 
-def add_message(who, direction, text):
+def add_message(who, direction, text, sender=None):
+    sender = sender or ("customer" if direction == "in" else "bot")
     with Session() as s:
-        s.add(Message(who=who[:80], direction=direction, text=(text or "")[:2000]))
+        s.add(Message(who=who[:80], direction=direction, sender=sender, text=(text or "")[:2000]))
         s.commit()
+
+
+# ---------------------------------------------------------------- contacts (potential clients)
+CONTACT_FIELDS = ("stage", "notes", "follow_up", "assigned", "bot_paused")
+
+
+def contact_dict(c):
+    try:
+        signals = json.loads(c.signals or "{}")
+    except ValueError:
+        signals = {}
+    return {"who": c.who, "name": c.name or "", "first_seen": c.first_seen, "last_inbound": c.last_inbound,
+            "last_outbound": c.last_outbound, "inbound_count": c.inbound_count or 0, "signals": signals,
+            "stage": c.stage or "new", "notes": c.notes or "", "follow_up": c.follow_up or "",
+            "assigned": c.assigned or "", "bot_paused": bool(c.bot_paused)}
+
+
+def touch_contact(who, name="", direction="in"):
+    """Create the contact on first message and update counters/timestamps."""
+    with Session() as s:
+        c = s.get(Contact, who[:80])
+        if c is None:
+            c = Contact(who=who[:80], name=(name or "")[:200], signals="{}", stage="new", inbound_count=0)
+            s.add(c)
+        if name and not c.name:
+            c.name = name[:200]
+        if direction == "in":
+            c.last_inbound = _now()
+            c.inbound_count = (c.inbound_count or 0) + 1
+        else:
+            c.last_outbound = _now()
+        s.commit()
+        return contact_dict(c)
+
+
+def add_signal(who, key, value=True):
+    """Record something the person did. 'faq' collects a list of topics."""
+    with Session() as s:
+        c = s.get(Contact, who[:80])
+        if c is None:
+            c = Contact(who=who[:80], signals="{}", stage="new", inbound_count=0)
+            s.add(c)
+        data = json.loads(c.signals or "{}")
+        if key == "faq":
+            topics = data.get("faq", [])
+            if value not in topics:
+                topics.append(value)
+            data["faq"] = topics
+        else:
+            data[key] = value
+        c.signals = json.dumps(data)
+        s.commit()
+
+
+def set_contact_name(who, name):
+    with Session() as s:
+        c = s.get(Contact, who[:80])
+        if c is not None and name:
+            c.name = name[:200]
+            s.commit()
+
+
+def get_contact(who):
+    with Session() as s:
+        c = s.get(Contact, who[:80])
+        return contact_dict(c) if c else None
+
+
+def list_contacts(limit=500):
+    with Session() as s:
+        rows = s.scalars(select(Contact).order_by(desc(Contact.last_inbound)).limit(limit))
+        return [contact_dict(c) for c in rows]
+
+
+def update_contact(who, **changes):
+    with Session() as s:
+        c = s.get(Contact, who[:80])
+        if c is None:
+            return None
+        for k, v in changes.items():
+            if k in CONTACT_FIELDS and v is not None:
+                setattr(c, k, v)
+        s.commit()
+        return contact_dict(c)
+
+
+def leads_for(who, phone=""):
+    with Session() as s:
+        q = select(Lead).order_by(desc(Lead.created))
+        rows = [r for r in s.scalars(q.limit(500)) if (phone and r.phone == phone) or r.phone == who]
+        return [_lead(r) for r in rows]
 
 
 def conversations(limit=100):
@@ -119,8 +233,8 @@ def thread(who, limit=300):
     with Session() as s:
         rows = s.scalars(select(Message).where(Message.who == who)
                          .order_by(desc(Message.created)).limit(limit)).all()
-        return [{"created": _iso(r.created), "direction": r.direction, "text": r.text}
-                for r in reversed(rows)]
+        return [{"created": _iso(r.created), "direction": r.direction, "sender": r.sender or "",
+                 "text": r.text} for r in reversed(rows)]
 
 
 def get_setting(key):

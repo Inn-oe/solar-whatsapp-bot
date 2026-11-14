@@ -26,6 +26,7 @@ import requests
 from flask import Flask, jsonify, request, send_from_directory, session
 
 import db
+import leads
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("solar-bot")
@@ -181,11 +182,25 @@ def recommend(daily_kwh):
 
 
 def faq_answer(text):
+    """Return (topic, answer) for the first matching FAQ, or None."""
     t = text.lower()
     for f in CATALOG["faqs"]:
         if any(k.lower() in t for k in f["keys"]):
-            return f["answer"] + "\n\nReply *menu* for more options."
+            keys = [k.lower() for k in f["keys"]]
+            topic = "payment" if PAYMENT_WORDS & set(keys) else keys[0]
+            return topic, f["answer"] + "\n\nReply *menu* for more options."
     return None
+
+
+def sig(who, key, value=True):
+    """Remember something the person did in the chat (used to score potential clients)."""
+    try:
+        db.add_signal(who, key, value)
+    except Exception:  # never let lead tracking break a reply
+        log.exception("could not record signal %s", key)
+
+
+PAYMENT_WORDS = {"pay", "payment", "finance", "instalment", "installment", "deposit"}
 
 
 def save_lead(phone, name, **data):
@@ -222,6 +237,8 @@ def handle(phone, name, text):
         p = recommend(daily)
         s["state"] = "menu"
         s["recommended"] = p["name"]
+        sig(phone, "sized_kwh", round(daily, 1))
+        sig(phone, "recommended", p["name"])
         return (
             f"For about {daily:.0f} kWh/day, I'd suggest the *{p['name']}* "
             f"({money(p['price'])}).\n\nIt powers: {p['powers']}.\n\n"
@@ -232,10 +249,14 @@ def handle(phone, name, text):
     if state == "quote_name":
         s["lead_name"] = clip(raw, 200)
         s["state"] = "quote_location"
+        db.set_contact_name(phone, s["lead_name"])
+        sig(phone, "quote_step", "location")
         return "Thanks! What *town or suburb* is the installation for?"
 
     if state == "quote_location":
         s["lead_location"] = clip(raw, 200)
+        sig(phone, "location", s["lead_location"])
+        sig(phone, "quote_step", "contact" if is_web else "need")
         if is_web:
             s["state"] = "quote_contact"
             return "What *phone number* (WhatsApp if possible) can we reach you on?"
@@ -248,9 +269,14 @@ def handle(phone, name, text):
             return "That doesn't look like a phone number. Please type it with the country code, e.g. *+263 77 123 4567*."
         s["lead_contact"] = clip(raw, 40)
         s["state"] = "quote_need"
+        sig(phone, "contact", s["lead_contact"])
+        sig(phone, "quote_step", "need")
         return "Which package or what do you want to power? (e.g. *Home 3kW*, or *fridge, TV and lights*)"
 
     if state == "quote_need":
+        sig(phone, "need", clip(raw, 300))
+        sig(phone, "quote_completed")
+        sig(phone, "quote_step", "done")
         save_lead(phone, s.get("lead_name") or name, location=s.get("lead_location", ""),
                   need=clip(raw, 1000), suggested=s.get("recommended", ""),
                   contact=s.get("lead_contact"))
@@ -264,6 +290,8 @@ def handle(phone, name, text):
         d = package_detail(t)
         if d:
             s["last"] = "packages"
+            name = next((p["name"] for p in CATALOG["packages"] if p["id"] == t), t)
+            sig(phone, "package", name)
             return d
     s.pop("last", None)
 
@@ -271,6 +299,7 @@ def handle(phone, name, text):
     if t in {"1", "packages", "prices", "price"}:
         s["state"] = "menu"
         s["last"] = "packages"
+        sig(phone, "viewed_packages")
         return packages_text()
 
     if t in {"2", "size", "sizing"}:
@@ -282,12 +311,15 @@ def handle(phone, name, text):
 
     if t in {"3", "quote", "quotation"}:
         s["state"] = "quote_name"
+        sig(phone, "quote_requested")
+        sig(phone, "quote_step", "name")
         return "Great, let's get you a free quotation. What is your *full name*?"
 
     if t in {"4", "human", "agent", "person", "call"}:
         if is_web:
             return (f"Please use the *Request a quote* form on this page and leave your number, "
                     f"or call {CATALOG['phone']}.\n\nReply *menu* for more options.")
+        sig(phone, "callback")
         save_lead(phone, name, kind="callback", need="Asked to speak to a person")
         return (f"Okay, a team member will message you soon. You can also call {CATALOG['phone']}.\n\n"
                 "Reply *menu* for more options.")
@@ -295,9 +327,11 @@ def handle(phone, name, text):
     if t in {"5", "contact", "hours", "address", "location"}:
         return contact_text()
 
-    return faq_answer(t) or (
-        "Sorry, I didn't quite get that. Reply with a number from the menu:\n\n" + menu_text()
-    )
+    faq = faq_answer(t)
+    if faq:
+        sig(phone, "faq", faq[0])
+        return faq[1]
+    return "Sorry, I didn't quite get that. Reply with a number from the menu:\n\n" + menu_text()
 
 
 # ---------------------------------------------------------------- WhatsApp I/O
@@ -364,13 +398,17 @@ def incoming():
                         text = (i.get("button_reply") or i.get("list_reply") or {}).get("id", "")
                     else:
                         text = ""
+                    contact = db.touch_contact(phone, names.get(phone, ""), "in")
+                    db.add_message(phone, "in", text or f"[{kind} message]")
+                    if contact["bot_paused"]:
+                        continue  # a staff member is handling this chat
                     if text:
                         reply = handle(phone, names.get(phone, ""), text)
-                        db.add_message(phone, "in", text)
                     else:
                         reply = "I can only read text messages for now. Reply *menu* to see options."
                     if send_text(phone, reply):
                         db.add_message(phone, "out", reply)
+                        db.touch_contact(phone, direction="out")
                 except Exception:  # one bad message must not fail the webhook
                     log.exception("handler error")
     return "ok", 200
@@ -414,9 +452,11 @@ def api_chat():
     if not sid or not text:
         return jsonify(error="Missing message."), 400
     who = "web:" + sid
+    db.touch_contact(who, "", "in")
     reply = handle(who, "", text)
     db.add_message(who, "in", text)
     db.add_message(who, "out", reply)
+    db.touch_contact(who, direction="out")
     return jsonify(reply=reply)
 
 
@@ -521,6 +561,81 @@ def admin_conversations():
 @admin_required
 def admin_thread(who):
     return jsonify(messages=db.thread(who))
+
+
+def _client_json(c):
+    a = leads.analyse(c)
+    out = {k: v for k, v in c.items()}
+    for k in ("first_seen", "last_inbound", "last_outbound"):
+        out[k] = db._iso(c[k])
+    return out | a
+
+
+@app.get("/admin/api/clients")
+@admin_required
+def admin_clients():
+    rows = [_client_json(c) for c in db.list_contacts()]
+    rows.sort(key=lambda r: (not r["follow_up_due"], r["stage"] in ("won", "lost"), -r["score"]))
+    return jsonify(clients=rows, stages=list(leads.STAGES))
+
+
+@app.get("/admin/api/clients/<who>")
+@admin_required
+def admin_client(who):
+    c = db.get_contact(who)
+    if not c:
+        return jsonify(error="Not found."), 404
+    return jsonify(client=_client_json(c), messages=db.thread(who),
+                   requests=db.leads_for(who, c["signals"].get("contact", "")))
+
+
+@app.patch("/admin/api/clients/<who>")
+@admin_required
+def admin_client_update(who):
+    d = request.get_json(silent=True) or {}
+    changes = {}
+    if "stage" in d:
+        if d["stage"] not in leads.STAGES:
+            return jsonify(error="Unknown stage."), 400
+        changes["stage"] = d["stage"]
+    if "follow_up" in d:
+        f = str(d["follow_up"] or "")
+        if f and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", f):
+            return jsonify(error="Follow-up date must be YYYY-MM-DD."), 400
+        changes["follow_up"] = f
+    if "notes" in d:
+        changes["notes"] = clip(str(d["notes"] or ""), 2000)
+    if "assigned" in d:
+        changes["assigned"] = clip(str(d["assigned"] or ""), 100)
+    if "bot_paused" in d:
+        changes["bot_paused"] = bool(d["bot_paused"])
+    c = db.update_contact(who, **changes)
+    return (jsonify(client=_client_json(c)), 200) if c else (jsonify(error="Not found."), 404)
+
+
+@app.post("/admin/api/clients/<who>/reply")
+@admin_required
+def admin_client_reply(who):
+    c = db.get_contact(who)
+    if not c:
+        return jsonify(error="Not found."), 404
+    a = leads.analyse(c)
+    if not a["is_whatsapp"]:
+        return jsonify(error="Website visitors cannot be messaged from here. Use the phone number they gave."), 400
+    if not a["window_open"]:
+        return jsonify(error="Their last message is over 24 hours old. WhatsApp only allows an approved "
+                             "template message now (create one in WhatsApp Manager)."), 400
+    text = clip(str((request.get_json(silent=True) or {}).get("text", "")), 1000)
+    if not text:
+        return jsonify(error="Type a message first."), 400
+    if not send_text(who, text):
+        return jsonify(error="WhatsApp did not accept the message. Check WHATSAPP_TOKEN and PHONE_NUMBER_ID "
+                             "in Render."), 502
+    db.add_message(who, "out", text, "staff")
+    db.touch_contact(who, direction="out")
+    if c["stage"] == "new":
+        db.update_contact(who, stage="contacted")
+    return jsonify(ok=True)
 
 
 @app.get("/admin/api/catalog")
