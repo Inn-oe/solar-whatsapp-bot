@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solar systems - ask us anything</title>
+<style>
+  :root{--bg:#fffaf0;--card:#fff;--ink:#1d2433;--muted:#5d6678;--line:#eadfc8;--accent:#f59e0b;--accent-ink:#1d1300;--green:#16a34a;--bot:#fff3d6}
+  @media (prefers-color-scheme:dark){:root{--bg:#14110b;--card:#1d1a12;--ink:#f3efe6;--muted:#a8a08e;--line:#3a3322;--accent:#f59e0b;--accent-ink:#1d1300;--bot:#2b2514}}
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+  header{padding:20px 0 8px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  header b{font-size:1.2rem}
+  a.btn,button.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+  a.btn.green{background:var(--green);color:#fff}
+  .hero{padding:24px 0 8px}.hero h1{font-size:clamp(1.6rem,4vw,2.4rem);margin:.2em 0}.hero p{color:var(--muted);max-width:60ch}
+  h2{margin:32px 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card h3{margin:0 0 4px}.price{font-size:1.4rem;font-weight:700;margin:4px 0}.card p{margin:.3em 0;color:var(--muted);font-size:.93rem}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  #log{height:340px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:4px}
+  .m{max-width:88%;padding:9px 12px;border-radius:12px;white-space:normal;word-wrap:break-word}
+  .m.bot{background:var(--bot);align-self:flex-start}.m.me{background:var(--accent);color:var(--accent-ink);align-self:flex-end}
+  form.row{display:flex;gap:8px;margin-top:10px}
+  input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+  label{display:block;font-size:.9rem;color:var(--muted);margin:10px 0 4px}
+  .ok{color:var(--green);font-weight:600}.err{color:#dc2626}
+  footer{margin:40px 0;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <b id="company">Solar systems</b>
+    <span id="wa"></span>
+  </header>
+  <section class="hero">
+    <h1>Power your home or business with solar ☀️</h1>
+    <p>Browse our packages, ask the assistant a question, or request a free quotation. We reply fast.</p>
+  </section>
+
+  <h2>Packages</h2>
+  <div class="grid" id="packages"></div>
+
+  <div class="two">
+    <section>
+      <h2>Ask our assistant</h2>
+      <div class="card">
+        <div id="log" aria-live="polite"></div>
+        <form class="row" id="chatForm">
+          <input id="chatInput" placeholder="Type a message, e.g. 1 for prices" maxlength="500" autocomplete="off">
+          <button class="btn" type="submit">Send</button>
+        </form>
+      </div>
+    </section>
+    <section id="quote">
+      <h2>Request a quote</h2>
+      <form class="card" id="leadForm">
+        <label for="n">Full name</label><input id="n" required maxlength="200">
+        <label for="p">Phone / WhatsApp</label><input id="p" required maxlength="40" placeholder="+263 77 123 4567" inputmode="tel">
+        <label for="l">Town or suburb</label><input id="l" maxlength="200">
+        <label for="d">What do you want to power?</label><textarea id="d" rows="3" maxlength="1000" placeholder="e.g. fridge, TV, lights, borehole pump"></textarea>
+        <p><button class="btn" type="submit">Send request</button></p>
+        <p id="leadMsg"></p>
+      </form>
+    </section>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = t => esc(t).replace(/\*([^*\n]+)\*/g,"<b>$1</b>").replace(/_([^_\n]+)_/g,"<i>$1</i>").replace(/\n/g,"<br>");
+let sid; try { sid = localStorage.getItem("sid"); } catch(e) {}
+if (!sid) { sid = Math.random().toString(36).slice(2) + Date.now().toString(36); try { localStorage.setItem("sid", sid); } catch(e) {} }
+
+function add(text, who) {
+  const d = document.createElement("div");
+  d.className = "m " + who;
+  if (who === "bot") d.innerHTML = fmt(text); else d.textContent = text;
+  $("#log").appendChild(d);
+  $("#log").scrollTop = $("#log").scrollHeight;
+}
+async function say(text, silent) {
+  if (!silent) add(text, "me");
+  try {
+    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text})});
+    const j = await r.json();
+    add(r.ok ? j.reply : (j.error || "Something went wrong."), "bot");
+  } catch(e) { add("Connection problem. Please try again.", "bot"); }
+}
+$("#chatForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = $("#chatInput").value.trim(); if (!v) return;
+  $("#chatInput").value = ""; say(v);
+});
+$("#leadForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const m = $("#leadMsg"); m.className = ""; m.textContent = "Sending...";
+  try {
+    const r = await fetch("/api/lead", {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({name:$("#n").value, phone:$("#p").value, location:$("#l").value, need:$("#d").value, package:$("#leadForm").dataset.pkg || ""})});
+    const j = await r.json();
+    if (r.ok) { m.className = "ok"; m.textContent = "Thank you! We'll contact you shortly."; $("#leadForm").reset(); }
+    else { m.className = "err"; m.textContent = j.error || "Could not send. Please try again."; }
+  } catch(e) { m.className = "err"; m.textContent = "Connection problem. Please try again."; }
+});
+
+fetch("/api/catalog").then(r => r.json()).then(c => {
+  document.title = c.company + " - solar systems";
+  $("#company").textContent = c.company;
+  const money = n => c.currency + " " + Number(n).toLocaleString();
+  $("#packages").replaceChildren(...c.packages.map(p => {
+    const d = document.createElement("div"); d.className = "card";
+    const h = document.createElement("h3"); h.textContent = p.name;
+    const pr = document.createElement("div"); pr.className = "price"; pr.textContent = money(p.price);
+    const a = document.createElement("p"); a.textContent = p.powers;
+    const b = document.createElement("p"); b.textContent = p.includes;
+    const btn = document.createElement("button"); btn.className = "btn"; btn.textContent = "Get a quote";
+    btn.onclick = () => { $("#leadForm").dataset.pkg = p.name; $("#d").value = p.name; $("#quote").scrollIntoView({behavior:"smooth"}); $("#n").focus(); };
+    d.append(h, pr, a, b, btn); return d;
+  }));
+  if (c.whatsapp) {
+    const a = document.createElement("a"); a.className = "btn green"; a.textContent = "Chat on WhatsApp";
+    a.href = "https://wa.me/" + c.whatsapp; a.target = "_blank"; a.rel = "noopener"; $("#wa").append(a);
+  }
+  $("#foot").textContent = [c.address, c.phone, c.email, c.hours].filter(Boolean).join("  ·  ");
+  const pl = document.createElement("a"); pl.href = "/privacy"; pl.textContent = " Privacy policy"; $("#foot").append(pl);
+});
+say("hi", true);
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin</title>
+<style>
+  :root{--bg:#f6f7f9;--card:#fff;--ink:#1d2433;--muted:#5d6678;--line:#dfe3ea;--accent:#f59e0b;--accent-ink:#1d1300;--ok:#16a34a;--bad:#dc2626;--me:#fde7b0;--them:#eef1f5}
+  @media (prefers-color-scheme:dark){:root{--bg:#12141a;--card:#1b1e26;--ink:#eceef3;--muted:#98a0b0;--line:#2d313c;--me:#5a4410;--them:#262a35}}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  nav{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+  button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 14px;cursor:pointer}
+  button.on,button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+  input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto}
+  table{border-collapse:collapse;width:100%;min-width:760px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600;font-size:.85rem}
+  .muted{color:var(--muted)}.ok{color:var(--ok)}.bad{color:var(--bad)}
+  .badge{font-size:.75rem;padding:2px 8px;border-radius:99px;background:var(--them)}
+  .split{display:grid;grid-template-columns:300px 1fr;gap:12px}
+  @media(max-width:760px){.split{grid-template-columns:1fr}}
+  .conv{padding:9px;border-bottom:1px solid var(--line);cursor:pointer}.conv:hover,.conv.on{background:var(--them)}
+  .msg{max-width:80%;padding:7px 11px;border-radius:12px;margin:6px 0;white-space:pre-wrap;word-wrap:break-word}
+  .msg.in{background:var(--them)}.msg.out{background:var(--me);margin-left:auto}
+  textarea#cat{width:100%;height:60vh;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="login" class="card" hidden style="max-width:360px;margin:60px auto">
+    <h2 style="margin-top:0">Admin login</h2>
+    <p id="loginMsg" class="muted"></p>
+    <form id="loginForm"><input id="pw" type="password" placeholder="Password" autocomplete="current-password" style="width:100%"><p><button class="primary" type="submit">Log in</button></p></form>
+  </div>
+
+  <div id="app" hidden>
+    <header><h2 style="margin:0">Admin</h2><button id="logout">Log out</button></header>
+    <nav>
+      <button data-tab="leads" class="on">Leads</button>
+      <button data-tab="chats">Conversations</button>
+      <button data-tab="settings">Prices &amp; settings</button>
+    </nav>
+
+    <section id="leads">
+      <p><select id="filter"><option value="">All leads</option><option>new</option><option>contacted</option><option>won</option><option>lost</option></select>
+      <button id="refresh">Refresh</button></p>
+      <div class="card"><table><thead><tr><th>Date</th><th>Via</th><th>Name</th><th>Phone</th><th>Location</th><th>Need</th><th>Status</th><th>Notes</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+      <p id="empty" class="muted" hidden>No leads yet.</p></div>
+    </section>
+
+    <section id="chats" hidden>
+      <div class="split">
+        <div class="card" id="convs" style="max-height:70vh"></div>
+        <div class="card" id="thread" style="max-height:70vh"><span class="muted">Select a conversation.</span></div>
+      </div>
+    </section>
+
+    <section id="settings" hidden>
+      <p class="muted">Edit company details, packages, prices and FAQs. Changes apply to both the website and the WhatsApp bot straight away. Keep it valid JSON.</p>
+      <textarea id="cat" spellcheck="false"></textarea>
+      <p><button class="primary" id="saveCat">Save changes</button> <span id="catMsg"></span></p>
+    </section>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.createElement(tag), props); e.append(...kids); return e; };
+async function api(path, opts = {}) {
+  const r = await fetch(path, {...opts, headers: {"Content-Type":"application/json","X-Requested-With":"fetch"}, body: opts.body ? JSON.stringify(opts.body) : undefined});
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401 && path !== "/admin/login") { show(false); }
+  if (!r.ok) throw new Error(j.error || "Request failed");
+  return j;
+}
+const fmtDate = s => s ? new Date(s).toLocaleString() : "";
+
+function show(loggedIn, enabled = true) {
+  $("#login").hidden = loggedIn; $("#app").hidden = !loggedIn;
+  if (!loggedIn) $("#loginMsg").textContent = enabled ? "" : "Admin is disabled: set ADMIN_PASSWORD on the server.";
+}
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  try { await api("/admin/login", {method:"POST", body:{password:$("#pw").value}}); $("#pw").value = ""; show(true); loadLeads(); }
+  catch (err) { $("#loginMsg").className = "bad"; $("#loginMsg").textContent = err.message; }
+});
+$("#logout").onclick = async () => { await api("/admin/logout", {method:"POST"}).catch(()=>{}); show(false); };
+
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
+  ["leads","chats","settings"].forEach(t => $("#" + t).hidden = t !== b.dataset.tab);
+  if (b.dataset.tab === "leads") loadLeads();
+  if (b.dataset.tab === "chats") loadConvs();
+  if (b.dataset.tab === "settings") loadCatalog();
+});
+
+async function loadLeads() {
+  const f = $("#filter").value;
+  const {leads} = await api("/admin/api/leads" + (f ? "?status=" + f : ""));
+  $("#empty").hidden = leads.length > 0;
+  $("#rows").replaceChildren(...leads.map(l => {
+    const digits = (l.phone || "").replace(/\D/g, "");
+    const phone = digits ? el("a", {href:"https://wa.me/" + digits, target:"_blank", rel:"noopener", textContent:l.phone}) : el("span", {textContent:"-"});
+    const status = el("select"); ["new","contacted","won","lost"].forEach(s => status.append(el("option", {value:s, textContent:s, selected:s === l.status})));
+    const notes = el("input", {value:l.notes || "", placeholder:"Notes"});
+    const msg = el("span", {className:"muted"});
+    const save = el("button", {textContent:"Save", onclick: async () => {
+      try { await api("/admin/api/leads/" + l.id, {method:"PATCH", body:{status:status.value, notes:notes.value}}); msg.className = "ok"; msg.textContent = " Saved"; }
+      catch (e) { msg.className = "bad"; msg.textContent = " " + e.message; }
+    }});
+    const need = l.need + (l.suggested ? " (suggested: " + l.suggested + ")" : "");
+    return el("tr", {}, el("td", {textContent:fmtDate(l.created)}), el("td", {}, el("span", {className:"badge", textContent:l.source + (l.kind === "callback" ? " · call me" : "")})),
+      el("td", {textContent:l.name}), el("td", {}, phone), el("td", {textContent:l.location}), el("td", {textContent:need}),
+      el("td", {}, status), el("td", {}, notes), el("td", {}, save, msg));
+  }));
+}
+$("#filter").onchange = loadLeads; $("#refresh").onclick = loadLeads;
+
+async function loadConvs() {
+  const {conversations} = await api("/admin/api/conversations");
+  $("#convs").replaceChildren(...(conversations.length ? conversations.map(c => {
+    const d = el("div", {className:"conv", onclick: () => openThread(c.who, d)},
+      el("b", {textContent:c.who.startsWith("web:") ? "Website visitor " + c.who.slice(4, 10) : "+" + c.who}),
+      el("div", {className:"muted", textContent:fmtDate(c.last) + " · " + c.count + " msgs"}),
+      el("div", {className:"muted", textContent:c.preview}));
+    return d;
+  }) : [el("span", {className:"muted", textContent:"No conversations yet."})]));
+}
+async function openThread(who, node) {
+  document.querySelectorAll(".conv").forEach(x => x.classList.toggle("on", x === node));
+  const {messages} = await api("/admin/api/conversations/" + encodeURIComponent(who));
+  $("#thread").replaceChildren(...messages.map(m => el("div", {className:"msg " + m.direction, textContent:m.text, title:fmtDate(m.created)})));
+  $("#thread").scrollTop = $("#thread").scrollHeight;
+}
+
+async function loadCatalog() {
+  const {catalog} = await api("/admin/api/catalog");
+  $("#cat").value = JSON.stringify(catalog, null, 2); $("#catMsg").textContent = "";
+}
+$("#saveCat").onclick = async () => {
+  const m = $("#catMsg"); m.className = "";
+  let data; try { data = JSON.parse($("#cat").value); } catch (e) { m.className = "bad"; m.textContent = "Not valid JSON: " + e.message; return; }
+  try { await api("/admin/api/catalog", {method:"PUT", body:data}); m.className = "ok"; m.textContent = "Saved. Live now."; }
+  catch (e) { m.className = "bad"; m.textContent = e.message; }
+};
+
+fetch("/admin/api/me").then(r => r.json()).then(j => { show(j.loggedIn, j.enabled); if (j.loggedIn) loadLeads(); });
+</script>
+</body>
+</html>

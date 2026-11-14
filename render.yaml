@@ -9,9 +9,17 @@ services:
     envVars:
       - key: VERIFY_TOKEN
         generateValue: true
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: WHATSAPP_TOKEN
         sync: false
       - key: PHONE_NUMBER_ID
         sync: false
       - key: APP_SECRET
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: PUBLIC_WHATSAPP
         sync: false
