@@ -25,6 +25,10 @@
   .m{max-width:88%;padding:9px 12px;border-radius:12px;white-space:normal;word-wrap:break-word}
   .m.bot{background:var(--bot);align-self:flex-start}.m.me{background:var(--accent);color:var(--accent-ink);align-self:flex-end}
   form.row{display:flex;gap:8px;margin-top:10px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;max-width:100%}
+  .chip{background:var(--card);color:var(--ink);border:1.5px solid var(--accent);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
+  .chip:hover,.chip:focus-visible{background:var(--accent);color:var(--accent-ink)}
+  .chips.used .chip{opacity:.45;pointer-events:none}
   input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
   label{display:block;font-size:.9rem;color:var(--muted);margin:10px 0 4px}
   .ok{color:var(--green);font-weight:600}.err{color:#dc2626}
@@ -51,7 +55,7 @@
       <div class="card">
         <div id="log" aria-live="polite"></div>
         <form class="row" id="chatForm">
-          <input id="chatInput" placeholder="Type a message, e.g. 1 for prices" maxlength="500" autocomplete="off">
+          <input id="chatInput" placeholder="Tap an option above, or type a question" maxlength="500" autocomplete="off">
           <button class="btn" type="submit">Send</button>
         </form>
       </div>
@@ -86,12 +90,25 @@ function add(text, who) {
   $("#log").appendChild(d);
   $("#log").scrollTop = $("#log").scrollHeight;
 }
-async function say(text, silent) {
-  if (!silent) add(text, "me");
+function chips(options) {
+  document.querySelectorAll(".chips").forEach(c => c.classList.add("used"));  // older options are spent
+  if (!options || !options.length) return;
+  const box = document.createElement("div"); box.className = "chips";
+  for (const o of options) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = o.title;
+    b.onclick = () => say(o.id, false, o.title);
+    box.appendChild(b);
+  }
+  $("#log").appendChild(box);
+  $("#log").scrollTop = $("#log").scrollHeight;
+}
+async function say(text, silent, shown) {
+  if (!silent) add(shown || text, "me");
   try {
-    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text})});
+    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text, shown: shown || ""})});
     const j = await r.json();
     add(r.ok ? j.reply : (j.error || "Something went wrong."), "bot");
+    chips(r.ok ? j.options : [{id: "menu", title: "🏠 Main menu"}]);
   } catch(e) { add("Connection problem. Please try again.", "bot"); }
 }
 $("#chatForm").addEventListener("submit", e => {

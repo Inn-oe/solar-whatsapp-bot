@@ -8,12 +8,30 @@
   "utc_offset": 2,
   "response_time": "1 hour",
   "open_hours": {
-    "0": ["08:00", "17:00"],
-    "1": ["08:00", "17:00"],
-    "2": ["08:00", "17:00"],
-    "3": ["08:00", "17:00"],
-    "4": ["08:00", "17:00"],
-    "5": ["08:00", "13:00"]
+    "0": [
+      "08:00",
+      "17:00"
+    ],
+    "1": [
+      "08:00",
+      "17:00"
+    ],
+    "2": [
+      "08:00",
+      "17:00"
+    ],
+    "3": [
+      "08:00",
+      "17:00"
+    ],
+    "4": [
+      "08:00",
+      "17:00"
+    ],
+    "5": [
+      "08:00",
+      "13:00"
+    ]
   },
   "note": "SAMPLE DATA - edit prices, packages and FAQs below to match your business, then redeploy.",
   "packages": [
@@ -50,82 +68,222 @@
       "daily_kwh": 30
     }
   ],
+  "towns": [
+    "Harare",
+    "Chitungwiza",
+    "Bulawayo",
+    "Mutare",
+    "Gweru",
+    "Masvingo",
+    "Kwekwe",
+    "Kadoma",
+    "Marondera"
+  ],
   "faqs": [
     {
-      "keys": ["warranty", "guarantee"],
-      "answer": "Panels: 10-25 year warranty. Inverters: 2-5 years. Batteries: 2-10 years depending on type. Installation workmanship: 12 months."
+      "keys": [
+        "how much",
+        "price",
+        "cost",
+        "prices",
+        "cheap"
+      ],
+      "answer": "Price depends on the system size and the brands. Reply *menu* to see our packages, or ask for a free quote and we will send a written price.",
+      "title": "💲 How much does it cost?"
     },
     {
-      "keys": ["install", "installation", "how long"],
-      "answer": "Installation usually takes 1-2 days after a site visit. A technician confirms panel placement, wiring and the right system size before we start."
+      "keys": [
+        "zesa",
+        "grid",
+        "load shedding",
+        "load-shedding",
+        "power cut",
+        "outage",
+        "blackout"
+      ],
+      "answer": "A hybrid system keeps your lights, TV, fridge and Wi-Fi running during power cuts, using solar and battery. It can also use ZESA when available. Ask for a quote sized to the loads you want to keep on.",
+      "title": "🔌 ZESA & power cuts"
     },
     {
-      "keys": ["pay", "payment", "finance", "instalment", "installment", "deposit"],
-      "answer": "We accept a deposit to book (typically 50-70%) with the balance on installation. Ask our team about payment plans."
+      "keys": [
+        "battery",
+        "batteries",
+        "lithium",
+        "gel"
+      ],
+      "answer": "Lithium batteries last longer, are lighter and can be discharged deeper. Gel or lead-acid batteries cost less up front but need replacing sooner. We recommend based on your budget and how much power you use at night.",
+      "title": "🔋 Batteries"
     },
     {
-      "keys": ["maintenance", "service", "clean"],
-      "answer": "Solar needs very little care: rinse panels now and then and have the system checked once a year. We offer service plans."
+      "keys": [
+        "pay",
+        "payment",
+        "finance",
+        "instalment",
+        "installment",
+        "deposit"
+      ],
+      "answer": "We accept a deposit to book (typically 50-70%) with the balance on installation. Ask our team about payment plans.",
+      "title": "💳 Payment & deposit"
     },
     {
-      "keys": ["night", "cloud", "rain"],
-      "answer": "Batteries store power for the night and cloudy periods. Panels still make some power on cloudy days, just less."
+      "keys": [
+        "warranty",
+        "guarantee"
+      ],
+      "answer": "Panels: 10-25 year warranty. Inverters: 2-5 years. Batteries: 2-10 years depending on type. Installation workmanship: 12 months.",
+      "title": "🛡️ Warranty"
     },
     {
-      "keys": ["how many panels", "how many solar panels", "size of system", "what size"],
-      "answer": "It depends on what you want to run. Tell us your appliances (fridge, TV, lights, borehole pump, geyser) and how many hours a day, and we will size the panels, inverter and battery for you. Reply *menu* and choose a quote."
+      "keys": [
+        "how many panels",
+        "how many solar panels",
+        "size of system",
+        "what size"
+      ],
+      "answer": "It depends on what you want to run. Tell us your appliances (fridge, TV, lights, borehole pump, geyser) and how many hours a day, and we will size the panels, inverter and battery for you. Reply *menu* and choose a quote.",
+      "title": "📐 How many panels?"
     },
     {
-      "keys": ["how much", "price", "cost", "prices", "cheap"],
-      "answer": "Price depends on the system size and the brands. Reply *menu* to see our packages, or ask for a free quote and we will send a written price."
+      "keys": [
+        "borehole",
+        "pump",
+        "irrigation"
+      ],
+      "answer": "Yes, we can power a borehole pump with solar. We need the pump size (kW or HP), the depth and the daily water you need. A site visit confirms the best design.",
+      "title": "💧 Borehole pumps"
     },
     {
-      "keys": ["zesa", "grid", "load shedding", "load-shedding", "power cut", "outage", "blackout"],
-      "answer": "A hybrid system keeps your lights, TV, fridge and Wi-Fi running during power cuts, using solar and battery. It can also use ZESA when available. Ask for a quote sized to the loads you want to keep on."
+      "keys": [
+        "install",
+        "installation",
+        "how long"
+      ],
+      "answer": "Installation usually takes 1-2 days after a site visit. A technician confirms panel placement, wiring and the right system size before we start.",
+      "title": "🔧 Installation time"
     },
     {
-      "keys": ["geyser", "water heater", "stove", "heater", "aircon", "air con"],
-      "answer": "Geysers, stoves, heaters and air conditioners use a lot of power. They can run on solar, but they need a bigger system. Tell us what you want to run and we will size it. A solar geyser is often a cheaper option."
+      "keys": [
+        "scam",
+        "genuine",
+        "fake",
+        "trust",
+        "licensed",
+        "licence",
+        "license",
+        "registered"
+      ],
+      "answer": "Fair question. Always ask any installer for company registration, past installations you can visit, brand warranty papers and a written quote. We are happy to share these. Reply *menu* to talk to our team.",
+      "title": "✅ Is it genuine?"
     },
     {
-      "keys": ["borehole", "pump", "irrigation"],
-      "answer": "Yes, we can power a borehole pump with solar. We need the pump size (kW or HP), the depth and the daily water you need. A site visit confirms the best design."
+      "keys": [
+        "geyser",
+        "water heater",
+        "stove",
+        "heater",
+        "aircon",
+        "air con"
+      ],
+      "answer": "Geysers, stoves, heaters and air conditioners use a lot of power. They can run on solar, but they need a bigger system. Tell us what you want to run and we will size it. A solar geyser is often a cheaper option.",
+      "title": "🔥 Geyser, stove, aircon"
     },
     {
-      "keys": ["battery", "batteries", "lithium", "gel"],
-      "answer": "Lithium batteries last longer, are lighter and can be discharged deeper. Gel or lead-acid batteries cost less up front but need replacing sooner. We recommend based on your budget and how much power you use at night."
+      "keys": [
+        "inverter",
+        "hybrid",
+        "off-grid",
+        "off grid",
+        "grid-tie",
+        "grid tie"
+      ],
+      "answer": "Hybrid inverters work with solar, battery and the grid. Off-grid systems run on solar and battery only. Grid-tie systems have no backup during a power cut. For homes with outages we usually recommend hybrid.",
+      "title": "⚙️ Inverter types"
     },
     {
-      "keys": ["inverter", "hybrid", "off-grid", "off grid", "grid-tie", "grid tie"],
-      "answer": "Hybrid inverters work with solar, battery and the grid. Off-grid systems run on solar and battery only. Grid-tie systems have no backup during a power cut. For homes with outages we usually recommend hybrid."
+      "keys": [
+        "night",
+        "cloud",
+        "rain"
+      ],
+      "answer": "Batteries store power for the night and cloudy periods. Panels still make some power on cloudy days, just less.",
+      "title": "🌙 Night & cloudy days"
     },
     {
-      "keys": ["scam", "genuine", "fake", "trust", "licensed", "licence", "license", "registered"],
-      "answer": "Fair question. Always ask any installer for company registration, past installations you can visit, brand warranty papers and a written quote. We are happy to share these. Reply *menu* to talk to our team."
+      "keys": [
+        "payback",
+        "save",
+        "saving",
+        "return on",
+        "worth it"
+      ],
+      "answer": "Savings depend on how much you spend on power and fuel now. Many customers recover the cost within a few years. Share your monthly electricity or generator spend and we will estimate it.",
+      "title": "📈 Savings & payback"
     },
     {
-      "keys": ["brand", "jinko", "canadian", "longi", "growatt", "deye", "victron", "sunsynk"],
-      "answer": "We supply quality panels, inverters and batteries from well-known brands. The exact brands depend on the package and stock. Ask for a quote and we will list every item and its warranty."
+      "keys": [
+        "site visit",
+        "visit",
+        "survey",
+        "assess"
+      ],
+      "answer": "A technician visits to check the roof, shade, wiring and your loads, then confirms the system size. Reply *menu* to book a visit or request a quote.",
+      "title": "📋 Site visit"
     },
     {
-      "keys": ["payback", "save", "saving", "return on", "worth it"],
-      "answer": "Savings depend on how much you spend on power and fuel now. Many customers recover the cost within a few years. Share your monthly electricity or generator spend and we will estimate it."
+      "keys": [
+        "roof",
+        "shade",
+        "tilt",
+        "north"
+      ],
+      "answer": "Panels work best facing north with little shade. Most roof types work. We check the roof and shade at the site visit and mount the panels at the best angle.",
+      "title": "🏠 Roof & shade"
     },
     {
-      "keys": ["site visit", "visit", "survey", "assess"],
-      "answer": "A technician visits to check the roof, shade, wiring and your loads, then confirms the system size. Reply *menu* to book a visit or request a quote."
+      "keys": [
+        "how long do",
+        "lifespan",
+        "last how",
+        "years last"
+      ],
+      "answer": "Panels typically last 25 years or more. Inverters often last 8-12 years. Batteries last roughly 3-5 years for gel and 8-10 years for lithium, depending on use.",
+      "title": "⏳ How long it lasts"
     },
     {
-      "keys": ["roof", "shade", "tilt", "north"],
-      "answer": "Panels work best facing north with little shade. Most roof types work. We check the roof and shade at the site visit and mount the panels at the best angle."
+      "keys": [
+        "maintenance",
+        "service",
+        "clean"
+      ],
+      "answer": "Solar needs very little care: rinse panels now and then and have the system checked once a year. We offer service plans.",
+      "title": "🧽 Maintenance"
     },
     {
-      "keys": ["how long do", "lifespan", "last how", "years last"],
-      "answer": "Panels typically last 25 years or more. Inverters often last 8-12 years. Batteries last roughly 3-5 years for gel and 8-10 years for lithium, depending on use."
+      "keys": [
+        "brand",
+        "jinko",
+        "canadian",
+        "longi",
+        "growatt",
+        "deye",
+        "victron",
+        "sunsynk"
+      ],
+      "answer": "We supply quality panels, inverters and batteries from well-known brands. The exact brands depend on the package and stock. Ask for a quote and we will list every item and its warranty.",
+      "title": "🏷️ Brands"
     },
     {
-      "keys": ["hours", "open", "where are you", "location", "address", "contact"],
-      "answer": "Reply *menu* and choose to speak to our team, and we will share our contact details and arrange a call or visit."
+      "keys": [
+        "hours",
+        "open",
+        "where are you",
+        "location",
+        "address",
+        "contact"
+      ],
+      "answer": "Reply *menu* and choose to speak to our team, and we will share our contact details and arrange a call or visit.",
+      "title": "📍 Contact & location"
     }
   ]
 }
