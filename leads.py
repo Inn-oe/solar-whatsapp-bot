@@ -29,6 +29,9 @@ def analyse(contact, now=None):
 
     if s.get('callback'):
         add(30, 'Asked to speak to a person')
+    unanswered = s.get('unanswered') or []
+    if s.get('needs_human') and unanswered:
+        add(20, f'Asked something the bot could not answer: "{unanswered[-1][:80]}"')
     if s.get('quote_completed'):
         add(35, 'Completed a quotation request')
     elif s.get('quote_requested'):
@@ -75,6 +78,9 @@ def analyse(contact, now=None):
         action = 'Closed as lost. Optionally check back in about 3 months.'
     elif s.get('callback'):
         action = 'Call them now: they asked to speak to a person.'
+    elif s.get('needs_human') and unanswered:
+        action = (f'Answer their question: "{unanswered[-1][:120]}". '
+                  'The bot told them a person will reply.')
     elif s.get('quote_completed') and stage in ('new', 'contacted'):
         action = (f"Prepare a quotation{f' for {want}' if want else ''} and offer a site survey{where}.")
     elif stage == 'quoted':

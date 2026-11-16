@@ -5,6 +5,16 @@
   "email": "info@example.com",
   "address": "Your address, City",
   "hours": "Mon-Fri 8:00-17:00, Sat 8:00-13:00",
+  "utc_offset": 2,
+  "response_time": "1 hour",
+  "open_hours": {
+    "0": ["08:00", "17:00"],
+    "1": ["08:00", "17:00"],
+    "2": ["08:00", "17:00"],
+    "3": ["08:00", "17:00"],
+    "4": ["08:00", "17:00"],
+    "5": ["08:00", "13:00"]
+  },
   "note": "SAMPLE DATA - edit prices, packages and FAQs below to match your business, then redeploy.",
   "packages": [
     {

@@ -9,7 +9,13 @@ Environment variables:
   SECRET_KEY         signs the admin login cookie
   DATABASE_URL       PostgreSQL URL to keep leads/chats across restarts (SQLite otherwise)
   PUBLIC_WHATSAPP    optional digits-only WhatsApp number, shows a "Chat on WhatsApp" button
+  ALERT_NUMBERS      optional staff WhatsApp numbers (digits, comma-separated) that get new-lead alerts
+  ALERT_TEMPLATE     optional approved template name with one body variable, used when a staff
+                     member has not messaged the bot in 24 hours (WhatsApp blocks free text then)
+  ALERT_TEMPLATE_LANG  template language code (default en_US)
+  INTERNAL_KEY       shared secret that lets the business platform send staff replies through the bot
 """
+import datetime as dt
 import hashlib
 import hmac
 import json
@@ -17,6 +23,7 @@ import logging
 import os
 import re
 import secrets
+import threading
 import time
 from datetime import timedelta
 from functools import wraps
@@ -49,6 +56,10 @@ PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID", "")
 APP_SECRET = os.getenv("APP_SECRET", "")
 GRAPH_VERSION = os.getenv("GRAPH_VERSION", "v21.0")
 PUBLIC_WHATSAPP = re.sub(r"\D", "", os.getenv("PUBLIC_WHATSAPP", ""))
+ALERT_NUMBERS = [n for n in (re.sub(r"\D", "", x) for x in os.getenv("ALERT_NUMBERS", "").split(",")) if n]
+ALERT_TEMPLATE = os.getenv("ALERT_TEMPLATE", "").strip()
+ALERT_TEMPLATE_LANG = os.getenv("ALERT_TEMPLATE_LANG", "en_US").strip()
+INTERNAL_KEY = os.getenv("INTERNAL_KEY", "")
 
 
 # ---------------------------------------------------------------- catalog
@@ -75,6 +86,19 @@ def validate_catalog(c):
         if p["id"] in seen:
             return f'Duplicate package id "{p["id"]}".'
         seen.add(p["id"])
+    if "utc_offset" in c and (not isinstance(c["utc_offset"], (int, float)) or isinstance(c["utc_offset"], bool)):
+        return '"utc_offset" must be a number of hours, e.g. 2.'
+    if "response_time" in c and not isinstance(c["response_time"], str):
+        return '"response_time" must be text, e.g. "1 hour".'
+    oh = c.get("open_hours")
+    if oh is not None:
+        if not isinstance(oh, dict):
+            return '"open_hours" must map day numbers (0 = Monday) to ["08:00", "17:00"].'
+        for day, span in oh.items():
+            if (day not in {"0", "1", "2", "3", "4", "5", "6"} or not isinstance(span, list) or len(span) != 2
+                    or not all(isinstance(x, str) and re.fullmatch(r"\d{2}:\d{2}", x) for x in span)
+                    or span[0] >= span[1]):
+                return '"open_hours" must map day numbers (0 = Monday) to ["08:00", "17:00"].'
     if not isinstance(c.get("faqs"), list):
         return '"faqs" must be a list.'
     for f in c["faqs"]:
@@ -99,8 +123,7 @@ def load_catalog():
 
 CATALOG = load_catalog()
 
-# Conversation state per user (memory only; resets on restart).
-SESSIONS: dict[str, dict] = {}
+# Conversation state lives in the database (db.get_state / db.save_state) so restarts don't lose it.
 SEEN_IDS: dict[str, float] = {}
 HITS: dict[str, list] = {}
 
@@ -132,10 +155,52 @@ def limited(key, limit, window=60):
 
 
 # ---------------------------------------------------------------- replies
-def menu_text():
+DAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+DEFAULT_OPEN_HOURS = {"0": ["08:00", "17:00"], "1": ["08:00", "17:00"], "2": ["08:00", "17:00"],
+                      "3": ["08:00", "17:00"], "4": ["08:00", "17:00"], "5": ["08:00", "13:00"]}
+
+
+def local_now():
+    """Business local time (naive). utc_offset defaults to 2 (Zimbabwe / South Africa)."""
+    offset = CATALOG.get("utc_offset", 2)
+    return (dt.datetime.now(dt.timezone.utc) + timedelta(hours=offset)).replace(tzinfo=None)
+
+
+def _hours(day):
+    return (CATALOG.get("open_hours") or DEFAULT_OPEN_HOURS).get(str(day))
+
+
+def is_open(now=None):
+    now = now or local_now()
+    h = _hours(now.weekday())
+    return bool(h) and h[0] <= now.strftime("%H:%M") < h[1]
+
+
+def reply_promise(now=None):
+    """When a person will answer, e.g. 'within 1 hour' or 'when we open tomorrow at 08:00'."""
+    now = now or local_now()
+    if is_open(now):
+        return f"within {CATALOG.get('response_time') or '1 hour'}"
+    for i in range(8):
+        d = now + timedelta(days=i)
+        h = _hours(d.weekday())
+        if not h or (i == 0 and now.strftime("%H:%M") >= h[0]):
+            continue
+        when = "today" if i == 0 else "tomorrow" if i == 1 else f"on {DAYS[d.weekday()]}"
+        return f"when we open {when} at {h[0]}"
+    return "as soon as possible"
+
+
+def first_name(name):
+    parts = re.sub(r"[^\w' -]", "", name or "").split()
+    return parts[0].capitalize()[:30] if parts else ""
+
+
+def menu_text(first=""):
     c = CATALOG
+    hello = f"Hi {first} 👋\n" if first else ""
     return (
-        f"Welcome to *{c['company']}* ☀️\n"
+        f"{hello}Welcome to *{c['company']}* ☀️\n"
         "How can I help? Reply with a number:\n\n"
         "1️⃣ Solar packages & prices\n"
         "2️⃣ Size a system for my home or business\n"
@@ -201,6 +266,97 @@ def sig(who, key, value=True):
 
 
 PAYMENT_WORDS = {"pay", "payment", "finance", "instalment", "installment", "deposit"}
+SMALL_TALK = {"ok", "okay", "k", "thanks", "thank you", "thank u", "thanx", "thx", "yes", "no", "sure", "cool",
+              "fine", "alright", "noted", "great", "nice", "👍", "🙏", "good", "bye", "tatenda", "ndatenda"}
+
+# ---------------------------------------------------------------- staff alerts
+ALERT_TITLES = {"quote": "New quotation request", "callback": "Client wants to talk to a person",
+                "unanswered": "Question the bot could not answer", "paused": "Client wrote (bot paused)"}
+ALERT_GAP = {"quote": 0, "callback": 600, "unanswered": 3600, "paused": 1800}  # seconds between repeats
+
+
+def send_template(to, text):
+    """Fallback for alerts outside WhatsApp's 24-hour window: an approved template with one variable."""
+    if not (ALERT_TEMPLATE and WHATSAPP_TOKEN and PHONE_NUMBER_ID):
+        return False
+    one_line = re.sub(r"\s+", " ", text)[:900]  # template variables may not contain new lines
+    r = requests.post(
+        f"https://graph.facebook.com/{GRAPH_VERSION}/{PHONE_NUMBER_ID}/messages",
+        headers={"Authorization": f"Bearer {WHATSAPP_TOKEN}"},
+        json={"messaging_product": "whatsapp", "to": to, "type": "template",
+              "template": {"name": ALERT_TEMPLATE, "language": {"code": ALERT_TEMPLATE_LANG},
+                           "components": [{"type": "body", "parameters": [{"type": "text", "text": one_line}]}]}},
+        timeout=15,
+    )
+    if r.status_code >= 300:
+        log.error("alert template failed %s: %s", r.status_code, r.text[:300])
+        return False
+    return True
+
+
+def _deliver_alert(body, skip):
+    for n in ALERT_NUMBERS:
+        if n == skip:
+            continue
+        try:
+            if not send_text(n, body) and not send_template(n, body):
+                log.warning("alert to %s not delivered (staff must message the bot within 24h, "
+                            "or set ALERT_TEMPLATE)", n)
+        except Exception:
+            log.exception("alert to %s failed", n)
+
+
+def alert_team(who, name, kind, detail, state):
+    """Tell staff on WhatsApp about something that needs a person. Never blocks the customer's reply."""
+    if not ALERT_NUMBERS or who.startswith("web:"):
+        return
+    sent = state.setdefault("_alerts", {})
+    if time.time() - sent.get(kind, 0) < ALERT_GAP.get(kind, 600):
+        return
+    sent[kind] = time.time()
+    shown = name or "Unknown name"
+    body = (f"🔔 *{ALERT_TITLES.get(kind, kind)}*\n{shown} (+{who})\n{clip(detail, 500)}\n\n"
+            f"Reply to them: https://wa.me/{who}")
+    threading.Thread(target=_deliver_alert, args=(body, who), daemon=True).start()
+
+
+def staff_summary():
+    """What a staff member gets when they send 'leads' to the bot: who to contact today."""
+    rows = []
+    for c in db.list_contacts():
+        if c["who"] in ALERT_NUMBERS or c["stage"] in ("won", "lost"):
+            continue
+        a = leads.analyse(c)
+        rows.append((not a["follow_up_due"], -a["score"], c, a))
+    rows.sort(key=lambda r: r[:2])
+    if not rows:
+        return "No open leads right now."
+    lines = [f"*Open leads: {len(rows)}* (most urgent first)\n"]
+    icon = {"hot": "🔥", "warm": "🌤", "cold": "❄️"}
+    for _, _, c, a in rows[:8]:
+        label = c["name"] or ("Website visitor" if c["who"].startswith("web:") else "+" + c["who"])
+        due = " · follow-up due" if a["follow_up_due"] else ""
+        lines.append(f"{icon[a['temperature']]} *{label}* ({a['score']}){due}\n{a['next_action'].split(' Note:')[0]}")
+    lines.append("\nFull list: the WhatsApp tab in the business platform.")
+    return "\n\n".join(lines)
+
+
+def set_follow_up(who, days):
+    """Schedule a follow-up unless staff already set one."""
+    try:
+        c = db.get_contact(who)
+        if c and not c["follow_up"]:
+            db.update_contact(who, follow_up=(local_now().date() + timedelta(days=days)).isoformat())
+    except Exception:
+        log.exception("could not set follow-up for %s", who)
+
+
+def reset(s):
+    """Back to the main menu, keeping long-lived memory (keys starting with '_')."""
+    keep = {k: v for k, v in s.items() if k.startswith("_")}
+    s.clear()
+    s.update(keep)
+    s["state"] = "menu"
 
 
 def save_lead(phone, name, **data):
@@ -212,18 +368,34 @@ def save_lead(phone, name, **data):
 
 # ---------------------------------------------------------------- bot brain
 def handle(phone, name, text):
-    """Return the reply for one incoming message. `phone` is a number or "web:<id>"."""
-    if len(SESSIONS) > 5000:
-        SESSIONS.clear()
+    """Return the reply for one incoming message. `phone` is a number or "web:<id>".
+
+    Where the person is in the conversation is loaded from and saved to the database."""
+    try:
+        s = db.get_state(phone)
+    except Exception:
+        log.exception("could not load chat state")
+        s = {}
+    s.setdefault("state", "menu")
+    try:
+        return _handle(phone, name, text, s)
+    finally:
+        try:
+            db.save_state(phone, s)
+        except Exception:
+            log.exception("could not save chat state")
+
+
+def _handle(phone, name, text, s):
     raw = text.strip()
     t = raw.lower()
     is_web = phone.startswith("web:")
-    s = SESSIONS.setdefault(phone, {"state": "menu"})
+    first = first_name(s.get("lead_name") or name)
 
-    if t in {"menu", "hi", "hello", "hey", "start", "0", "hie", "hesi"}:
-        s.clear()
-        s["state"] = "menu"
-        return menu_text()
+    if t in {"menu", "hi", "hello", "hey", "start", "0", "hie", "hesi", "hi there", "good morning",
+             "good afternoon", "good evening", "mhoro", "makadii", "sawubona"}:
+        reset(s)
+        return menu_text(first)
 
     state = s["state"]
 
@@ -251,7 +423,8 @@ def handle(phone, name, text):
         s["state"] = "quote_location"
         db.set_contact_name(phone, s["lead_name"])
         sig(phone, "quote_step", "location")
-        return "Thanks! What *town or suburb* is the installation for?"
+        hello = first_name(s["lead_name"])
+        return f"Thanks{', ' + hello if hello else ''}! What *town or suburb* is the installation for?"
 
     if state == "quote_location":
         s["lead_location"] = clip(raw, 200)
@@ -277,13 +450,22 @@ def handle(phone, name, text):
         sig(phone, "need", clip(raw, 300))
         sig(phone, "quote_completed")
         sig(phone, "quote_step", "done")
-        save_lead(phone, s.get("lead_name") or name, location=s.get("lead_location", ""),
-                  need=clip(raw, 1000), suggested=s.get("recommended", ""),
-                  contact=s.get("lead_contact"))
-        s.clear()
-        s["state"] = "menu"
-        return ("✅ Thank you! Our team will contact you shortly with your quotation.\n\n"
-                "Reply *menu* for more options.")
+        lead_name = s.get("lead_name") or name
+        where = s.get("lead_location", "")
+        save_lead(phone, lead_name, location=where, need=clip(raw, 1000),
+                  suggested=s.get("recommended", ""), contact=s.get("lead_contact"))
+        set_follow_up(phone, 2)
+        alert_team(phone, lead_name, "quote",
+                   f"Needs: {clip(raw, 300)}" + (f"\nWhere: {where}" if where else "")
+                   + (f"\nBot suggested: {s['recommended']}" if s.get("recommended") else ""), s)
+        promise = reply_promise()
+        reset(s)
+        if is_web:
+            return (f"✅ Thank you{', ' + first if first else ''}! Your request is saved. "
+                    f"Our team will contact you {promise} with your quotation.\n\nReply *menu* for more options.")
+        return (f"✅ Thank you{', ' + first if first else ''}! Your request is saved.\n\n"
+                f"One of our team will message you here {promise} with your quotation, "
+                "and arrange a free site visit to confirm the size.\n\nReply *menu* for more options.")
 
     # --- a package number right after the package list shows its details
     if t.isdigit() and s.pop("last", None) == "packages":
@@ -321,8 +503,10 @@ def handle(phone, name, text):
                     f"or call {CATALOG['phone']}.\n\nReply *menu* for more options.")
         sig(phone, "callback")
         save_lead(phone, name, kind="callback", need="Asked to speak to a person")
-        return (f"Okay, a team member will message you soon. You can also call {CATALOG['phone']}.\n\n"
-                "Reply *menu* for more options.")
+        set_follow_up(phone, 0)
+        alert_team(phone, s.get("lead_name") or name, "callback", "Asked to speak to a person.", s)
+        return (f"Sure{', ' + first if first else ''}. A member of our team will message you here {reply_promise()}. "
+                f"You can also call {CATALOG['phone']}.\n\nReply *menu* for more options.")
 
     if t in {"5", "contact", "hours", "address", "location"}:
         return contact_text()
@@ -331,7 +515,20 @@ def handle(phone, name, text):
     if faq:
         sig(phone, "faq", faq[0])
         return faq[1]
-    return "Sorry, I didn't quite get that. Reply with a number from the menu:\n\n" + menu_text()
+
+    if t.strip(" .!") in SMALL_TALK or len(t) <= 2:
+        return "👍 Reply *menu* any time to see packages, size a system or get a quote."
+
+    # Something the bot can't answer: hand it to a person instead of looping on the menu.
+    sig(phone, "unanswered", clip(raw, 200))
+    sig(phone, "needs_human", True)
+    promise = reply_promise()
+    if is_web:
+        return (f"Good question. I can't answer that one myself. Please use *Request a quote* on this page "
+                f"and leave your number, and a person will reply {promise}.\n\nOr reply *menu* for options.")
+    alert_team(phone, s.get("lead_name") or name, "unanswered", f'They asked: "{clip(raw, 300)}"', s)
+    return (f"Good question{', ' + first if first else ''}. I've passed it to our team, and a person will "
+            f"reply here {promise}.\n\nMeanwhile, reply *menu* to see packages, size a system or get a quote.")
 
 
 # ---------------------------------------------------------------- WhatsApp I/O
@@ -398,10 +595,18 @@ def incoming():
                         text = (i.get("button_reply") or i.get("list_reply") or {}).get("id", "")
                     else:
                         text = ""
+                    if phone in ALERT_NUMBERS and text.strip().lower() in {"leads", "report", "today"}:
+                        # staff asking for today's list; this also keeps their 24-hour alert window open
+                        send_text(phone, staff_summary())
+                        continue
                     contact = db.touch_contact(phone, names.get(phone, ""), "in")
                     db.add_message(phone, "in", text or f"[{kind} message]")
                     if contact["bot_paused"]:
-                        continue  # a staff member is handling this chat
+                        # a staff member is handling this chat: no bot reply, but tell them the client wrote
+                        st = db.get_state(phone)
+                        alert_team(phone, contact["name"], "paused", f'They wrote: "{clip(text or kind, 300)}"', st)
+                        db.save_state(phone, st)
+                        continue
                     if text:
                         reply = handle(phone, names.get(phone, ""), text)
                     else:
@@ -613,29 +818,50 @@ def admin_client_update(who):
     return (jsonify(client=_client_json(c)), 200) if c else (jsonify(error="Not found."), 404)
 
 
+def staff_reply(who, text):
+    """Send a staff member's message to a client. Returns (json, status)."""
+    c = db.get_contact(who)
+    if not c:
+        return {"error": "Not found."}, 404
+    a = leads.analyse(c)
+    if not a["is_whatsapp"]:
+        return {"error": "Website visitors cannot be messaged from here. Use the phone number they gave."}, 400
+    if not a["window_open"]:
+        return {"error": "Their last message is over 24 hours old. WhatsApp only allows an approved "
+                         "template message now. Call them, or wait for them to write again."}, 400
+    text = clip(str(text or ""), 1000)
+    if not text:
+        return {"error": "Type a message first."}, 400
+    if not send_text(who, text):
+        return {"error": "WhatsApp did not accept the message. Check WHATSAPP_TOKEN and PHONE_NUMBER_ID "
+                         "in Render."}, 502
+    db.add_message(who, "out", text, "staff")
+    db.touch_contact(who, direction="out")
+    db.add_signal(who, "needs_human", False)  # a person has now answered
+    if c["stage"] == "new":
+        db.update_contact(who, stage="contacted")
+    return {"ok": True}, 200
+
+
 @app.post("/admin/api/clients/<who>/reply")
 @admin_required
 def admin_client_reply(who):
-    c = db.get_contact(who)
-    if not c:
-        return jsonify(error="Not found."), 404
-    a = leads.analyse(c)
-    if not a["is_whatsapp"]:
-        return jsonify(error="Website visitors cannot be messaged from here. Use the phone number they gave."), 400
-    if not a["window_open"]:
-        return jsonify(error="Their last message is over 24 hours old. WhatsApp only allows an approved "
-                             "template message now (create one in WhatsApp Manager)."), 400
-    text = clip(str((request.get_json(silent=True) or {}).get("text", "")), 1000)
-    if not text:
-        return jsonify(error="Type a message first."), 400
-    if not send_text(who, text):
-        return jsonify(error="WhatsApp did not accept the message. Check WHATSAPP_TOKEN and PHONE_NUMBER_ID "
-                             "in Render."), 502
-    db.add_message(who, "out", text, "staff")
-    db.touch_contact(who, direction="out")
-    if c["stage"] == "new":
-        db.update_contact(who, stage="contacted")
-    return jsonify(ok=True)
+    body, status = staff_reply(who, (request.get_json(silent=True) or {}).get("text", ""))
+    return jsonify(body), status
+
+
+@app.post("/internal/reply")
+def internal_reply():
+    """Staff replies sent from the business platform (server to server, shared INTERNAL_KEY)."""
+    if not INTERNAL_KEY:
+        return jsonify(error="Replies from the platform are not set up (INTERNAL_KEY missing on the bot)."), 503
+    if not hmac.compare_digest(request.headers.get("X-Internal-Key", "").encode(), INTERNAL_KEY.encode()):
+        return jsonify(error="Forbidden."), 403
+    d = request.get_json(silent=True) or {}
+    body, status = staff_reply(str(d.get("who", ""))[:80], d.get("text", ""))
+    if status == 200:
+        log.info("staff reply to %s by %s", d.get("who"), clip(str(d.get("by", "")), 100))
+    return jsonify(body), status
 
 
 @app.get("/admin/api/catalog")

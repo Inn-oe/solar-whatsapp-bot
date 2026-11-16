@@ -72,7 +72,44 @@ class Setting(Base):
     value = Column(Text)
 
 
+class ChatState(Base):
+    """Where each person is in a conversation (e.g. halfway through a quote), so restarts don't lose it."""
+    __tablename__ = "chat_state"
+    who = Column(String(80), primary_key=True)
+    data = Column(Text, default="{}")
+    updated = Column(DateTime(timezone=True), default=_now)
+
+
 Base.metadata.create_all(engine)
+
+STATE_MAX_AGE = dt.timedelta(hours=24)  # an unfinished conversation older than this starts fresh
+
+
+def get_state(who):
+    with Session() as s:
+        row = s.get(ChatState, who[:80])
+        if row is None:
+            return {}
+        updated = row.updated if (row.updated is None or row.updated.tzinfo) else row.updated.replace(tzinfo=dt.timezone.utc)
+        try:
+            data = json.loads(row.data or "{}")
+        except ValueError:
+            return {}
+        if updated and _now() - updated > STATE_MAX_AGE:
+            # keep only long-lived memory (alert timestamps), drop the half-finished flow
+            return {k: v for k, v in data.items() if k.startswith("_")}
+        return data
+
+
+def save_state(who, data):
+    with Session() as s:
+        row = s.get(ChatState, who[:80])
+        if row is None:
+            row = ChatState(who=who[:80])
+            s.add(row)
+        row.data = json.dumps(data)
+        row.updated = _now()
+        s.commit()
 
 
 def _iso(d):
@@ -171,6 +208,8 @@ def add_signal(who, key, value=True):
             if value not in topics:
                 topics.append(value)
             data["faq"] = topics
+        elif key == "unanswered":  # the last few questions the bot could not answer
+            data["unanswered"] = (data.get("unanswered", []) + [value])[-5:]
         else:
             data[key] = value
         c.signals = json.dumps(data)
