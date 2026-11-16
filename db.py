@@ -80,7 +80,49 @@ class ChatState(Base):
     updated = Column(DateTime(timezone=True), default=_now)
 
 
+class MarketPrice(Base):
+    """One advertised price for a solar system size, read from a public web page."""
+    __tablename__ = "market_prices"
+    id = Column(Integer, primary_key=True)
+    seen = Column(DateTime(timezone=True), default=_now, index=True)
+    source = Column(String(120), index=True)   # name of the seller / site
+    url = Column(String(500))
+    location = Column(String(80), default="")  # town the source covers, "" = national
+    size_kva = Column(String(8))               # kept as text ("3.2") so SQLite and Postgres agree
+    price = Column(Integer)                    # USD
+    kind = Column(String(12), default="")      # installed | kit | "" (not stated)
+    snippet = Column(String(300), default="")  # the text the price was read from
+
+
 Base.metadata.create_all(engine)
+
+
+def replace_market_prices(source, rows):
+    """Swap one source's prices for what was just read (so removed adverts disappear)."""
+    with Session() as s:
+        s.query(MarketPrice).filter(MarketPrice.source == source).delete()
+        for r in rows:
+            s.add(MarketPrice(source=source[:120], url=r["url"][:500], location=r.get("location", "")[:80],
+                              size_kva=str(r["size_kva"]), price=int(r["price"]), kind=r.get("kind", "")[:12],
+                              snippet=r.get("snippet", "")[:300]))
+        s.commit()
+
+
+def market_prices(max_age_days=45):
+    """Prices read recently; older ones are ignored as out of date."""
+    cutoff = _now() - dt.timedelta(days=max_age_days)
+    with Session() as s:
+        rows = s.scalars(select(MarketPrice).where(MarketPrice.seen >= cutoff)).all()
+        return [{"source": r.source, "url": r.url, "location": r.location or "", "size_kva": float(r.size_kva),
+                 "price": r.price, "kind": r.kind or "", "snippet": r.snippet or "", "seen": _iso(r.seen)}
+                for r in rows]
+
+
+def drop_market_source(source):
+    with Session() as s:
+        s.query(MarketPrice).filter(MarketPrice.source == source).delete()
+        s.commit()
+
 
 STATE_MAX_AGE = dt.timedelta(hours=24)  # an unfinished conversation older than this starts fresh
 

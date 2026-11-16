@@ -56,6 +56,7 @@
       <button data-tab="clients" class="on">Potential clients</button>
       <button data-tab="leads">Quote requests</button>
       <button data-tab="chats">All conversations</button>
+      <button data-tab="market">Market prices</button>
       <button data-tab="settings">Prices &amp; settings</button>
     </nav>
 
@@ -86,6 +87,23 @@
         <div class="card" id="convs" style="max-height:70vh"></div>
         <div class="card" id="thread" style="max-height:70vh"><span class="muted">Select a conversation.</span></div>
       </div>
+    </section>
+
+    <section id="market" hidden>
+      <p class="muted">Prices that solar sellers currently advertise, read automatically from public web pages once a day. The bot shows clients the typical range for each system size. <span id="mkWhen"></span></p>
+      <p><button id="mkRefresh">Refresh now</button> <span id="mkMsg"></span></p>
+      <div class="card" style="overflow-x:auto"><table><thead><tr><th>Size</th><th>Typical range (USD)</th><th>Middle</th><th>Lowest–highest</th><th>Prices</th><th>Sellers</th><th>By town</th></tr></thead><tbody id="mkSizes"></tbody></table>
+      <p id="mkEmpty" class="muted" hidden>No prices collected yet. The first collection runs shortly after the service starts.</p></div>
+      <h3>Where the prices come from</h3>
+      <div class="card" style="overflow-x:auto"><table><thead><tr><th>Source</th><th>Town</th><th>Last result</th><th>Checked</th></tr></thead><tbody id="mkSources"></tbody></table></div>
+      <details style="margin-top:12px"><summary>Every price found (<span id="mkCount">0</span>)</summary>
+        <div class="card" style="overflow-x:auto;max-height:50vh"><table><thead><tr><th>Size</th><th>USD</th><th>Type</th><th>Source</th><th>Text it was read from</th></tr></thead><tbody id="mkPrices"></tbody></table></div>
+      </details>
+      <details style="margin-top:12px"><summary>Edit the list of sources</summary>
+        <p class="muted">Add a seller's price page or a classifieds page for a town. Use "location": "" for a national source. Facebook pages cannot be read automatically.</p>
+        <textarea id="mkSrc" spellcheck="false" style="min-height:220px"></textarea>
+        <p><button class="primary" id="mkSave">Save sources</button> <span id="mkSrcMsg"></span></p>
+      </details>
     </section>
 
     <section id="settings" hidden>
@@ -131,8 +149,8 @@ $("#logout").onclick = async () => { await api("/admin/logout", {method:"POST"})
 
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => {
   document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x === b));
-  ["clients","leads","chats","settings"].forEach(t => $("#" + t).hidden = t !== b.dataset.tab);
-  ({clients: loadClients, leads: loadLeads, chats: loadConvs, settings: loadCatalog})[b.dataset.tab]();
+  ["clients","leads","chats","market","settings"].forEach(t => $("#" + t).hidden = t !== b.dataset.tab);
+  ({clients: loadClients, leads: loadLeads, chats: loadConvs, market: loadMarket, settings: loadCatalog})[b.dataset.tab]();
 });
 
 /* ---------------- potential clients ---------------- */
@@ -262,6 +280,48 @@ async function openThread(who, node) {
   $("#thread").replaceChildren(...messages.map(m => el("div", {className:"msg " + (m.sender === "staff" ? "staff" : m.direction), textContent:m.text, title:fmtDate(m.created)})));
   $("#thread").scrollTop = $("#thread").scrollHeight;
 }
+
+/* ---------------- market prices ---------------- */
+const usd = n => Number(n).toLocaleString();
+async function loadMarket() {
+  const j = await api("/admin/api/market");
+  const sizes = Object.entries(j.summary.sizes).sort((a, b) => a[0] - b[0]);
+  $("#mkWhen").textContent = j.summary.refreshed ? "Last collected " + ago(j.summary.refreshed) + "." : "";
+  if (!j.enabled) $("#mkWhen").textContent += " Showing market prices to clients is switched off in settings (market_prices).";
+  $("#mkEmpty").hidden = sizes.length > 0;
+  $("#mkSizes").replaceChildren(...sizes.map(([size, e]) => {
+    const a = e.all, thin = a.count < j.min_prices || a.sources < 2;
+    const towns = Object.entries(e.towns).map(([t, s]) => `${t}: ${usd(s.low)}–${usd(s.high)} (${s.count})`).join(" · ");
+    return el("tr", {style: thin ? "opacity:.55" : ""},
+      el("td", {}, el("b", {textContent: size + "kVA"})),
+      el("td", {textContent: usd(a.low) + "–" + usd(a.high) + (thin ? " (too few to show clients)" : "")}),
+      el("td", {textContent: usd(a.median)}), el("td", {textContent: usd(a.min) + "–" + usd(a.max)}),
+      el("td", {textContent: a.count}), el("td", {textContent: a.sources}), el("td", {className: "muted", textContent: towns}));
+  }));
+  $("#mkSources").replaceChildren(...j.sources.map(s => el("tr", {},
+    el("td", {}, el("a", {href: s.url, target: "_blank", rel: "noopener", textContent: s.name})),
+    el("td", {textContent: s.location || "National"}),
+    el("td", {className: (s.note || "").startsWith("ok:") ? "ok" : "muted", textContent: s.note || "not checked yet"}),
+    el("td", {className: "muted", textContent: s.checked ? ago(s.checked) : ""}))));
+  $("#mkCount").textContent = j.prices.length;
+  $("#mkPrices").replaceChildren(...j.prices.map(p => el("tr", {},
+    el("td", {textContent: p.size_kva + "kVA"}), el("td", {textContent: usd(p.price)}),
+    el("td", {textContent: p.kind || "not stated"}),
+    el("td", {}, el("a", {href: p.url, target: "_blank", rel: "noopener", textContent: p.source})),
+    el("td", {className: "muted", textContent: p.snippet.slice(0, 160)}))));
+  $("#mkSrc").value = JSON.stringify(j.sources.map(({name, url, location}) => ({name, url, location: location || ""})), null, 2);
+}
+$("#mkRefresh").onclick = async () => {
+  const m = $("#mkMsg"); m.className = "";
+  try { const j = await api("/admin/api/market/refresh", {method: "POST", body: {}}); m.className = "ok"; m.textContent = j.message; setTimeout(loadMarket, 70000); }
+  catch (e) { m.className = "bad"; m.textContent = e.message; }
+};
+$("#mkSave").onclick = async () => {
+  const m = $("#mkSrcMsg"); m.className = "";
+  let data; try { data = JSON.parse($("#mkSrc").value); } catch (e) { m.className = "bad"; m.textContent = "Not valid JSON: " + e.message; return; }
+  try { await api("/admin/api/market/sources", {method: "PUT", body: data}); m.className = "ok"; m.textContent = "Saved. Use Refresh now to read the new sources."; loadMarket(); }
+  catch (e) { m.className = "bad"; m.textContent = e.message; }
+};
 
 /* ---------------- settings ---------------- */
 async function loadCatalog() {

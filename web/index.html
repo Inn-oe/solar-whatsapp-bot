@@ -135,12 +135,13 @@ fetch("/api/catalog").then(r => r.json()).then(c => {
   $("#packages").replaceChildren(...c.packages.map(p => {
     const d = document.createElement("div"); d.className = "card";
     const h = document.createElement("h3"); h.textContent = p.name;
-    const pr = document.createElement("div"); pr.className = "price"; pr.textContent = money(p.price);
+    const pr = document.createElement("div"); pr.className = "price"; pr.textContent = p.price_text || money(p.price);
+    if (p.market) { const mk = document.createElement("p"); mk.textContent = "Current market range. Your exact price comes with your quote."; d._mk = mk; }
     const a = document.createElement("p"); a.textContent = p.powers;
     const b = document.createElement("p"); b.textContent = p.includes;
     const btn = document.createElement("button"); btn.className = "btn"; btn.textContent = "Get a quote";
     btn.onclick = () => { $("#leadForm").dataset.pkg = p.name; $("#d").value = p.name; $("#quote").scrollIntoView({behavior:"smooth"}); $("#n").focus(); };
-    d.append(h, pr, a, b, btn); return d;
+    d.append(h, pr, ...(d._mk ? [d._mk] : []), a, b, btn); return d;
   }));
   if (c.whatsapp) {
     const a = document.createElement("a"); a.className = "btn green"; a.textContent = "Chat on WhatsApp";

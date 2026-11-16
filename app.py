@@ -34,6 +34,7 @@ from flask import Flask, jsonify, request, send_from_directory, session
 
 import db
 import leads
+import market
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("solar-bot")
@@ -107,6 +108,11 @@ def validate_catalog(c):
             return 'Every FAQ needs "keys" (list of words) and "answer" (text).'
         if "title" in f and not (isinstance(f["title"], str) and 0 < len(f["title"]) <= 24):
             return f'FAQ title "{f.get("title")}" must be 1-24 characters (it is shown on a WhatsApp button).'
+    if "market_prices" in c and not isinstance(c["market_prices"], bool):
+        return '"market_prices" must be true or false.'
+    for p in pk:
+        if "size_kva" in p and (not isinstance(p["size_kva"], (int, float)) or isinstance(p["size_kva"], bool)):
+            return f'Package "{p.get("name")}": "size_kva" must be a number.'
     if "towns" in c and not (isinstance(c["towns"], list) and all(isinstance(x, str) and x for x in c["towns"])):
         return '"towns" must be a list of town names.'
     return None
@@ -130,6 +136,49 @@ CATALOG = load_catalog()
 # Conversation state lives in the database (db.get_state / db.save_state) so restarts don't lose it.
 SEEN_IDS: dict[str, float] = {}
 HITS: dict[str, list] = {}
+
+
+def package_size(p):
+    """System size in kVA: the package's "size_kva", or the number in its name ("Home 3kW")."""
+    if isinstance(p.get("size_kva"), (int, float)) and not isinstance(p.get("size_kva"), bool):
+        return float(p["size_kva"])
+    m = re.search(r"(?i)(\d{1,2}(?:\.\d)?)\s?k(?:va|w)(?![a-z])", p.get("name", ""))
+    return float(m.group(1)) if m else None
+
+
+def market_range(p, town=""):
+    """Current advertised price range for a package's size, or None (no data / switched off)."""
+    if not CATALOG.get("market_prices", True) or CATALOG.get("currency", "").upper() not in ("USD", "US$", "$"):
+        return None
+    size = package_size(p)
+    if not size:
+        return None
+    try:
+        r = market.range_for(size, town)
+    except Exception:
+        log.exception("market range failed")
+        return None
+    return r if r and r["low"] < r["high"] else None
+
+
+def price_text(p, town=""):
+    """What the bot shows as a package's price: the live market range, else the catalog price."""
+    r = market_range(p, town)
+    return f"{CATALOG['currency']} {r['low']:,}–{r['high']:,}" if r else money(p["price"])
+
+
+def market_note(p, town=""):
+    r = market_range(p, town)
+    if not r:
+        return ""
+    when = ""
+    try:
+        when = ", checked " + dt.datetime.fromisoformat(market.summary()["refreshed"]).strftime("%d %b").lstrip("0")
+    except (TypeError, ValueError):
+        pass
+    return (f"📊 *Market check:* {r['size']:g}kVA systems in {r['where']} are advertised at "
+            f"{CATALOG['currency']} {r['low']:,}–{r['high']:,} (typical {r['median']:,}), from {r['count']} "
+            f"current prices at {r['sources']} sellers{when}. Your exact price comes with your quotation.")
 
 
 def money(n):
@@ -257,19 +306,20 @@ def menu_reply(first=""):
              "choose an option. You can also type any question.", MENU_OPTIONS, "Menu")
 
 
-def packages_reply():
-    rows = [(f"pkg:{p['id']}", short(p["name"], 24), short(f"{money(p['price'])} · {p['powers']}", 72))
+def packages_reply(town=""):
+    rows = [(f"pkg:{p['id']}", short(p["name"], 24), short(f"{price_text(p, town)} · {p['powers']}", 72))
             for p in CATALOG["packages"][:9]]
-    names = "\n".join(f"• *{p['name']}* - {money(p['price'])}" for p in CATALOG["packages"])
+    names = "\n".join(f"• *{p['name']}* - {price_text(p, town)}" for p in CATALOG["packages"])
     return R(f"*Our solar packages*\n\n{names}\n\nTap *View packages* to see what each one powers.",
              rows + [O_MENU], "View packages")
 
 
-def package_reply(pid):
+def package_reply(pid, town=""):
     for p in CATALOG["packages"]:
         if p["id"] == pid:
-            return R(f"*{p['name']}* - {money(p['price'])}\n\n"
-                     f"⚡ Powers: {p['powers']}\n\n📦 Includes: {p['includes']}",
+            note = market_note(p, town)
+            return R(f"*{p['name']}* - {price_text(p, town)}\n\n"
+                     f"⚡ Powers: {p['powers']}\n\n📦 Includes: {p['includes']}" + (f"\n\n{note}" if note else ""),
                      [(f"quote:pkg:{p['id']}", "📝 Quote for this"), ("packages", "☀️ Other packages"), O_MENU])
     return None
 
@@ -401,6 +451,27 @@ def alert_team(who, name, kind, detail, state):
     body = (f"🔔 *{ALERT_TITLES.get(kind, kind)}*\n{shown} (+{who})\n{clip(detail, 500)}\n\n"
             f"Reply to them: https://wa.me/{who}")
     threading.Thread(target=_deliver_alert, args=(body, who), daemon=True).start()
+
+
+def market_summary_text():
+    """What staff get when they send 'market' to the bot: current advertised ranges by size."""
+    m = market.summary()
+    if not m["sizes"]:
+        return "No market prices collected yet. They refresh automatically every day."
+    lines = ["📊 *Market prices (advertised, USD)*\n"]
+    for size, e in m["sizes"].items():
+        a = e["all"]
+        if a["count"] < 2:
+            continue
+        towns = ", ".join(f"{t} {st['low']:,}–{st['high']:,}" for t, st in e["towns"].items()
+                          if st["count"] >= market.MIN_PRICES)
+        lines.append(f"*{size:g}kVA*: {a['low']:,}–{a['high']:,} (typical {a['median']:,}; {a['count']} prices, "
+                     f"{a['sources']} sellers)" + (f"\n   {towns}" if towns else ""))
+    try:
+        lines.append("\nChecked " + dt.datetime.fromisoformat(m["refreshed"]).strftime("%d %b %H:%M UTC"))
+    except (TypeError, ValueError):
+        pass
+    return "\n".join(lines)
 
 
 def staff_summary():
@@ -547,8 +618,11 @@ def _finish_quote(phone, name, s, need, is_web):
     save_lead(phone, lead_name, location=where, need=clip(need, 1000),
               suggested=s.get("recommended", ""), contact=s.get("lead_contact"))
     set_follow_up(phone, 2)
+    asked = next((p for p in CATALOG["packages"] if p["name"] in (need, s.get("_recommended"))), None)
+    rng = market_range(asked, where) if asked else None
     alert_team(phone, lead_name, "quote",
                f"Needs: {clip(need, 300)}" + (f"\nWhere: {where}" if where else "")
+               + (f"\nMarket range {rng['size']:g}kVA ({rng['where']}): USD {rng['low']:,}–{rng['high']:,}" if rng else "")
                + (f"\nBot suggested: {s['_recommended']}" if s.get("_recommended") else ""), s)
     promise = reply_promise()
     reset(s)
@@ -590,14 +664,14 @@ def _handle(phone, name, text, s):
     if t == "packages":
         reset(s)
         sig(phone, "viewed_packages")
-        return packages_reply()
+        return packages_reply(s.get("_town", ""))
     if t.startswith("pkg:"):
         reset(s)
-        r = package_reply(t[4:])
+        r = package_reply(t[4:], s.get("_town", ""))
         if r:
             sig(phone, "package", next(p["name"] for p in CATALOG["packages"] if p["id"] == t[4:]))
             return r
-        return packages_reply()
+        return packages_reply(s.get("_town", ""))
     if t == "size":
         reset(s)
         return size_reply()
@@ -670,6 +744,7 @@ def _handle(phone, name, text, s):
         if t == "loc:other":
             return "Please type your *town or suburb*."
         s["lead_location"] = clip(t[4:].title() if t.startswith("loc:") else raw, 200)
+        s["_town"] = s["lead_location"]   # remembered, so later prices use this town's market
         return _after_location(phone, name, s, is_web)
 
     if state == "quote_contact":
@@ -724,9 +799,10 @@ def _sized(phone, s, daily):
     s["_recommended"] = p["name"]
     sig(phone, "sized_kwh", round(daily, 1))
     sig(phone, "recommended", p["name"])
-    return R(f"For about {daily:.0f} kWh a day, I'd suggest the *{p['name']}* ({money(p['price'])}).\n\n"
-             f"⚡ It powers: {p['powers']}.\n\n"
-             "This is an estimate. A technician confirms the final size at a free site visit.",
+    note = market_note(p, s.get("_town", ""))
+    return R(f"For about {daily:.0f} kWh a day, I'd suggest the *{p['name']}* ({price_text(p, s.get('_town', ''))}).\n\n"
+             f"⚡ It powers: {p['powers']}.\n\n" + (f"{note}\n\n" if note else "")
+             + "This is an estimate. A technician confirms the final size at a free site visit.",
              [(f"quote:pkg:{p['id']}", "📝 Quote for this"), ("packages", "☀️ All packages"), O_MENU])
 
 
@@ -841,6 +917,9 @@ def incoming():
                         text = m.get("button", {}).get("payload") or m.get("button", {}).get("text", "")
                     else:
                         text = ""
+                    if phone in ALERT_NUMBERS and text.strip().lower() in {"market", "market prices"}:
+                        send_text(phone, market_summary_text())
+                        continue
                     if phone in ALERT_NUMBERS and text.strip().lower() in {"leads", "report", "today"}:
                         # staff asking for today's list; this also keeps their 24-hour alert window open
                         send_text(phone, staff_summary())
@@ -890,8 +969,9 @@ def health():
 @app.get("/api/catalog")
 def api_catalog():
     c = CATALOG
+    packages = [dict(p, price_text=price_text(p), market=bool(market_range(p))) for p in c["packages"]]
     return jsonify({k: c[k] for k in ("company", "currency", "phone", "email", "address", "hours")}
-                   | {"packages": c["packages"], "whatsapp": PUBLIC_WHATSAPP})
+                   | {"packages": packages, "whatsapp": PUBLIC_WHATSAPP})
 
 
 @app.post("/api/chat")
@@ -1112,6 +1192,38 @@ def internal_reply():
     return jsonify(body), status
 
 
+@app.get("/admin/api/market")
+@admin_required
+def admin_market():
+    st = market.status()
+    sources = [dict(src, **st.get(src["name"], {})) for src in market.get_sources()]
+    prices = sorted(db.market_prices(), key=lambda r: (r["size_kva"], r["price"]))
+    return jsonify(summary=market.summary(), sources=sources, prices=prices,
+                   enabled=bool(CATALOG.get("market_prices", True)), min_prices=market.MIN_PRICES)
+
+
+@app.post("/admin/api/market/refresh")
+@admin_required
+def admin_market_refresh():
+    if limited("market-refresh", 3, 3600):
+        return jsonify(error="Refreshed recently. To be fair to the sites we read, wait a while."), 429
+    threading.Thread(target=market.refresh, daemon=True).start()
+    return jsonify(ok=True, message="Refresh started. It takes about a minute.")
+
+
+@app.put("/admin/api/market/sources")
+@admin_required
+def admin_market_sources():
+    data = request.get_json(silent=True)
+    err = market.validate_sources(data)
+    if err:
+        return jsonify(error=err), 400
+    market.set_sources([{"name": x["name"].strip()[:120], "url": x["url"].strip()[:500],
+                         "location": x.get("location", "").strip()[:80]} for x in data])
+    market._cache.clear()
+    return jsonify(ok=True)
+
+
 @app.get("/admin/api/catalog")
 @admin_required
 def admin_catalog_get():
@@ -1130,6 +1242,9 @@ def admin_catalog_put():
     CATALOG.update(data)
     return jsonify(ok=True)
 
+
+if os.getenv("MARKET_AUTO", "1") != "0":
+    threading.Thread(target=market.loop, daemon=True, name="market-refresh").start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5001)), debug=False)
