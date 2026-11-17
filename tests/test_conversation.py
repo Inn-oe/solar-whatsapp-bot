@@ -131,3 +131,58 @@ def test_transformer_is_not_started_on_a_small_server(monkeypatch):
     monkeypatch.setattr(brain, "_memory_limit_mb", lambda: 4096)
     brain.retrain()
     assert started
+
+
+def test_vague_fault_gets_a_human_follow_up_not_a_bare_location_question(chat):
+    """The screenshot case: 'My solar is malfunctioning' must not jump straight to 'Whereabouts is it?'."""
+    r1 = chat.say("My solar is malfunctioning")
+    assert "sorry" in r1.lower() or "frustrating" in r1.lower()
+    assert "beeping" in r1.lower() or "error" in r1.lower()          # asks what the system is doing
+    assert "town" not in r1.lower() and not r1.startswith("Thanks")  # location comes later; no pointless thanks
+    r2 = chat.say("it keeps beeping since this morning")
+    assert r2.startswith(("Thanks", "Got it", "Okay", "Noted")) and "town" in r2.lower()
+    r3 = chat.say("Harare")
+    assert "beeping" in r3 and "Harare" in r3                         # the report is repeated back
+    assert "don't open" in r3                                         # and a safety tip
+    e = last_enquiry(chat.who, "maintenance")
+    assert e and "malfunctioning" in e["summary"] and "beeping" in e["summary"]
+
+
+def test_specific_fault_is_acknowledged_with_sympathy(chat):
+    reply = chat.say("my batteries are not charging anymore")
+    assert reply.lower().startswith(("sorry", "that sounds"))
+    assert "town" in reply.lower()
+
+
+def test_coverage_question_is_answered_not_a_contact_card(chat):
+    reply = chat.say("do you install in Bulawayo?")
+    assert reply.startswith("Yes, we install in Bulawayo") and "📞" not in reply
+    follow = chat.say("yes please")                              # accepts the offer: the quote conversation starts
+    assert ("run" in follow.lower() or "power" in follow.lower()) and follow.lower().count("what") == 1
+
+
+def test_appliance_statement_is_sized_not_answered_from_the_faq(chat):
+    reply = chat.say("i have a fridge, tv and a borehole pump")
+    assert "kWh" in reply and "suggest" in reply
+
+
+def test_yes_please_after_an_answer_starts_the_quote(chat):
+    chat.say("how much is a 5kva system")                         # offers a quotation
+    chat.say("ok and installation included?")                      # answered, no details demanded
+    reply = chat.say("yes please send quote")
+    assert "run" in reply.lower() or "power" in reply.lower()      # the quote conversation starts
+
+
+def test_extra_detail_is_not_taken_as_the_town(chat):
+    chat.say("my inverter is off and the lights are out")           # asked for the town
+    reply = chat.say("no error just dead")
+    assert "town" in reply.lower() and "No Error" not in reply     # keeps the detail, asks again
+    done = chat.say("Kwekwe")
+    assert "Kwekwe" in done and "no error just dead" in done.lower()
+
+
+def test_service_request_keeps_the_complaint_and_is_not_marked_priority(chat):
+    chat.say("can u come check my panels they are dirty")
+    done = chat.say("Mutare")
+    assert "dirty" in done and "as a priority" not in done and "Mutare; Routine" not in done
+    assert last_enquiry(chat.who, "maintenance")["priority"] == "medium"

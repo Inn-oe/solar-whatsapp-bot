@@ -211,7 +211,7 @@
     },
     {
       "name": "bot_identity", "category": "other", "priority": "low", "handler": "reply",
-      "replies": ["I'm the virtual assistant for {company} 🤖. I can answer questions, sort out quotes and book maintenance, and a real person on our team steps in whenever you want. Just say \"call me\"."],
+      "replies": ["I'm the virtual assistant for {company} 🤖, so no name as such, just call me the {company} assistant. I can answer questions, arrange quotes and book maintenance, and a real person on our team steps in whenever you like. Just say \"call me\".", "Good question{first_comma}! I'm an automated assistant for {company}, not a person. I can help with prices, quotes and faults, and I'll bring in someone from the team the moment you ask.", "I'm a virtual assistant, {company}'s first point of contact 🤖. Anything I can't handle goes straight to a real person on the team, and you can ask for one at any time."],
       "examples": ["are you a bot", "am i talking to a human", "are you a real person", "is this a robot", "who am i speaking to",
         "who are you", "are you an ai", "is this automated", "is there a real person here", "what is your name"]
     },

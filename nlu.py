@@ -121,6 +121,9 @@ def extract_appliances(text):
         if label not in seen:
             seen.append(label)
             total += kwh
+    if "borehole pump" in seen and "pump" in seen:  # "borehole pump" is one appliance, not two
+        seen.remove("pump")
+        total -= APPLIANCES["pump"][1]
     return seen, round(total, 1)
 
 

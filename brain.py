@@ -90,11 +90,34 @@ def _import_sheet():
     if not QA_SHEET.exists():
         return
     import qa_import
-    digest = qa_import.file_hash(QA_SHEET)
+    digest = qa_import.file_hash(QA_SHEET) + ":2"   # ":2" = version of the import rules
     if db.get_setting("nlu_qa_hash") == digest:
         return
     qa_import.import_csv(QA_SHEET)
     db.set_setting("nlu_qa_hash", digest)
+
+
+IDENTITY_REPLIES = [
+    "I'm the virtual assistant for {company} 🤖, so no name as such, just call me the {company} assistant. I can "
+    "answer questions, arrange quotes and book maintenance, and a real person on our team steps in whenever you "
+    "like. Just say \"call me\".",
+    "Good question{first_comma}! I'm an automated assistant for {company}, not a person. I can help with prices, "
+    "quotes and faults, and I'll bring in someone from the team the moment you ask.",
+    "I'm a virtual assistant, {company}'s first point of contact 🤖. Anything I can't handle goes straight to a "
+    "real person on the team, and you can ask for one at any time.",
+]
+_OLD_IDENTITY = "I'm the virtual assistant for {company} 🤖. I can answer questions, sort out quotes and book maintenance"
+
+
+def _migrate():
+    """One-time updates to texts that were already saved in the database by an earlier version."""
+    if db.get_setting("nlu_migration") == "2":
+        return
+    meta = db.list_intents().get("bot_identity")
+    if meta and len(meta["replies"]) == 1 and meta["replies"][0].startswith(_OLD_IDENTITY):
+        db.save_intent("bot_identity", meta["category"], meta["priority"], meta["handler"], IDENTITY_REPLIES,
+                       meta["enabled"])
+    db.set_setting("nlu_migration", "2")
 
 
 def retrain():
@@ -169,6 +192,7 @@ def start(catalog):
     try:
         seed(catalog)
         _import_sheet()
+        _migrate()
         return retrain()
     except Exception:
         log.exception("NLU start-up failed; the bot will hand every message to the team")
@@ -189,6 +213,11 @@ def analyze(text, towns=None, existing_customer=False):
     # figures or appliances with no clear intent: treat it as a sizing / buying question
     if intent is None and (ents.get("appliances") or ents.get("kwh")) and "sizing" in _intents:
         intent = "sizing"
+    # "I have a fridge, tv and a borehole pump" (a statement, not a question) is a sizing request
+    if (len(ents.get("appliances") or []) >= 2 and "sizing" in _intents and "?" not in text
+            and not re.match(r"\s*(can|do|does|will|is|are|how|what|which|why)\b", text, re.I)
+            and (category_now in (None, "enquiry", "other") or (intent or "").startswith(("faq_", "qa_")))):
+        intent = "sizing"
     meta = _intents.get(intent) or {}
     category = meta.get("category", "enquiry")
     priority, reasons = nlu.decide_priority(meta.get("priority", "medium"), category, text, ents, existing_customer)
@@ -196,6 +225,14 @@ def analyze(text, towns=None, existing_customer=False):
             "similarity": round(res["similarity"], 3), "ranked": res["ranked"], "matched": res["matched"],
             "category": category, "priority": priority, "reasons": reasons, "entities": ents,
             "handler": meta.get("handler", "reply"), "understood": intent is not None}
+
+
+QUESTION_START = re.compile(r"\s*(can|could|do|does|will|would|is|are|how|what|which|why|when|where|who)\b", re.I)
+AGREES = re.compile(r"\s*(yes|yeah|yep|ok|okay|sure|please|go ahead|ehe|send)\b", re.I)
+
+
+def is_question(text):
+    return "?" in text or bool(QUESTION_START.match(text))
 
 
 # ---------------------------------------------------------------- wording helpers
@@ -266,12 +303,19 @@ def respond(phone, name, text, s):
 
     # 1. is the customer answering the question we just asked?
     filled = _fill_awaiting(ctx)
+    if filled == "more":
+        return _keep_detail_and_reask(ctx)
     if filled:
         return _continue_flow(ctx)
 
     intent, handler = a["intent"], a["handler"]
-    if intent is None:
+    # "yes please" / "send the quote" right after we offered a quotation accepts the offer
+    accepts_offer = (s.get("pending") == "quote_offer" and intent in (None, "affirm", "buy_system", "site_visit")
+                     and not is_question(text) and bool(AGREES.match(text)))
+    if intent is None and not accepts_offer:
         return _not_understood(ctx)
+    if accepts_offer:
+        handler = "affirm"
     s["_unknown"] = 0
     if a["confidence"] < 0.4:  # answered, but unsure: let staff confirm it so the bot learns
         try:
@@ -283,10 +327,13 @@ def respond(phone, name, text, s):
     _record_enquiry(ctx)
 
     # 3. answer
+    awaiting_before = s.get("awaiting")
     reply = _HANDLERS.get(handler, _h_reply)(ctx)
 
-    # 4. answered a side question in the middle of a flow: gently go back to it
-    if s.get("flow") and s.get("awaiting") and handler not in ("purchase", "maintenance"):
+    # 4. answered a side question in the middle of a flow: gently go back to it (unless this reply moved the
+    #    flow on and already asks the next question itself)
+    if (s.get("flow") and s.get("awaiting") and s.get("awaiting") == awaiting_before
+            and handler not in ("purchase", "maintenance")):
         reply += "\n\n" + _ask(ctx, s["awaiting"], resumed=True)
     return reply
 
@@ -397,6 +444,15 @@ def _h_contact(ctx):
     c = ctx.catalog
     s = ctx.s
     town = ctx.ents.get("location")
+    asks_for_details = re.search(r"\b(address|where are you|located|office|shop|hours|open|close|phone|number|email|"
+                                 r"contact|call|whatsapp)\b", nlu.clean(ctx.text))
+    if town and not asks_for_details:
+        known = [t.lower() for t in (c.get("towns") or [])]
+        if town.lower() in known:
+            s["pending"] = "quote_offer"
+            return (f"Yes, we install in {town}. Would you like me to arrange a free site visit and a quotation?")
+        return (f"I'm not sure we cover {town} yet, but I'll ask the team to confirm. What would you like solar "
+                "for, so I can pass it on?")
     served = ""
     if town and town.lower() not in [t.lower() for t in (c.get("towns") or [])]:
         served = f"\n\nI'm not sure we cover {town} yet. A team member will confirm if you tell me your area."
@@ -429,7 +485,8 @@ def _h_packages(ctx):
 def _h_sizing(ctx):
     c, s = core(), ctx.s
     e = ctx.ents
-    if e.get("size_kva") or e.get("budget") or (e.get("location") and e.get("appliances")):
+    if (e.get("size_kva") or e.get("budget") or (e.get("location") and e.get("appliances"))) \
+            and not is_question(ctx.text):
         # a size, budget or town alongside the appliances means they are ready to buy, not just asking
         ctx.a["intent"], ctx.a["category"] = "buy_system", "purchase"
         return _h_purchase(ctx)
@@ -468,7 +525,10 @@ def _h_answer_team(ctx):
     if not replies:
         return _not_understood(ctx)
     text = say(replies, s, **ctx.kw())
+    offer = s.get("pending")
     reset_flow(s)
+    if offer:
+        s["pending"] = offer
     s["flow"], s["awaiting"] = "details", "details"
     s["_detail_intent"], s["_detail_category"] = ctx.a["intent"], ctx.a["category"]
     _slots(s)["first_text"] = core().clip(ctx.text, 300)
@@ -574,8 +634,25 @@ def _add_detail(slots, key, value):
         slots[key] = (have + "; " if have else "") + value
 
 
-def _gather(ctx):
-    """Pull everything useful out of the message into the flow's slots."""
+SYMPTOM = re.compile(
+    r"\b(beep\w*|error|fault|code|alarm|flash\w*|blink\w*|trip\w*|overload\w*|not (?:charg\w*|work\w*|switch\w*|"
+    r"hold\w*|turn\w*|giving|supply\w*)|no (?:power|output|electricity|lights?|charge)|stopp?\w*|dead|flat|drain\w*|"
+    r"run\w* out|finish\w*|last|noise|hot|warm|blank|display|shut\w*|cut\w*|off|leak\w*|crack\w*|broken|damag\w*|"
+    r"smok\w*|burn\w*|spark\w*|low|weak|slow|dim|only|fell|dropp\w*|keeps?|since|every)\b")
+
+
+def _specific_issue(text, a):
+    """True when the message says what is wrong ('keeps beeping', 'batteries not charging'), not just that
+    something is wrong ('my solar is malfunctioning')."""
+    if a["priority"] == "urgent" or a["intent"] == "warranty_claim":
+        return True
+    t = nlu.clean(text)
+    return bool(SYMPTOM.search(t)) or len(t.split()) >= 9
+
+
+def _gather(ctx, issue_text=True):
+    """Pull everything useful out of the message into the flow's slots. `issue_text` is False when the
+    message was only the answer to another question (e.g. the town), so it is not mistaken for the problem."""
     s, e = ctx.s, ctx.ents
     slots = _slots(s)
     if e.get("location"):
@@ -611,11 +688,20 @@ def _gather(ctx):
             slots["kwh"] = e.get("kwh") or e["appliance_kwh"]
     elif kind == "maintenance":
         t = ctx.text
-        if (ctx.a["intent"] in ("maintenance_fault", "warranty_claim") or ctx.a["priority"] == "urgent"
-                or len(t.split()) >= 4):
-            _add_detail(slots, "issue", core().clip(t, 300))
+        if ctx.a["category"] == "maintenance":
+            rank = {"low": 0, "medium": 1, "high": 2, "urgent": 3}
+            if rank.get(ctx.a["priority"], 1) >= rank.get(slots.get("priority", "low"), 0):
+                slots["priority"] = ctx.a["priority"]
+        if not issue_text:
+            pass
         elif ctx.a["intent"] == "maintenance_service":
-            _add_detail(slots, "issue", "Routine service / inspection")
+            slots["routine"] = True
+            _add_detail(slots, "issue", "Service / inspection requested: " + core().clip(t, 200))
+        elif _specific_issue(t, ctx.a):
+            _add_detail(slots, "issue", core().clip(t, 300))
+        else:
+            # "my solar is malfunctioning": remember it, but ask what is actually happening
+            _add_detail(slots, "reported", core().clip(t, 300))
 
 
 def _missing(ctx):
@@ -636,12 +722,13 @@ ASKS = {
     "need": ["Happy to help with that{first_comma}! What would you like the system to run? For example fridge, "
              "TV, lights, a borehole pump, or the size if you know it (like 5kVA).",
              "Sure{first_comma}. So I can size it properly, what do you want to power: lights, fridge, TV, geyser, pump?"],
-    "issue": ["I'm sorry you're having trouble{first_comma}. What exactly is happening? For example any beeping, "
-              "error code or lights on the inverter, and since when?",
-              "Sorry to hear that{first_comma}. Can you describe the problem? Any error code, beeping or warning "
-              "light, and when did it start?"],
-    "location": ["Thanks! Whereabouts is it (town or suburb)?", "Got it. Which town or suburb are you in?",
-                 "And where is the installation, which town or suburb?"],
+    "issue": ["Sorry to hear that{first_comma}, let's get it sorted. What is the system doing? For example "
+              "beeping, an error code on the display, no power, or batteries not holding. And roughly when did "
+              "it start?",
+              "Oh no, that's frustrating{first_comma}. What are you seeing exactly? Any beeping, error code or "
+              "warning light, lights off, or batteries draining fast? And when did it begin?"],
+    "location": ["Which town or suburb is it in?", "Whereabouts are you, which town or suburb?",
+                 "And which town or suburb are you in?"],
     "contact": ["What's the best phone number (WhatsApp if possible) for our team to reach you on?"],
     "name": ["And may I have your name please?", "Lastly, what name should I put on the request?"],
     "sizing_need": ["What would you like to keep running: fridge, TV, lights, geyser, pump? Or tell me your "
@@ -656,11 +743,31 @@ RESUME = {"details": "When you can, send me those details and I'll pass them to 
           "sizing_need": "Back to sizing: what would you like to keep running?"}
 
 
-def _ask(ctx, slot, resumed=False):
+def _ask(ctx, slot, resumed=False, filled=False):
+    """The next question. `filled` means the customer just answered the previous one, so acknowledge it first
+    (never say 'thanks' before they have given us anything)."""
     ctx.s["awaiting"] = slot
     if resumed:
         return RESUME[slot]
-    return say(ASKS[slot], ctx.s, **ctx.kw())
+    ack = ""
+    if filled:
+        ack = say(["Thanks.", "Got it.", "Okay, thanks.", "Noted."], ctx.s) + " "
+    return ack + say(ASKS[slot], ctx.s, **ctx.kw())
+
+
+NOT_PLACE_WORDS = {"no", "not", "yes", "just", "is", "are", "was", "were", "the", "my", "it", "its", "i", "and", "but",
+                   "because", "when", "why", "what", "how", "have", "has", "do", "does", "did", "can", "will", "error",
+                   "dead", "off", "on", "help", "please", "ok", "okay", "thanks", "thank", "you", "also", "still",
+                   "since", "beeping", "working", "charging", "power", "inverter", "battery", "batteries", "panels",
+                   "solar", "light", "lights", "fridge", "tv", "need", "want", "got", "had", "keeps", "stopped"}
+
+
+def _looks_like_place(raw):
+    """A short phrase made of place-like words: 'Borrowdale, Harare' yes, 'no error just dead' no."""
+    if not _looks_like_answer(raw) or len(raw.split()) > 5:
+        return False
+    words = re.findall(r"[a-z']+", raw.lower())
+    return bool(words) and not any(w in NOT_PLACE_WORDS for w in words)
 
 
 def _looks_like_answer(raw):
@@ -686,19 +793,30 @@ def _fill_awaiting(ctx):
     if slot == "details":
         # anything that is not a question is taken as the details we asked for
         confident_other = a["understood"] and a["confidence"] >= 0.6 and a["intent"] != "affirm"
-        return "?" not in raw and len(re.findall(r"[A-Za-z0-9]", raw)) >= 2 and not confident_other
+        # "yes please send quote" answers the earlier offer; it is not the details we asked for
+        agrees = (a["intent"] in ("affirm", "buy_system", "site_visit")
+                  or re.match(r"\s*(yes|yeah|yep|ok|okay|sure|please|go ahead|ehe)\b", raw, re.I))
+        # appliance / size / location / phone details are exactly what the question asked for
+        has_details = any(e.get(k) for k in ("appliances", "kwh", "size_kva", "budget", "products", "location", "phone"))
+        return ("?" not in raw and len(re.findall(r"[A-Za-z0-9]", raw)) >= 2
+                and (has_details or not confident_other) and not agrees)
     if slot == "sizing_need":
+        if is_question(raw):
+            return False   # "will 5kVA run a borehole pump?" is a question, not the list we asked for
         kwh = e.get("kwh") or e.get("appliance_kwh")
         return bool(kwh)
     sure_of_other = a["understood"] and a["confidence"] >= 0.6 and a["intent"] not in (None, "affirm")
     if slot == "location":
         # a short, non-question reply to "where?" is the answer ("Borrowdale, Harare"), unless the model is
-        # confident it is something else entirely
-        if _looks_like_answer(raw) and (e.get("location") or not sure_of_other):
+        # confident it is something else entirely or it is plainly not a place ("no error just dead")
+        if _looks_like_place(raw) and (e.get("location") or not sure_of_other):
             place = raw.strip(" .,!").title()
         else:
             place = e.get("location", "")
         if not place:
+            if ("?" not in raw and len(raw.split()) >= 2 and s.get("flow") in ("purchase", "maintenance")
+                    and a["intent"] not in ("greeting", "thanks", "goodbye", "deny", "talk_to_human", "complaint")):
+                return "more"   # more detail about the request: keep it and ask for the town again
             return False
         slots["location"] = place
         s["_town"] = place
@@ -719,6 +837,8 @@ def _fill_awaiting(ctx):
         if re.search(r"\b(not sure|dont know|do not know|advise|any|you decide|help me choose|recommend)\b", nlu.clean(raw)):
             _add_detail(slots, "need", "Not sure: wants advice")
             return True
+        if is_question(raw):
+            return False   # "will 5kVA run a borehole pump?" is a question for us, not our answer
         if any(e.get(k) for k in ("appliances", "kwh", "size_kva", "budget", "products")):
             _gather(ctx)
             return True
@@ -727,11 +847,23 @@ def _fill_awaiting(ctx):
             return True
         return False
     if slot == "issue":
-        if len(raw.split()) >= 2 and "?" not in raw and a["intent"] not in ("affirm",):
+        if "?" not in raw and a["intent"] not in ("affirm",) and (len(raw.split()) >= 2 or SYMPTOM.search(nlu.clean(raw))):
             _add_detail(slots, "issue", core().clip(raw, 300))
             return True
         return False
     return False
+
+
+def _keep_detail_and_reask(ctx):
+    """The customer added detail instead of answering ('no error, it is just dead'): keep it, ask again."""
+    s = ctx.s
+    slots = _slots(s)
+    if s.get("flow") == "maintenance":
+        _add_detail(slots, "issue", core().clip(ctx.text, 300))
+    else:
+        _gather(ctx, issue_text=True)
+    ack = say(["Got it, thanks.", "Okay, noted.", "Thanks, that helps."], s) + " "
+    return ack + say(ASKS[s["awaiting"]], s, **ctx.kw())
 
 
 def _continue_flow(ctx):
@@ -741,17 +873,18 @@ def _continue_flow(ctx):
     if s.get("flow") == "sizing":
         kwh = ctx.ents.get("kwh") or ctx.ents.get("appliance_kwh")
         return _sized(ctx, kwh)
-    _gather(ctx)
+    answered = s.get("awaiting")
+    _gather(ctx, issue_text=answered not in ("location", "contact", "name"))
     s.pop("awaiting", None)
-    return _advance(ctx)
+    return _advance(ctx, filled=True)
 
 
-def _advance(ctx):
+def _advance(ctx, filled=False):
     """Ask for the next missing detail, or finish the request when nothing is missing."""
     s = ctx.s
     slot = _missing(ctx)
     if slot:
-        return _ask(ctx, slot)
+        return _ask(ctx, slot, filled=filled)
     return _finish_purchase(ctx) if s["flow"] == "purchase" else _finish_maintenance(ctx)
 
 
@@ -767,11 +900,20 @@ def _h_purchase(ctx):
 
 def _h_maintenance(ctx):
     s = ctx.s
-    if s.get("flow") != "maintenance":
+    fresh = s.get("flow") != "maintenance"
+    if fresh:
         reset_flow(s)
         s["flow"] = "maintenance"
     _gather(ctx)
     prefix = ""
+    if fresh and ctx.a["priority"] != "urgent" and _missing(ctx) != "issue":
+        # the next question is not the symptom question (which already says sorry), so be human first
+        if ctx.a["intent"] == "maintenance_service":
+            prefix = say(["Happy to arrange that{first_comma}.", "Of course{first_comma}, we can look at it."],
+                         s, **ctx.kw()) + " "
+        else:
+            prefix = say(["Sorry to hear that{first_comma}.", "Sorry about the trouble{first_comma}.",
+                          "That sounds frustrating{first_comma}, let's get it fixed."], s, **ctx.kw()) + " "
     if ctx.a["priority"] == "urgent" and not s.get("_safety_told"):
         s["_safety_told"] = True
         sheet = _intent_replies(ctx)
@@ -835,9 +977,14 @@ def _finish_maintenance(ctx):
     c, s = core(), ctx.s
     slots = _slots(s)
     name = slots.get("name") or ctx.name
-    issue = slots.get("issue") or "Needs maintenance"
+    parts = []
+    for x in (slots.get("reported"), slots.get("issue")):
+        if x and x not in parts:
+            parts.append(x)
+    issue = "; ".join(parts) or "Needs maintenance"
     where = slots.get("location", "")
-    priority = ctx.a["priority"] if ctx.a["category"] == "maintenance" else "high"
+    routine = bool(slots.get("routine"))
+    priority = slots.get("priority") or ("medium" if routine else "high")
     c.sig(ctx.phone, "maintenance_issue", c.clip(issue, 300))
     if where:
         c.sig(ctx.phone, "location", where)
@@ -851,7 +998,8 @@ def _finish_maintenance(ctx):
     c.alert_team(ctx.phone, name, "maintenance", f"[{priority.upper()}] {c.clip(issue, 300)}"
                  + (f"\nWhere: {where}" if where else ""), s)
     try:
-        db.upsert_enquiry(ctx.phone, name, "maintenance", ctx.a["intent"] or "maintenance_fault", priority, ctx.text,
+        db.upsert_enquiry(ctx.phone, name, "maintenance", "maintenance_service" if routine else "maintenance_fault",
+                          priority, ctx.text,
                           summary=issue + (f" ({where})" if where else ""), reasons=ctx.a["reasons"],
                           confidence=ctx.a["confidence"])
     except Exception:
@@ -859,15 +1007,17 @@ def _finish_maintenance(ctx):
     first = first_name(name)
     reset_flow(s)
     s["_safety_told"] = False
-    if priority == "urgent":
-        lead = "I've marked this as URGENT"
-    elif priority == "high":
-        lead = "I've marked this as high priority"
-    else:
-        lead = "I've logged this"
     where_txt = f" in {where}" if where else ""
-    return (f"Thank you{', ' + first if first else ''}. {lead} and our technical team will contact you "
-            f"{ctx.promise} to arrange a visit{where_txt}. If it gets worse, call us on {ctx.catalog['phone']}.")
+    hello = f"Thank you{', ' + first if first else ''}."
+    if routine:
+        what = issue.replace("Service / inspection requested: ", "")
+        return (f"{hello} I've booked in your service request ({c.clip(what, 90)}){where_txt}, and our technical "
+                f"team will contact you {ctx.promise} to arrange a visit.")
+    how = {"urgent": "as URGENT", "high": "as a priority"}.get(priority, "")
+    return (f"{hello} I've logged your report ({c.clip(issue, 90)}){where_txt} {how}".replace("  ", " ").rstrip()
+            + f", and our technical team will contact you {ctx.promise} to arrange a visit."
+            "\n\nUntil then, please don't open the inverter or touch any wiring. If you notice smoke, a burning "
+            f"smell or it gets very hot, switch it off and call us on {ctx.catalog['phone']}.")
 
 
 _HANDLERS = {

@@ -11,6 +11,7 @@ Safe to run again: it only adds missing intents and phrases, and never overwrite
 import csv
 import hashlib
 import logging
+import re
 import sys
 from pathlib import Path
 
@@ -47,7 +48,10 @@ TEAM_MODES = {"lookup", "policy_lookup", "regulatory_lookup", "quote_lookup", "a
               "troubleshooting", "privacy_workflow"}
 
 
-def describe(csv_category, intent, mode, risk, required=""):
+ASKS_FOR_INFO = re.compile(r"(please (?:share|tell|send|list|note)|share your|tell me|send me|list your|which (?:branch|brand|package|product)|what appliances)", re.I)
+
+
+def describe(csv_category, intent, mode, risk, required="", answer=""):
     """-> (category, priority, handler) for a CSV intent that becomes its own bot intent."""
     if intent in EMERGENCY or risk == "critical" or mode == "emergency":
         return "maintenance", "urgent", "maintenance"
@@ -64,7 +68,8 @@ def describe(csv_category, intent, mode, risk, required=""):
     if mode in ("clarify",):
         return "other", "low", "reply"
     if mode in TEAM_MODES:
-        handler = "answer_team" if required else "reply"   # nothing to ask for: just answer
+        # collect details only when the sheet's answer actually asks the customer for something
+        handler = "answer_team" if (required and ASKS_FOR_INFO.search(answer)) else "reply"
     else:
         handler = "reply"          # knowledge, company_check
     cat, pri = "enquiry", "low"
@@ -101,6 +106,7 @@ def import_csv(path, existing=None):
     by_intent = {}
     for r in rows:
         by_intent.setdefault(r["intent"].strip(), []).append(r)
+    before = dict(existing)
     examples, created = [], 0
     for intent, group in by_intent.items():
         first = group[0]
@@ -109,7 +115,7 @@ def import_csv(path, existing=None):
             target = f"qa_{intent}"
             if target not in existing:
                 category, priority, handler = describe(first["category"], intent, first["response_mode"], first["risk"],
-                                                         first["required_fields"])
+                                                         first["required_fields"], first["recommended_answer"])
                 answer = " ".join(first["recommended_answer"].split())
                 db.save_intent(target, category, priority, handler, [answer])
                 existing[target] = {"name": target}
@@ -117,6 +123,13 @@ def import_csv(path, existing=None):
         elif target not in existing:
             log.warning("built-in intent %s is missing; skipping %s", target, intent)
             continue
+        if intent not in MERGE and target in before and before[target].get("handler") == "answer_team":
+            # earlier versions asked for details on answers that never ask for any; just answer instead
+            category, priority, handler = describe(first["category"], intent, first["response_mode"], first["risk"],
+                                                   first["required_fields"], first["recommended_answer"])
+            if handler == "reply":
+                old = before[target]
+                db.save_intent(target, old["category"], old["priority"], "reply", old["replies"], old["enabled"])
         for r in group:
             q = " ".join(r["customer_question"].split())
             if q.lower().strip(" ?!.") not in SKIP_QUESTIONS:
