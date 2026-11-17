@@ -6,7 +6,8 @@ import datetime as dt
 import json
 import os
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, create_engine, desc, func, select
+from sqlalchemy import (Boolean, Column, DateTime, Float, Integer, String, Text, UniqueConstraint, create_engine, desc,
+                        func, select)
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 _url = os.getenv("DATABASE_URL", "sqlite:///data.db")
@@ -92,6 +93,62 @@ class MarketPrice(Base):
     price = Column(Integer)                    # USD
     kind = Column(String(12), default="")      # installed | kit | "" (not stated)
     snippet = Column(String(300), default="")  # the text the price was read from
+
+
+class NluIntent(Base):
+    """A kind of message the bot understands, with its category, priority and the replies it may give."""
+    __tablename__ = "nlu_intents"
+    name = Column(String(60), primary_key=True)
+    category = Column(String(20), default="enquiry")   # purchase | enquiry | maintenance | other
+    priority = Column(String(10), default="medium")    # low | medium | high | urgent
+    handler = Column(String(20), default="reply")      # reply | purchase | maintenance | packages | sizing | ...
+    replies = Column(Text, default="[]")               # JSON list of reply variants
+    enabled = Column(Boolean, default=True)
+    updated = Column(DateTime(timezone=True), default=_now)
+
+
+class NluExample(Base):
+    """One example phrase for an intent. These are what the language model is trained on."""
+    __tablename__ = "nlu_examples"
+    __table_args__ = (UniqueConstraint("intent", "text", name="uq_nlu_example"),)
+    id = Column(Integer, primary_key=True)
+    intent = Column(String(60), index=True)
+    text = Column(String(500))
+    source = Column(String(12), default="seed")        # seed | staff | chat
+    created = Column(DateTime(timezone=True), default=_now)
+
+
+class Enquiry(Base):
+    """What a customer wants, one open row per person and category (purchase / enquiry / maintenance)."""
+    __tablename__ = "enquiries"
+    id = Column(Integer, primary_key=True)
+    who = Column(String(80), index=True)
+    name = Column(String(200), default="")
+    category = Column(String(20), index=True)
+    intent = Column(String(60), default="")
+    priority = Column(String(10), default="medium")
+    reasons = Column(Text, default="[]")               # JSON list: why this priority
+    status = Column(String(12), default="open", index=True)  # open | handled
+    summary = Column(Text, default="")
+    last_text = Column(Text, default="")
+    message_count = Column(Integer, default=1)
+    confidence = Column(Float, default=0.0)
+    created = Column(DateTime(timezone=True), default=_now)
+    updated = Column(DateTime(timezone=True), default=_now, index=True)
+    handled_by = Column(String(100), default="")
+
+
+class Unmatched(Base):
+    """Messages the model was unsure about: staff label them and they become training examples."""
+    __tablename__ = "nlu_unmatched"
+    id = Column(Integer, primary_key=True)
+    who = Column(String(80), default="")
+    text = Column(String(500))
+    guess = Column(String(60), default="")
+    confidence = Column(Float, default=0.0)
+    status = Column(String(12), default="new", index=True)  # new | labelled | ignored
+    label = Column(String(60), default="")
+    created = Column(DateTime(timezone=True), default=_now)
 
 
 Base.metadata.create_all(engine)
@@ -316,6 +373,167 @@ def thread(who, limit=300):
                          .order_by(desc(Message.created)).limit(limit)).all()
         return [{"created": _iso(r.created), "direction": r.direction, "sender": r.sender or "",
                  "text": r.text} for r in reversed(rows)]
+
+
+# ---------------------------------------------------------------- language model data
+def _intent(r):
+    try:
+        replies = json.loads(r.replies or "[]")
+    except ValueError:
+        replies = []
+    return {"name": r.name, "category": r.category, "priority": r.priority, "handler": r.handler,
+            "replies": replies, "enabled": bool(r.enabled)}
+
+
+def list_intents():
+    with Session() as s:
+        return {r.name: _intent(r) for r in s.scalars(select(NluIntent))}
+
+
+def save_intent(name, category="enquiry", priority="medium", handler="reply", replies=None, enabled=True):
+    with Session() as s:
+        row = s.get(NluIntent, name) or NluIntent(name=name)
+        row.category, row.priority, row.handler = category, priority, handler
+        row.replies = json.dumps(replies or [])
+        row.enabled = enabled
+        row.updated = _now()
+        s.add(row)
+        s.commit()
+        return _intent(row)
+
+
+def delete_intent(name):
+    with Session() as s:
+        s.query(NluExample).filter(NluExample.intent == name).delete()
+        s.query(NluIntent).filter(NluIntent.name == name).delete()
+        s.commit()
+
+
+def list_examples(intent=None):
+    with Session() as s:
+        q = select(NluExample).order_by(NluExample.id)
+        if intent:
+            q = q.where(NluExample.intent == intent)
+        return [{"id": r.id, "intent": r.intent, "text": r.text, "source": r.source} for r in s.scalars(q)]
+
+
+def add_example(intent, text, source="staff"):
+    """Add an example phrase unless it is already there. Returns True when a row was added."""
+    text = " ".join(str(text or "").split())[:500]
+    if not text:
+        return False
+    with Session() as s:
+        if s.scalar(select(NluExample.id).where(NluExample.intent == intent, NluExample.text == text)):
+            return False
+        s.add(NluExample(intent=intent, text=text, source=source))
+        s.commit()
+        return True
+
+
+def add_examples_bulk(rows, source="seed"):
+    """rows: [(intent, text)]. Adds the ones that are not stored yet in one go. Returns how many were added."""
+    with Session() as s:
+        have = {(i, t) for i, t in s.execute(select(NluExample.intent, NluExample.text))}
+        added = 0
+        for intent, text in rows:
+            text = " ".join(str(text or "").split())[:500]
+            if text and (intent, text) not in have:
+                have.add((intent, text))
+                s.add(NluExample(intent=intent, text=text, source=source))
+                added += 1
+        s.commit()
+        return added
+
+
+def delete_example(example_id):
+    with Session() as s:
+        s.query(NluExample).filter(NluExample.id == example_id).delete()
+        s.commit()
+
+
+def add_unmatched(who, text, guess="", confidence=0.0):
+    text = " ".join(str(text or "").split())[:500]
+    if not text:
+        return
+    with Session() as s:
+        if s.scalar(select(Unmatched.id).where(Unmatched.text == text, Unmatched.status == "new")):
+            return
+        s.add(Unmatched(who=who[:80], text=text, guess=guess or "", confidence=float(confidence)))
+        s.commit()
+
+
+def list_unmatched(status="new", limit=200):
+    with Session() as s:
+        rows = s.scalars(select(Unmatched).where(Unmatched.status == status)
+                         .order_by(desc(Unmatched.created)).limit(limit))
+        return [{"id": r.id, "who": r.who, "text": r.text, "guess": r.guess, "confidence": r.confidence,
+                 "created": _iso(r.created)} for r in rows]
+
+
+def label_unmatched(item_id, intent):
+    """Staff says which intent a message was ('ignore' dismisses it). The text becomes a training example."""
+    with Session() as s:
+        row = s.get(Unmatched, item_id)
+        if row is None:
+            return None
+        row.status, row.label = ("ignored", "") if intent == "ignore" else ("labelled", intent)
+        text = row.text
+        s.commit()
+    if intent != "ignore":
+        add_example(intent, text, "chat")
+    return True
+
+
+# ---------------------------------------------------------------- enquiries
+PRIORITY_ORDER = {"low": 0, "medium": 1, "high": 2, "urgent": 3}
+
+
+def _enquiry(r):
+    try:
+        reasons = json.loads(r.reasons or "[]")
+    except ValueError:
+        reasons = []
+    return {"id": r.id, "who": r.who, "name": r.name, "category": r.category, "intent": r.intent,
+            "priority": r.priority, "reasons": reasons, "status": r.status, "summary": r.summary,
+            "last_text": r.last_text, "message_count": r.message_count, "created": _iso(r.created),
+            "updated": _iso(r.updated)}
+
+
+def _open_enquiry(s, who, category):
+    return s.scalar(select(Enquiry).where(Enquiry.who == who[:80], Enquiry.category == category,
+                                          Enquiry.status == "open").order_by(desc(Enquiry.updated)))
+
+
+def upsert_enquiry(who, name, category, intent, priority, text, summary="", reasons=None, confidence=0.0):
+    """One open enquiry per person and category: later messages update it and can only raise its priority."""
+    with Session() as s:
+        row = _open_enquiry(s, who, category)
+        if row is None:
+            row = Enquiry(who=who[:80], category=category, message_count=0, priority=priority, reasons="[]")
+            s.add(row)
+        if PRIORITY_ORDER.get(priority, 1) > PRIORITY_ORDER.get(row.priority or "low", 0):
+            row.priority = priority
+        old = json.loads(row.reasons or "[]")
+        row.reasons = json.dumps(list(dict.fromkeys(old + (reasons or [])))[:6])
+        row.intent, row.name = intent, (name or row.name or "")[:200]
+        row.last_text = (text or "")[:500]
+        if summary:
+            row.summary = summary[:500]
+        elif not row.summary:
+            row.summary = (text or "")[:200]
+        row.message_count = (row.message_count or 0) + 1
+        row.confidence = float(confidence)
+        row.updated = _now()
+        s.commit()
+        return _enquiry(row)
+
+
+def set_enquiry_summary(who, category, summary):
+    with Session() as s:
+        row = _open_enquiry(s, who, category)
+        if row:
+            row.summary = summary[:500]
+            s.commit()
 
 
 def get_setting(key):

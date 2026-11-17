@@ -55,7 +55,7 @@
       <div class="card">
         <div id="log" aria-live="polite"></div>
         <form class="row" id="chatForm">
-          <input id="chatInput" placeholder="Tap an option above, or type a question" maxlength="500" autocomplete="off">
+          <input id="chatInput" placeholder="Type your message, e.g. I want solar for my house" maxlength="500" autocomplete="off">
           <button class="btn" type="submit">Send</button>
         </form>
       </div>
@@ -105,10 +105,10 @@ function chips(options) {
 async function say(text, silent, shown) {
   if (!silent) add(shown || text, "me");
   try {
-    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text, shown: shown || ""})});
+    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text})});
     const j = await r.json();
     add(r.ok ? j.reply : (j.error || "Something went wrong."), "bot");
-    chips(r.ok ? j.options : [{id: "menu", title: "🏠 Main menu"}]);
+
   } catch(e) { add("Connection problem. Please try again.", "bot"); }
 }
 $("#chatForm").addEventListener("submit", e => {

@@ -1,0 +1,228 @@
+{
+  "version": 3,
+  "faq_examples": {
+    "faq_is_it_genuine": ["are you a registered company", "are you legit", "how do i know you are not scammers", "is this a real business",
+      "can i trust your company", "are your products original", "do you have a company registration", "i have been scammed before, are you genuine",
+      "are you licensed to install solar", "do you have references from other customers"],
+    "faq_warranty": ["how long is the warranty", "what guarantee do i get", "is there a warranty on the installation",
+      "what if the inverter fails after a year", "do the panels come with a warranty", "who pays if something breaks under warranty"],
+    "faq_batteries": ["which battery is better lithium or gel", "how long do the batteries last at night", "what kind of batteries do you use",
+      "can i use my old batteries", "how many batteries will i need"],
+    "faq_payment_deposit": ["can i pay in instalments", "do you take a deposit", "how do i pay for the system", "can i pay half now and half later",
+      "do you offer payment plans", "how much deposit do i need to pay"],
+    "faq_zesa_power_cuts": ["will it work when zesa goes off", "does solar work during load shedding", "will i still have lights when there is a power cut",
+      "what happens when the grid is off"],
+    "faq_night_cloudy_days": ["does solar work on cloudy days", "will it work at night", "what about winter and cloudy weather", "do panels work in the rain"],
+    "faq_installation_time": ["how many days does the installation take", "how long before you finish installing", "how soon can you install after i pay",
+      "will the installation take long"],
+    "faq_how_long_it_lasts": ["how many years do solar panels last", "how long will the inverter last", "when will i need to replace the system"],
+    "faq_savings_payback": ["how much will i save on electricity", "how long to pay back the cost of solar", "is solar worth the money",
+      "will solar reduce my zesa bill"],
+    "faq_site_visit": ["do you visit the house before installing", "is the site visit free", "will someone check my roof first"],
+    "faq_roof_shade": ["can solar go on my roof", "does the roof direction matter", "i have trees near my roof is that a problem"],
+    "faq_borehole_pumps": ["can solar run my borehole pump", "i have a borehole will solar work for it", "can you power an irrigation pump with solar"],
+    "faq_geyser_stove_aircon": ["can solar run a geyser", "will it power my stove", "can i use an aircon with solar", "can the system heat my water"],
+    "faq_inverter_types": ["what is a hybrid inverter", "difference between off grid and hybrid", "which type of inverter should i choose"],
+    "faq_brands": ["which brands do you sell", "do you sell jinko panels", "what brand of inverter do you install", "are your panels good quality"]
+  },
+  "intents": [
+    {
+      "name": "greeting", "category": "other", "priority": "low", "handler": "greeting",
+      "replies": [
+        "{greet}{first_comma}! 👋 Welcome to {company}. How can I help you today?",
+        "{greet}{first_comma}! Thanks for contacting {company}. Are you looking at solar for your home or business, or do you need help with a system you already have?",
+        "{greet}{first_comma}! This is the {company} assistant. What can I help you with?"
+      ],
+      "examples": ["hi", "hello", "hey", "hie", "hi there", "good morning", "good afternoon", "good evening", "morning",
+        "hello there", "hi good day", "hi are you there", "anyone there", "mhoro", "makadii", "hesi", "hello team",
+        "hello i need help", "hi i have a question", "hi can you help me", "sawubona", "hie good morning", "hey there",
+        "hello sir", "hello madam", "hi guys", "hallo", "evening"]
+    },
+    {
+      "name": "thanks", "category": "other", "priority": "low", "handler": "thanks",
+      "replies": ["You're welcome{first_comma}! 😊 Message me any time if you need anything else.",
+        "Pleasure{first_comma}! Just say if there is anything else I can help with.",
+        "Glad to help{first_comma}. Feel free to ask if anything else comes up."],
+      "examples": ["thanks", "thank you", "thank you very much", "thanks a lot", "thx", "ok thanks", "okay thank you",
+        "tatenda", "ndatenda", "ndatenda zvikuru", "thanks for your help", "thank you so much", "much appreciated",
+        "great thanks", "cool thanks", "thanks that helps", "thanks noted", "appreciate it", "👍", "🙏"]
+    },
+    {
+      "name": "goodbye", "category": "other", "priority": "low", "handler": "goodbye",
+      "replies": ["Thanks for chatting{first_comma}! Message us any time. ☀️", "Take care{first_comma}, and have a great day! ☀️"],
+      "examples": ["bye", "goodbye", "see you", "talk later", "ok bye", "cheers", "have a good day", "i will get back to you",
+        "ill come back later", "i will think about it", "let me think about it and get back to you", "tsalai", "chisarai", "later"]
+    },
+    {
+      "name": "affirm", "category": "other", "priority": "low", "handler": "affirm",
+      "replies": ["Great! What would you like to do next?", "Okay. Tell me a bit more about what you need."],
+      "examples": ["yes", "yes please", "yeah", "yep", "ok", "okay", "sure", "alright", "fine", "sounds good", "that works",
+        "go ahead", "ehe", "ehe ndizvozvo", "zvakanaka", "correct", "that is right", "definitely", "of course", "yes that is fine"]
+    },
+    {
+      "name": "deny", "category": "other", "priority": "low", "handler": "deny",
+      "replies": ["No problem. Is there anything else I can help with?", "Alright. Let me know if you change your mind."],
+      "examples": ["no", "nope", "no thanks", "no thank you", "not now", "not really", "hapana", "no that is all", "that is all",
+        "nothing else", "no it is fine", "not interested", "i am not interested", "no i do not want that", "no not that one"]
+    },
+    {
+      "name": "buy_system", "category": "purchase", "priority": "high", "handler": "purchase",
+      "replies": [],
+      "examples": ["i want to buy a solar system", "i want to install solar at my house", "i need a solar system",
+        "i am interested in a solar system", "can i get a quotation", "i would like a quote", "please send me a quote",
+        "i want solar", "looking to go solar", "i need solar power for my home", "can you install solar for me",
+        "i want to buy a solar kit", "do you sell complete solar systems", "i want to order a solar system",
+        "how do i order", "how can i buy from you", "i need an inverter and batteries installed", "i want to buy an inverter",
+        "i want to buy batteries", "i need panels for my house", "i want to purchase a system", "ready to buy solar",
+        "i want a 5kva system", "i need a 3kva inverter system installed", "can you quote me for a 5kw system",
+        "i would like to go solar for my business", "i need backup power for my shop", "i want to stop load shedding at home",
+        "i am tired of zesa cuts i want solar", "i want to get off the grid", "my family wants solar installed",
+        "ndinoda kutenga solar", "ndinoda solar system", "ndiri kuda kuisa solar", "ndinoda quotation", "ndinoda kuisa solar kumba",
+        "ndinoda inverter nemabatteries", "could you quote me for solar and batteries", "i need a quote for solar installation",
+        "quote please", "give me a quote", "can i have a quote for my house", "i want to get a quotation for a solar system",
+        "we want solar at our school", "we need solar for our clinic", "i want to put solar at my farm",
+        "i am looking for someone to install solar", "who can install solar for me", "i need a solar installer"]
+    },
+    {
+      "name": "price", "category": "purchase", "priority": "medium", "handler": "packages",
+      "replies": [],
+      "examples": ["how much are your solar systems", "what are your prices", "price list please", "send me your prices",
+        "how much is a 5kva system", "how much for a complete system", "what do your packages cost", "what packages do you have",
+        "do you have packages", "what do you sell", "cost of solar system", "how much does solar cost", "how much is an inverter",
+        "how much for batteries", "what is the price of panels", "i want to know your prices", "can i see your packages",
+        "your cheapest package", "what is your cheapest system", "marii solar system", "inoita marii solar", "mari yacho ndeyei",
+        "price of a 3kva system", "how much is a starter kit", "what is the cost of installation", "is there a package for small homes",
+        "prices of lithium batteries", "how much for a full solar installation", "pricing please", "rates please",
+        "what is the price", "price", "prices", "cost", "how much", "what do you charge", "what do you charge for a solar system",
+        "how much do you charge for installation", "what are your rates for solar", "solar prices please",
+        "how much will it cost me", "how much is solar these days", "price list", "please share your price list",
+        "what does a system cost", "i want to know the cost of solar"]
+    },
+    {
+      "name": "sizing", "category": "purchase", "priority": "medium", "handler": "sizing",
+      "replies": [],
+      "examples": ["what size system do i need", "what size solar system should i buy", "how big a system do i need for my house",
+        "i have a fridge tv and lights what system do i need", "what can a 3kva system power",
+        "can solar run my fridge and tv", "i want to run a fridge freezer tv and lights", "i use 10 kwh per day what do i need",
+        "my zesa bill is about 50 dollars a month what system", "i want to power a borehole pump and lights",
+        "what do i need to run a geyser", "can i run an aircon on solar", "how many panels do i need for a 4 bedroom house",
+        "help me choose a system", "i do not know what size to get", "can you advise me on the right system",
+        "what do you recommend for a small shop", "which package is right for me", "i have 5 lights a tv and a laptop",
+        "i want to run a welding machine", "recommend a system for me", "i need to power a fridge and wifi during load shedding",
+        "what will a 5kva run", "what can i run with a starter system", "size my system", "i consume 300 kwh a month",
+        "what system for a household of five", "my house has a fridge two tvs and a washing machine", "advise me on sizing"]
+    },
+    {
+      "name": "site_visit", "category": "purchase", "priority": "high", "handler": "purchase",
+      "replies": [],
+      "examples": ["can someone come and assess my house", "i want to book a site visit", "can a technician come and see my roof",
+        "when can you visit my place", "do you do free site visits", "i need a survey of my property",
+        "can you come and give me a quote at my house", "please send someone to look at my roof",
+        "book me a site visit", "i want a technician to come and check what i need", "can you do a site assessment",
+        "ndinoda kuti mutonge pamba", "i would like you to inspect my roof before quoting"]
+    },
+    {
+      "name": "upgrade_system", "category": "purchase", "priority": "medium", "handler": "purchase",
+      "replies": [],
+      "examples": ["i want to add more batteries to my system", "i want to add more panels", "can i upgrade my inverter",
+        "i need extra batteries for my existing system", "i want to expand my solar system", "can you add a geyser to my solar",
+        "i want to upgrade from 3kva to 5kva", "i have an inverter and want to add solar panels", "i bought a system and want more capacity",
+        "i want to add lithium batteries to my current inverter", "can you extend my solar setup", "i want to connect a borehole pump to my system",
+        "ndinoda kuwedzera mabatteries", "add more panels to my existing installation"]
+    },
+    {
+      "name": "maintenance_fault", "category": "maintenance", "priority": "high", "handler": "maintenance",
+      "replies": [],
+      "examples": ["my inverter is not working", "my solar system stopped working", "the inverter keeps beeping", "my system is showing an error",
+        "i have no power from my solar system", "my batteries are not charging", "my batteries drain very fast",
+        "the batteries do not last the night anymore", "my inverter keeps tripping", "my inverter is off and will not switch on",
+        "the lights went off and the inverter is dead", "my panels are not charging the batteries", "the system gives a fault code",
+        "my solar stopped working after the storm", "my inverter shows overload", "the inverter is making a strange noise",
+        "my panel is cracked",
+        "the grid power is on but the inverter is not switching", "my inverter display is blank",
+        "i have a problem with my solar system", "something is wrong with my system", "my system is not performing well",
+        "my geyser is not heating on solar anymore", "the inverter turns off at night", "one of my batteries is faulty",
+        "haisi kushanda inverter yangu", "inverter yaora", "solar yangu yadzima", "mabatteries haachachajwa", "inverter ari kuridza",
+        "batteries run out around midnight", "the battery does not last the night anymore", "inverter has been beeping since morning",
+        "solar stopped supplying electricity", "my solar gives no power at night now", "my system no longer works",
+        "power went off and my system did not take over", "my system keeps switching off", "the charge controller is not working",
+        "my inverter shows low battery all the time", "my system worked fine but now there is no output", "panels are producing very little power"]
+    },
+    {
+      "name": "maintenance_service", "category": "maintenance", "priority": "medium", "handler": "maintenance",
+      "replies": [],
+      "examples": ["i need my solar system serviced", "can you service my system", "i want maintenance for my inverter",
+        "can someone clean my solar panels", "i want a routine check of my system", "do you offer maintenance contracts",
+        "i need an annual service", "can a technician inspect my installation", "my system was installed a year ago and needs a check",
+        "please come and check my batteries", "i need a technician for my existing system", "can you test my batteries",
+        "do you do repairs", "i want to book a maintenance visit", "i need someone to look at my inverter",
+        "can you inspect my panels", "i need maintenance", "service my solar", "ndinoda kuti mutarise solar yangu",
+        "ndinoda service ye inverter", "my installation needs a service visit", "can you tighten the wiring and check my system"]
+    },
+    {
+      "name": "warranty_claim", "category": "maintenance", "priority": "high", "handler": "maintenance",
+      "replies": [],
+      "examples": ["i want to claim on my warranty", "my battery is still under warranty and has failed", "the inverter you installed has failed within warranty",
+        "can you replace my faulty battery under warranty", "i bought my system from you and it has a defect",
+        "i have a warranty claim", "my panel is damaged and it is under warranty", "the equipment you supplied is faulty",
+        "i want a replacement for my faulty inverter", "the system you installed last month is not working"]
+    },
+    {
+      "name": "complaint", "category": "maintenance", "priority": "high", "handler": "human",
+      "replies": ["I'm sorry about that{first_comma}. I've flagged it for a senior member of our team to look at, and they will contact you {promise}."],
+      "examples": ["i am not happy with the installation", "nobody has come back to me", "you promised to call me and did not",
+        "i have been waiting for days for a response", "this is very bad service", "i want to complain", "the technician did not come as promised",
+        "your team installed it badly", "i am disappointed with your service", "i want my money back", "why has nobody called me back",
+        "i have been waiting for my quotation for a week", "this is unacceptable", "i want to speak to the manager", "terrible service"]
+    },
+    {
+      "name": "order_status", "category": "enquiry", "priority": "medium", "handler": "human",
+      "replies": ["Let me get the right person to check that for you{first_comma}. They will message you {promise} with an update."],
+      "examples": ["when will you install my system", "what is the status of my order", "when is my installation date",
+        "i paid a deposit when will you start", "has my quotation been prepared", "where is my quotation",
+        "is my equipment ready", "when will the team arrive", "i am waiting for the installation date",
+        "can i get an update on my installation", "i paid already when do you come", "did you receive my payment",
+        "i sent proof of payment", "i made a deposit yesterday"]
+    },
+    {
+      "name": "document_request", "category": "enquiry", "priority": "medium", "handler": "human",
+      "replies": ["Sure{first_comma}. I've asked our team to send that to you {promise}."],
+      "examples": ["please resend my quotation", "can you send me my invoice", "i need a receipt for my payment",
+        "send me the quotation again", "i lost my invoice can you resend", "i need a copy of my warranty certificate",
+        "can i get the quotation in pdf", "send me the invoice please", "i need proof of purchase", "i need documents for my insurance"]
+    },
+    {
+      "name": "talk_to_human", "category": "enquiry", "priority": "high", "handler": "human",
+      "replies": [],
+      "examples": ["i want to speak to a person", "can someone call me", "please call me", "let me talk to someone",
+        "i want to talk to a human", "connect me to an agent", "can i speak to a technician", "can a salesperson call me",
+        "i prefer to talk on the phone", "call me back", "give me your sales number", "can someone phone me please",
+        "i want to speak to a real person", "put me through to someone", "kindly have someone contact me", "ndinoda kutaura nemunhu",
+        "mundifonere", "please have a consultant call me", "can the manager call me"]
+    },
+    {
+      "name": "contact_info", "category": "enquiry", "priority": "low", "handler": "contact",
+      "replies": [],
+      "examples": ["where are you located", "what is your address", "where is your office", "what are your working hours",
+        "when do you open", "are you open on saturday", "what time do you close", "what is your phone number",
+        "what is your email", "how can i contact you", "do you have a shop", "can i visit your office",
+        "are you open today", "which areas do you cover", "do you install in bulawayo", "do you service mutare",
+        "do you work outside harare", "do you travel to rural areas", "do you install in my area"]
+    },
+    {
+      "name": "bot_identity", "category": "other", "priority": "low", "handler": "reply",
+      "replies": ["I'm the virtual assistant for {company} 🤖. I can answer questions, sort out quotes and book maintenance, and a real person on our team steps in whenever you want. Just say \"call me\"."],
+      "examples": ["are you a bot", "am i talking to a human", "are you a real person", "is this a robot", "who am i speaking to",
+        "who are you", "are you an ai", "is this automated", "is there a real person here", "what is your name"]
+    },
+    {
+      "name": "off_topic", "category": "other", "priority": "low", "handler": "reply",
+      "replies": ["I can only help with solar systems at {company}: quotes, prices, questions and maintenance. Is there something solar-related I can help with?",
+        "That's outside what I can help with, I'm afraid. I'm here for solar: new systems, prices and maintenance. What do you need?"],
+      "examples": ["what is the weather today", "tell me a joke", "who won the football match", "what is the exchange rate",
+        "do you sell cars", "can you help me with my homework", "are you hiring", "i want to apply for a job",
+        "send me your cv", "do you sell phones", "how do i fix my laptop", "i need a plumber", "what is the capital of zimbabwe",
+        "do you sell fuel", "are you selling land", "bitcoin"]
+    }
+  ]
+}

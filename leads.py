@@ -29,6 +29,8 @@ def analyse(contact, now=None):
 
     if s.get('callback'):
         add(30, 'Asked to speak to a person')
+    if s.get('maintenance_issue'):
+        add(25, f"Reported a problem: {s['maintenance_issue'][:80]}")
     unanswered = s.get('unanswered') or []
     if s.get('needs_human') and unanswered:
         add(20, f'Asked something the bot could not answer: "{unanswered[-1][:80]}"')
@@ -78,6 +80,9 @@ def analyse(contact, now=None):
         action = 'Closed as lost. Optionally check back in about 3 months.'
     elif s.get('callback'):
         action = 'Call them now: they asked to speak to a person.'
+    elif s.get('maintenance_issue') and stage in ('new', 'contacted'):
+        action = (f'Maintenance request: "{s["maintenance_issue"][:100]}". '
+                  f'Contact them to arrange a technician visit{where}.')
     elif s.get('needs_human') and unanswered:
         action = (f'Answer their question: "{unanswered[-1][:120]}". '
                   'The bot told them a person will reply.')

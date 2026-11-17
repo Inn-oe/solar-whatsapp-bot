@@ -32,9 +32,11 @@ from pathlib import Path
 import requests
 from flask import Flask, jsonify, request, send_from_directory, session
 
+import brain
 import db
 import leads
 import market
+import nlu
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("solar-bot")
@@ -249,10 +251,9 @@ def first_name(name):
     return parts[0].capitalize()[:30] if parts else ""
 
 
-# A reply is text plus tap options. WhatsApp shows up to 3 options as buttons and more as a list;
-# the website chat shows them as clickable chips. Typing the option's number or title also works.
-def R(text, options=(), button="Choose an option"):
-    return {"text": text, "options": [list(o) for o in options], "button": button}
+# A reply is plain text. The customer chats in their own words; there are no buttons or menus.
+def R(text, options=(), button=""):
+    return {"text": text, "options": [], "button": ""}
 
 
 def as_reply(r):
@@ -260,35 +261,8 @@ def as_reply(r):
 
 
 def reply_log_text(r):
-    """How a reply is stored in the chat history (staff see which buttons were offered)."""
-    r = as_reply(r)
-    titles = [o[1] for o in r["options"]]
-    return r["text"] + (f"\n\n[{' | '.join(titles)}]" if titles else "")
+    return as_reply(r)["text"]
 
-
-O_MENU = ("menu", "🏠 Main menu")
-O_QUOTE = ("quote", "📝 Get a free quote", "A written quote and a free site visit")
-O_FAQ = ("faq", "❓ Common questions", "Batteries, ZESA, warranty, payment…")
-O_PACKAGES = ("packages", "☀️ Packages & prices", "See our solar packages")
-O_HUMAN = ("human", "👤 Talk to a person", "A member of our team will message you")
-
-MENU_OPTIONS = [
-    O_PACKAGES,
-    ("size", "⚡ Size my system", "Find the right package in 2 taps"),
-    O_QUOTE,
-    O_HUMAN,
-    ("contact", "📍 Contact & hours", "Phone, address and opening hours"),
-    O_FAQ,
-]
-
-SIZE_CHOICES = [  # (id, title, description, kWh per day)
-    ("size:3", "💡 Basics", "Lights, TV, phones, WiFi", 3),
-    ("size:6", "🧊 Basics + fridge", "Add a fridge or freezer", 6),
-    ("size:10", "🏠 Most of the home", "Fridge, TV, washing machine, small pump", 10),
-    ("size:15", "🏡 Whole home", "Plus geyser on a timer, microwave, borehole", 15),
-    ("size:30", "🏢 Business", "Shop, office, workshop or clinic", 30),
-    ("size:custom", "🔢 I know my kWh", "Type your daily or monthly use from your bill"),
-]
 
 DEFAULT_TOWNS = ["Harare", "Chitungwiza", "Bulawayo", "Mutare", "Gweru", "Masvingo", "Kwekwe", "Kadoma",
                  "Marondera"]
@@ -299,95 +273,11 @@ def short(s, n):
     return s if len(s) <= n else s[:n - 1].rstrip() + "…"
 
 
-def menu_reply(first=""):
-    c = CATALOG
-    hello = f"Hi {first} 👋\n" if first else ""
-    return R(f"{hello}Welcome to *{c['company']}* ☀️\n\nHow can I help you today? Tap *Menu* below and "
-             "choose an option. You can also type any question.", MENU_OPTIONS, "Menu")
-
-
-def packages_reply(town=""):
-    rows = [(f"pkg:{p['id']}", short(p["name"], 24), short(f"{price_text(p, town)} · {p['powers']}", 72))
-            for p in CATALOG["packages"][:9]]
-    names = "\n".join(f"• *{p['name']}* - {price_text(p, town)}" for p in CATALOG["packages"])
-    return R(f"*Our solar packages*\n\n{names}\n\nTap *View packages* to see what each one powers.",
-             rows + [O_MENU], "View packages")
-
-
-def package_reply(pid, town=""):
-    for p in CATALOG["packages"]:
-        if p["id"] == pid:
-            note = market_note(p, town)
-            return R(f"*{p['name']}* - {price_text(p, town)}\n\n"
-                     f"⚡ Powers: {p['powers']}\n\n📦 Includes: {p['includes']}" + (f"\n\n{note}" if note else ""),
-                     [(f"quote:pkg:{p['id']}", "📝 Quote for this"), ("packages", "☀️ Other packages"), O_MENU])
-    return None
-
-
-def contact_reply():
-    c = CATALOG
-    return R(f"*{c['company']}*\n📞 {c['phone']}\n✉️ {c['email']}\n📍 {c['address']}\n🕒 {c['hours']}",
-             [O_QUOTE, O_HUMAN, O_MENU])
-
-
-def size_reply():
-    return R("Let's find the right system ⚡\n\nWhat do you want to keep running? Tap *Choose* and pick "
-             "the closest match.", [o[:3] for o in SIZE_CHOICES], "Choose")
-
-
 def recommend(daily_kwh):
     for p in sorted(CATALOG["packages"], key=lambda p: p["daily_kwh"]):
         if p["daily_kwh"] >= daily_kwh:
             return p
     return max(CATALOG["packages"], key=lambda p: p["daily_kwh"])
-
-
-def faq_title(f):
-    return f.get("title") or f["keys"][0].capitalize()
-
-
-FAQ_PAGE = 8
-
-
-def faq_list_reply(page=0):
-    faqs = CATALOG["faqs"]
-    start = page * FAQ_PAGE
-    rows = [(f"faq:{i}", short(faq_title(f), 24), short(f["answer"], 72))
-            for i, f in enumerate(faqs[start:start + FAQ_PAGE], start)]
-    if start + FAQ_PAGE < len(faqs):
-        rows.append((f"faq:more:{page + 1}", "➡️ More questions", "See the next questions"))
-    rows.append(O_MENU)
-    return R("❓ *Common questions*\n\nTap *Questions* and pick a topic, or just type your question.",
-             rows, "Questions")
-
-
-def faq_topic(f):
-    keys = [k.lower() for k in f["keys"]]
-    return "payment" if PAYMENT_WORDS & set(keys) else keys[0]
-
-
-def faq_reply(f):
-    return R(f"*{faq_title(f)}*\n\n{f['answer']}", [("faq", "❓ More questions"), O_QUOTE, O_MENU])
-
-
-def faq_match(text):
-    """The FAQ with the most specific (longest) keyword found in the text, or None.
-
-    Longest wins so 'payback' beats 'pay' and 'how long do panels last' beats 'how long'."""
-    t = text.lower()
-    best, best_len = None, 0
-    for f in CATALOG["faqs"]:
-        for k in f["keys"]:
-            k = k.lower()
-            if k and k in t and len(k) > best_len:
-                best, best_len = f, len(k)
-    return best
-
-
-def faq_answer(text):
-    """Return (topic, answer text) for the first matching FAQ, or None."""
-    f = faq_match(text)
-    return (faq_topic(f), f["answer"]) if f else None
 
 
 def sig(who, key, value=True):
@@ -398,14 +288,11 @@ def sig(who, key, value=True):
         log.exception("could not record signal %s", key)
 
 
-PAYMENT_WORDS = {"pay", "payment", "finance", "instalment", "installment", "deposit"}
-SMALL_TALK = {"ok", "okay", "k", "thanks", "thank you", "thank u", "thanx", "thx", "yes", "no", "sure", "cool",
-              "fine", "alright", "noted", "great", "nice", "👍", "🙏", "good", "bye", "tatenda", "ndatenda"}
-
 # ---------------------------------------------------------------- staff alerts
 ALERT_TITLES = {"quote": "New quotation request", "callback": "Client wants to talk to a person",
-                "unanswered": "Question the bot could not answer", "paused": "Client wrote (bot paused)"}
-ALERT_GAP = {"quote": 0, "callback": 600, "unanswered": 3600, "paused": 1800}  # seconds between repeats
+                "unanswered": "Question the bot could not answer", "paused": "Client wrote (bot paused)",
+                "maintenance": "Maintenance request", "urgent": "URGENT: safety risk reported"}
+ALERT_GAP = {"quote": 0, "callback": 600, "unanswered": 3600, "paused": 1800, "maintenance": 0, "urgent": 0}  # seconds between repeats
 
 
 def send_template(to, text):
@@ -505,14 +392,6 @@ def set_follow_up(who, days):
         log.exception("could not set follow-up for %s", who)
 
 
-def reset(s):
-    """Back to the main menu, keeping long-lived memory (keys starting with '_')."""
-    keep = {k: v for k, v in s.items() if k.startswith("_")}
-    s.clear()
-    s.update(keep)
-    s["state"] = "menu"
-
-
 def save_lead(phone, name, **data):
     source = "web" if phone.startswith("web:") else "whatsapp"
     shown_phone = data.pop("contact", None) or ("" if source == "web" else phone)
@@ -524,286 +403,23 @@ def save_lead(phone, name, **data):
 def handle(phone, name, text):
     """Return the reply (dict from R()) for one incoming message. `phone` is a number or "web:<id>".
 
-    Where the person is in the conversation is loaded from and saved to the database."""
+    The language model (nlu.py / brain.py) works out what the person wants. Where they are in the
+    conversation is loaded from and saved to the database."""
     try:
         s = db.get_state(phone)
     except Exception:
         log.exception("could not load chat state")
         s = {}
-    s.setdefault("state", "menu")
     try:
-        r = as_reply(_handle(phone, name, text, s))
-        # remember what was offered, so typing "2" or an option's title works like tapping it
-        s["offer"] = [o[:2] for o in r["options"]]
-        return r
+        return R(brain.respond(phone, name, text, s))
+    except Exception:
+        log.exception("brain failed")
+        return R("Sorry, something went wrong on my side. A member of our team will follow up with you.")
     finally:
         try:
             db.save_state(phone, s)
         except Exception:
             log.exception("could not save chat state")
-
-
-GREETINGS = {"menu", "hi", "hello", "hey", "start", "0", "hie", "hesi", "hi there", "good morning",
-             "good afternoon", "good evening", "mhoro", "makadii", "sawubona", "main menu"}
-TYPED = {  # words people type, mapped to the same action as the buttons
-    "packages": "packages", "prices": "packages", "price": "packages", "package": "packages",
-    "size": "size", "sizing": "size",
-    "quote": "quote", "quotation": "quote",
-    "human": "human", "agent": "human", "person": "human", "call": "human", "call me": "human",
-    "contact": "contact", "hours": "contact", "address": "contact",
-    "faq": "faq", "questions": "faq", "help": "faq",
-}
-TYPING_STATES = {"size_kwh", "quote_contact"}  # here numbers are answers, not option picks
-
-
-def _norm(s):
-    return re.sub(r"[^a-z0-9 ]", "", str(s).lower()).strip()
-
-
-def _picked(t, s):
-    """Turn a typed option number or title into that option's id."""
-    offer = s.get("offer") or []
-    if t.isdigit() and s["state"] not in TYPING_STATES and 1 <= int(t) <= len(offer):
-        return offer[int(t) - 1][0]
-    n = _norm(t)
-    for oid, title in offer:
-        if n and n == _norm(title):
-            return oid
-    return t
-
-
-def _need_options():
-    rows = [(f"need:pkg:{p['id']}", short(p["name"], 24), short(p["powers"], 72)) for p in CATALOG["packages"][:8]]
-    return rows + [("need:advise", "🤔 Not sure, advise me", "A technician will recommend the right size"),
-                   ("need:type", "✏️ Describe my needs", "Type what you want to power")]
-
-
-def _start_quote(phone, name, s, want=""):
-    reset(s)
-    s["state"] = "quote_name"
-    if want:
-        s["want"] = want
-    sig(phone, "quote_requested")
-    sig(phone, "quote_step", "name")
-    intro = f"Great, let's get you a free quotation{f' for the *{want}*' if want else ''} 📝\n\n"
-    profile = first_name(name)
-    if profile:
-        return R(intro + "What name should we put on your quotation?",
-                 [("name:profile", short(f"✅ {name.strip()}", 20)), ("name:type", "✏️ Type another name")])
-    return intro + "Please type your *full name*."
-
-
-def _ask_location(s):
-    towns = [t for t in (CATALOG.get("towns") or DEFAULT_TOWNS) if isinstance(t, str)][:9]
-    hello = first_name(s.get("lead_name"))
-    return R(f"Thanks{', ' + hello if hello else ''}! Where is the installation? Tap *Choose town*.",
-             [(f"loc:{t}", short(t, 24)) for t in towns] + [("loc:other", "✏️ Other town / suburb")],
-             "Choose town")
-
-
-def _ask_need(s):
-    if s.get("want"):  # chose a package already
-        return None
-    rec = f"\n\nBased on your answers I suggested the *{s['_recommended']}*." if s.get("_recommended") else ""
-    return R(f"What would you like a quote for? Tap *Choose*.{rec}", _need_options(), "Choose")
-
-
-def _finish_quote(phone, name, s, need, is_web):
-    first = first_name(s.get("lead_name") or name)
-    sig(phone, "need", clip(need, 300))
-    sig(phone, "quote_completed")
-    sig(phone, "quote_step", "done")
-    lead_name = s.get("lead_name") or name
-    where = s.get("lead_location", "")
-    save_lead(phone, lead_name, location=where, need=clip(need, 1000),
-              suggested=s.get("recommended", ""), contact=s.get("lead_contact"))
-    set_follow_up(phone, 2)
-    asked = next((p for p in CATALOG["packages"] if p["name"] in (need, s.get("_recommended"))), None)
-    rng = market_range(asked, where) if asked else None
-    alert_team(phone, lead_name, "quote",
-               f"Needs: {clip(need, 300)}" + (f"\nWhere: {where}" if where else "")
-               + (f"\nMarket range {rng['size']:g}kVA ({rng['where']}): USD {rng['low']:,}–{rng['high']:,}" if rng else "")
-               + (f"\nBot suggested: {s['_recommended']}" if s.get("_recommended") else ""), s)
-    promise = reply_promise()
-    reset(s)
-    after = [O_FAQ, O_PACKAGES, O_MENU]
-    if is_web:
-        return R(f"✅ Thank you{', ' + first if first else ''}! Your request is saved. "
-                 f"Our team will contact you {promise} with your quotation.", after)
-    return R(f"✅ Thank you{', ' + first if first else ''}! Your request is saved.\n\n"
-             f"One of our team will message you here {promise} with your quotation, "
-             "and arrange a free site visit to confirm the size.", after)
-
-
-def _after_location(phone, name, s, is_web):
-    sig(phone, "location", s["lead_location"])
-    if is_web:
-        s["state"] = "quote_contact"
-        sig(phone, "quote_step", "contact")
-        return "What *phone number* (WhatsApp if possible) can we reach you on?"
-    sig(phone, "quote_step", "need")
-    ask = _ask_need(s)
-    if ask is None:
-        return _finish_quote(phone, name, s, s["want"], is_web)
-    s["state"] = "quote_need"
-    return ask
-
-
-def _handle(phone, name, text, s):
-    raw = text.strip()
-    is_web = phone.startswith("web:")
-    first = first_name(s.get("lead_name") or name)
-    t = _picked(raw.lower(), s)
-
-    if t in GREETINGS:
-        reset(s)
-        return menu_reply(first)
-    t = TYPED.get(t, t)
-
-    # --- options that work from anywhere (taps on older messages included)
-    if t == "packages":
-        reset(s)
-        sig(phone, "viewed_packages")
-        return packages_reply(s.get("_town", ""))
-    if t.startswith("pkg:"):
-        reset(s)
-        r = package_reply(t[4:], s.get("_town", ""))
-        if r:
-            sig(phone, "package", next(p["name"] for p in CATALOG["packages"] if p["id"] == t[4:]))
-            return r
-        return packages_reply(s.get("_town", ""))
-    if t == "size":
-        reset(s)
-        return size_reply()
-    if t.startswith("size:"):
-        reset(s)
-        if t == "size:custom":
-            s["state"] = "size_kwh"
-            return R("Type how much electricity you use: kWh *per day* (e.g. *10*) or *per month* from "
-                     "your bill (e.g. *300*).", [("size", "⬅️ Pick from a list"), O_MENU])
-        try:
-            return _sized(phone, s, float(t[5:]))
-        except ValueError:
-            return size_reply()
-    if t == "quote":
-        return _start_quote(phone, name, s)
-    if t.startswith("quote:pkg:"):
-        p = next((p for p in CATALOG["packages"] if p["id"] == t[10:]), None)
-        return _start_quote(phone, name, s, p["name"] if p else "")
-    if t == "human":
-        reset(s)
-        if is_web:
-            return R(f"Please use the *Request a quote* form on this page and leave your number, "
-                     f"or call {CATALOG['phone']}.", [O_FAQ, O_MENU])
-        sig(phone, "callback")
-        save_lead(phone, name, kind="callback", need="Asked to speak to a person")
-        set_follow_up(phone, 0)
-        alert_team(phone, s.get("lead_name") or name, "callback", "Asked to speak to a person.", s)
-        return R(f"Sure{', ' + first if first else ''}. A member of our team will message you here "
-                 f"{reply_promise()}. You can also call {CATALOG['phone']}.", [O_FAQ, O_PACKAGES, O_MENU])
-    if t == "contact":
-        reset(s)
-        return contact_reply()
-    if t == "faq":
-        reset(s)
-        return faq_list_reply()
-    if t.startswith("faq:more:"):
-        try:
-            return faq_list_reply(int(t[9:]))
-        except ValueError:
-            return faq_list_reply()
-    if t.startswith("faq:"):
-        try:
-            f = CATALOG["faqs"][int(t[4:])]
-        except (ValueError, IndexError):
-            return faq_list_reply()
-        sig(phone, "faq", faq_topic(f))
-        return faq_reply(f)
-
-    state = s["state"]
-
-    # --- multi-step flows
-    if state == "size_kwh":
-        nums = re.findall(r"\d+(?:\.\d+)?", raw.replace(",", ""))
-        if not nums:
-            return R("Please type a number, e.g. *10* (kWh per day) or *300* (per month).",
-                     [("size", "⬅️ Pick from a list"), O_MENU])
-        value = float(nums[0])
-        return _sized(phone, s, value / 30 if value > 100 else value)  # a large number is a monthly figure
-
-    if state == "quote_name":
-        if t == "name:type":
-            return "Please type your *full name*."
-        s["lead_name"] = clip(name if t == "name:profile" else raw, 200)
-        s["state"] = "quote_location"
-        db.set_contact_name(phone, s["lead_name"])
-        sig(phone, "quote_step", "location")
-        return _ask_location(s)
-
-    if state == "quote_location":
-        if t == "loc:other":
-            return "Please type your *town or suburb*."
-        s["lead_location"] = clip(t[4:].title() if t.startswith("loc:") else raw, 200)
-        s["_town"] = s["lead_location"]   # remembered, so later prices use this town's market
-        return _after_location(phone, name, s, is_web)
-
-    if state == "quote_contact":
-        digits = re.sub(r"\D", "", raw)
-        if len(digits) < 7:
-            return "That doesn't look like a phone number. Please type it with the country code, e.g. *+263 77 123 4567*."
-        s["lead_contact"] = clip(raw, 40)
-        sig(phone, "contact", s["lead_contact"])
-        sig(phone, "quote_step", "need")
-        ask = _ask_need(s)
-        if ask is None:
-            return _finish_quote(phone, name, s, s["want"], is_web)
-        s["state"] = "quote_need"
-        return ask
-
-    if state == "quote_need":
-        if t == "need:type":
-            return "Please type what you want to power, e.g. *fridge, TV, lights and borehole pump*."
-        if t == "need:advise":
-            need = "Not sure - wants advice" + (f" (bot suggested {s['_recommended']})" if s.get("_recommended") else "")
-        elif t.startswith("need:pkg:"):
-            p = next((p for p in CATALOG["packages"] if p["id"] == t[9:]), None)
-            need = p["name"] if p else raw
-        else:
-            need = raw
-        return _finish_quote(phone, name, s, need, is_web)
-
-    # --- free text
-    f = faq_match(raw)
-    if f:
-        sig(phone, "faq", faq_topic(f))
-        return faq_reply(f)
-
-    if _norm(raw) in SMALL_TALK or raw.strip() in SMALL_TALK or len(raw) <= 2:
-        return R("👍 Anything else I can help with?", [O_QUOTE, O_FAQ, O_MENU])
-
-    # Something the bot can't answer: hand it to a person instead of looping on the menu.
-    sig(phone, "unanswered", clip(raw, 200))
-    sig(phone, "needs_human", True)
-    promise = reply_promise()
-    if is_web:
-        return R(f"Good question. I can't answer that one myself. Please use *Request a quote* on this page "
-                 f"and leave your number, and a person will reply {promise}.", [O_FAQ, O_MENU])
-    alert_team(phone, s.get("lead_name") or name, "unanswered", f'They asked: "{clip(raw, 300)}"', s)
-    return R(f"Good question{', ' + first if first else ''}. I've passed it to our team, and a person will "
-             f"reply here {promise}.\n\nMeanwhile, you can tap an option below.", [O_FAQ, O_PACKAGES, O_MENU])
-
-
-def _sized(phone, s, daily):
-    p = recommend(daily)
-    reset(s)
-    s["_recommended"] = p["name"]
-    sig(phone, "sized_kwh", round(daily, 1))
-    sig(phone, "recommended", p["name"])
-    note = market_note(p, s.get("_town", ""))
-    return R(f"For about {daily:.0f} kWh a day, I'd suggest the *{p['name']}* ({price_text(p, s.get('_town', ''))}).\n\n"
-             f"⚡ It powers: {p['powers']}.\n\n" + (f"{note}\n\n" if note else "")
-             + "This is an estimate. A technician confirms the final size at a free site visit.",
-             [(f"quote:pkg:{p['id']}", "📝 Quote for this"), ("packages", "☀️ All packages"), O_MENU])
 
 
 # ---------------------------------------------------------------- WhatsApp I/O
@@ -825,47 +441,9 @@ def send_text(to, body):
     return True
 
 
-def interactive_payload(reply):
-    """WhatsApp interactive message for a reply: buttons for up to 3 short options, a list otherwise."""
-    opts = reply["options"][:10]
-    body = reply["text"] if len(reply["text"]) <= 1024 else "Choose an option below:"
-    if len(opts) <= 3 and all(len(o[1]) <= 20 for o in opts):
-        action = {"buttons": [{"type": "reply", "reply": {"id": o[0][:256], "title": o[1]}} for o in opts]}
-        return {"type": "button", "body": {"text": body}, "action": action}
-    rows = []
-    for o in opts:
-        row = {"id": o[0][:200], "title": short(o[1], 24)}
-        if len(o) > 2 and o[2]:
-            row["description"] = short(o[2], 72)
-        rows.append(row)
-    return {"type": "list", "body": {"text": body},
-            "action": {"button": short(reply.get("button") or "Choose an option", 20),
-                       "sections": [{"title": "Options", "rows": rows}]}}
-
-
 def send_reply(to, reply):
-    """Send a bot reply. Tap options become WhatsApp buttons / a list; numbered text if that fails."""
-    reply = as_reply(reply)
-    if not reply["options"]:
-        return send_text(to, reply["text"])
-    if not (WHATSAPP_TOKEN and PHONE_NUMBER_ID):
-        log.warning("WHATSAPP_TOKEN/PHONE_NUMBER_ID not set; would send to %s", to)
-        return False
-    if len(reply["text"]) > 1024 and not send_text(to, reply["text"]):
-        return False
-    r = requests.post(
-        f"https://graph.facebook.com/{GRAPH_VERSION}/{PHONE_NUMBER_ID}/messages",
-        headers={"Authorization": f"Bearer {WHATSAPP_TOKEN}"},
-        json={"messaging_product": "whatsapp", "to": to, "type": "interactive",
-              "interactive": interactive_payload(reply)},
-        timeout=15,
-    )
-    if r.status_code < 300:
-        return True
-    log.error("interactive send failed %s: %s", r.status_code, r.text[:300])
-    numbered = "\n".join(f"{i}. {o[1]}" for i, o in enumerate(reply["options"], 1))
-    text = reply["text"] if len(reply["text"]) <= 1024 else ""
-    return send_text(to, (text + "\n\n" if text else "") + "Reply with a number:\n" + numbered)
+    """Send a bot reply as a normal WhatsApp text message."""
+    return send_text(to, as_reply(reply)["text"])
 
 
 def valid_signature(req):
@@ -912,7 +490,7 @@ def incoming():
                     elif kind == "interactive":
                         i = m["interactive"]
                         picked = i.get("button_reply") or i.get("list_reply") or {}
-                        text, shown = picked.get("id", ""), picked.get("title")
+                        text = shown = picked.get("title") or picked.get("id", "")
                     elif kind == "button":  # quick-reply button on a template message
                         text = m.get("button", {}).get("payload") or m.get("button", {}).get("text", "")
                     else:
@@ -925,7 +503,7 @@ def incoming():
                         send_text(phone, staff_summary())
                         continue
                     contact = db.touch_contact(phone, names.get(phone, ""), "in")
-                    db.add_message(phone, "in", (f"[tapped] {shown}" if shown else text) or f"[{kind} message]")
+                    db.add_message(phone, "in", text or f"[{kind} message]")
                     if contact["bot_paused"]:
                         # a staff member is handling this chat: no bot reply, but tell them the client wrote
                         st = db.get_state(phone)
@@ -935,8 +513,8 @@ def incoming():
                     if text:
                         reply = handle(phone, names.get(phone, ""), text)
                     else:
-                        reply = R("I can only read text and button taps for now. Tap an option below.",
-                                  [O_MENU, O_QUOTE, O_HUMAN])
+                        reply = R("Thanks! I can only read typed messages here, not photos, voice notes or files. "
+                                  "Could you type it out for me? If it's urgent, say \"call me\" and a person will contact you.")
                     if send_reply(phone, reply):
                         db.add_message(phone, "out", reply_log_text(reply))
                         db.touch_contact(phone, direction="out")
@@ -984,13 +562,12 @@ def api_chat():
     if not sid or not text:
         return jsonify(error="Missing message."), 400
     who = "web:" + sid
-    shown = clip(str(d.get("shown", "")), 100)  # the chip title the visitor clicked, if any
     db.touch_contact(who, "", "in")
     reply = handle(who, "", text)
-    db.add_message(who, "in", f"[tapped] {shown}" if shown else text)
+    db.add_message(who, "in", text)
     db.add_message(who, "out", reply_log_text(reply))
     db.touch_contact(who, direction="out")
-    return jsonify(reply=reply["text"], options=[{"id": o[0], "title": o[1]} for o in reply["options"]])
+    return jsonify(reply=reply["text"], options=[])
 
 
 @app.post("/api/lead")
@@ -1183,7 +760,7 @@ def internal_reply():
     """Staff replies sent from the business platform (server to server, shared INTERNAL_KEY)."""
     if not INTERNAL_KEY:
         return jsonify(error="Replies from the platform are not set up (INTERNAL_KEY missing on the bot)."), 503
-    if not hmac.compare_digest(request.headers.get("X-Internal-Key", "").encode(), INTERNAL_KEY.encode()):
+    if not _internal_ok():
         return jsonify(error="Forbidden."), 403
     d = request.get_json(silent=True) or {}
     body, status = staff_reply(str(d.get("who", ""))[:80], d.get("text", ""))
@@ -1241,6 +818,42 @@ def admin_catalog_put():
     CATALOG.clear()
     CATALOG.update(data)
     return jsonify(ok=True)
+
+
+# ---------------------------------------------------------------- language model (called by the business platform)
+def _internal_ok():
+    key = request.headers.get("X-Internal-Key", "")
+    return bool(INTERNAL_KEY) and hmac.compare_digest(key.encode(), INTERNAL_KEY.encode())
+
+
+@app.get("/internal/nlu/status")
+def nlu_status():
+    if not _internal_ok():
+        return jsonify(error="Forbidden."), 403
+    return jsonify(nlu.engine.info)
+
+
+@app.post("/internal/nlu/train")
+def nlu_train():
+    """Rebuild the model from the example phrases in the database (after staff edit them)."""
+    if not _internal_ok():
+        return jsonify(error="Forbidden."), 403
+    return jsonify(brain.retrain())
+
+
+@app.post("/internal/nlu/test")
+def nlu_test():
+    """What would the bot make of this message? Used by the platform's 'Test a phrase' box."""
+    if not _internal_ok():
+        return jsonify(error="Forbidden."), 403
+    text = clip(str((request.get_json(silent=True) or {}).get("text", "")), 500)
+    if not text:
+        return jsonify(error="Type a message to test."), 400
+    a = brain.analyze(text, [t for t in (CATALOG.get("towns") or []) if isinstance(t, str)])
+    return jsonify(a)
+
+
+brain.start(CATALOG)
 
 
 if os.getenv("MARKET_AUTO", "1") != "0":
