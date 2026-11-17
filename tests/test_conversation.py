@@ -118,3 +118,16 @@ def test_sheet_complaint_alerts_team(chat):
     reply = chat.say("your technician did a bad job")
     assert "sorry" in reply.lower()
     assert any(l["kind"] == "callback" for l in db.list_leads() if l["phone"] == chat.who)
+
+
+def test_transformer_is_not_started_on_a_small_server(monkeypatch):
+    import brain
+    monkeypatch.setenv("NLU_BACKEND", "transformer")
+    monkeypatch.setattr(brain, "_memory_limit_mb", lambda: 512)
+    started = []
+    monkeypatch.setattr(brain, "_upgrade_to_transformer", lambda examples: started.append(1))
+    info = brain.retrain()
+    assert not started and "512 MB" in info["note"]
+    monkeypatch.setattr(brain, "_memory_limit_mb", lambda: 4096)
+    brain.retrain()
+    assert started

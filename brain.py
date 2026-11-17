@@ -109,10 +109,41 @@ def retrain():
     info = nlu.engine.train(examples, backend="tfidf")
     _intents = intents
     if os.getenv("NLU_BACKEND", "tfidf").lower() == "transformer":
-        _upgrade_to_transformer(examples)
-        info = dict(info, note="The transformer model is loading in the background. The quick model answers "
-                               "until it is ready; check this page again in a few minutes.")
+        problem = _memory_problem()
+        if problem:
+            log.warning(problem)
+            nlu.engine.info["note"] = problem
+            info = dict(info, note=problem)
+        else:
+            _upgrade_to_transformer(examples)
+            info = dict(info, note="The transformer model is loading in the background. The quick model answers "
+                                   "until it is ready; check this page again in a few minutes.")
     return info
+
+
+def _memory_limit_mb():
+    """The container's memory limit in MB (Linux cgroups), or None when it cannot be read."""
+    for path in ("/sys/fs/cgroup/memory.max", "/sys/fs/cgroup/memory/memory.limit_in_bytes"):
+        try:
+            value = Path(path).read_text().strip()
+        except OSError:
+            continue
+        if value.isdigit():
+            return int(value) / 1048576
+    return None
+
+
+def _memory_problem():
+    """Why the transformer must not be started here, or '' when it is safe.
+
+    The model plus the quick model peak at roughly 600 MB: on a 512 MB server the process is killed by the
+    host and restarts in a loop, dropping customer messages. Override the requirement with NLU_MIN_MEMORY_MB."""
+    need = int(os.getenv("NLU_MIN_MEMORY_MB", "1500"))
+    limit = _memory_limit_mb()
+    if limit is not None and limit < need:
+        return (f"Transformer not started: this server has {limit:.0f} MB of memory and it needs about {need} MB. "
+                "The quick model is answering. Upgrade the hosting plan to enable the transformer.")
+    return ""
 
 
 _upgrade_lock = threading.Lock()
