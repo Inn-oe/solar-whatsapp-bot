@@ -17,6 +17,7 @@ There is no model file: the model is rebuilt from the examples at start-up and a
 database is the only thing that has to be kept.
 """
 import difflib
+import json
 import logging
 import os
 import re
@@ -281,12 +282,32 @@ class _Remote:
         self.timeout = float(os.getenv("NLU_REMOTE_TIMEOUT", "4"))
         self._cache = {}
 
+    @staticmethod
+    def _sse_result(lines):
+        """The payload of the 'complete' event in a Gradio server-sent-events stream; raises on an 'error' event."""
+        event = None
+        for raw in lines:
+            line = raw.decode("utf-8", "replace") if isinstance(raw, bytes) else raw
+            line = line.rstrip("\r\n")
+            if line.startswith("event:"):
+                event = line[6:].strip()
+            elif line.startswith("data:"):
+                payload = line[5:].strip()
+                if event == "complete":
+                    return json.loads(payload)
+                if event == "error":
+                    raise RuntimeError(f"embedding service error: {payload[:200]}")
+        raise RuntimeError("embedding service closed the stream without a result")
+
     def _post(self, texts, timeout):
         import requests
-        r = requests.post(self.url + "/embed", json={"texts": texts}, timeout=timeout,
-                          headers={"Authorization": f"Bearer {self.key}"})
+        base = self.url + "/gradio_api/call/embed"
+        r = requests.post(base, json={"data": [json.dumps(list(texts)), self.key]}, timeout=timeout)
         r.raise_for_status()
-        data = r.json()
+        event_id = r.json()["event_id"]
+        with requests.get(f"{base}/{event_id}", stream=True, timeout=timeout) as stream:
+            stream.raise_for_status()
+            data = json.loads(self._sse_result(stream.iter_lines())[0])
         self.model_name = f"{data.get('model', 'remote')} (remote)"
         return normalize(np.asarray(data["vectors"], dtype=np.float32))
 

@@ -51,3 +51,12 @@ def test_remote_without_url_uses_the_quick_model(monkeypatch):
     monkeypatch.delenv("NLU_REMOTE_URL", raising=False)
     info = nlu.Engine().train(EXAMPLES, backend="remote")
     assert info["backend"] == "tfidf" and "unavailable" in info["note"]
+
+
+def test_gradio_event_stream_is_parsed():
+    ok = [b"event: heartbeat", b"data: null", b"", b"event: complete", b'data: ["{\\"dim\\": 2}"]', b""]
+    assert nlu._Remote._sse_result(ok) == ['{"dim": 2}']
+    with pytest.raises(RuntimeError):
+        nlu._Remote._sse_result([b"event: error", b'data: "unauthorized"'])
+    with pytest.raises(RuntimeError):
+        nlu._Remote._sse_result([b"event: heartbeat", b"data: null"])
