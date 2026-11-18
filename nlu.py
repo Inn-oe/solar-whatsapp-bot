@@ -230,6 +230,26 @@ def decide_priority(base, category, text, entities, existing_customer=False):
 
 
 # ---------------------------------------------------------------- the classifier
+def _accuracy_check_allowed():
+    """The cross-validated accuracy refits the model 4 times at once; with 89 intents that peaked above 500 MB and
+    got the bot killed on a 512 MB server. Skip it when the container has less than 1 GB.
+    NLU_ACCURACY_CHECK=on / off overrides."""
+    setting = os.getenv("NLU_ACCURACY_CHECK", "auto").lower()
+    if setting in ("on", "1", "true", "yes"):
+        return True
+    if setting in ("off", "0", "false", "no"):
+        return False
+    for path in ("/sys/fs/cgroup/memory.max", "/sys/fs/cgroup/memory/memory.limit_in_bytes"):
+        try:
+            with open(path) as f:
+                value = f.read().strip()
+        except OSError:
+            continue
+        if value.isdigit():
+            return int(value) / 1048576 >= 1000
+    return True   # limit unknown (e.g. a developer machine): measure
+
+
 class _Tfidf:
     """TF-IDF word + character n-grams: robust to typos and tiny training sets."""
     name = "tfidf"
@@ -395,8 +415,12 @@ class Engine:
             info = self.info
         # the accuracy check refits the model several times, so it runs in the background and
         # appears in `info` (and on the platform's Train page) when it is done
-        self._accuracy_thread = threading.Thread(target=self._measure_accuracy, args=(info, x, y), daemon=True)
-        self._accuracy_thread.start()
+        if _accuracy_check_allowed():
+            self._accuracy_thread = threading.Thread(target=self._measure_accuracy, args=(info, x, y), daemon=True)
+            self._accuracy_thread.start()
+        else:
+            self._accuracy_thread = None
+            log.info("accuracy check skipped: this server has too little memory (set NLU_ACCURACY_CHECK=on to force it)")
         log.info("NLU trained: %s", {k: v for k, v in info.items() if k != "accuracy"})
         return dict(info)
 
