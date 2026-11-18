@@ -5,7 +5,7 @@
   "email": "giebeeengineering@gmail.com",
   "address": "108 Central Avenue, Room 8, 1st Floor, Harare",
   "hours": "Mon-Fri 8:00-17:00, Sat 8:00-13:00",
-  "market_prices": true,
+  "market_prices": false,
   "utc_offset": 2,
   "response_time": "1 hour",
   "open_hours": {
@@ -34,39 +34,47 @@
       "13:00"
     ]
   },
-  "note": "Company details are GieBee Engineering's. The packages, prices and FAQ answers below are still SAMPLE DATA: replace them with real ones on the bot's /admin page or here before relying on them.",
+  "note": "Company details and packages are GieBee Engineering's: prices are the median of its 2026 quotations (USD, installed). 'Powers' is an engineering estimate from the inverter, battery and panel sizes, not something the quotations state. Edit on the bot's /admin page. The older FAQ answers were written for a generic solar company: review them.",
   "packages": [
     {
       "id": "1",
-      "name": "Starter 1kW",
-      "price": 650,
-      "powers": "Lights, phone charging, TV, laptop, small fridge (not all at once)",
-      "includes": "1kW inverter, 1 x 100Ah battery, 2 x 550W panels, mounting kit and installation",
-      "daily_kwh": 3
+      "name": "Starter 1.5kVA",
+      "price": 830,
+      "daily_kwh": 2.5,
+      "powers": "Lights, phone and laptop charging, TV, WiFi router and a small fridge (not all at once)",
+      "includes": "1-1.5kVA hybrid inverter, 12V 100Ah lithium battery (1.28kWh), 1-2 x 450W solar panels, mounting kit, protection kit, cabling and installation"
     },
     {
       "id": "2",
-      "name": "Home 3kW",
-      "price": 1800,
-      "powers": "Lights, TV, fridge, freezer, laptop, small appliances, borehole pump (small)",
-      "includes": "3kW inverter, 2 x 200Ah lithium batteries, 6 x 550W panels, mounting kit and installation",
-      "daily_kwh": 8
+      "name": "Home 3.2kVA",
+      "price": 1200,
+      "daily_kwh": 6,
+      "powers": "Lights, TV, WiFi, laptops, phone charging, a fridge and a deep freezer. Not a geyser, stove or aircon",
+      "includes": "3.2kVA hybrid inverter, 25.6V 100Ah lithium battery (2.56kWh), 4 x 450W solar panels (1.8kW), mounting kit, protection kit, cabling and installation"
     },
     {
       "id": "3",
-      "name": "Family 5kW",
-      "price": 3200,
-      "powers": "Whole-house lighting, fridge, freezer, TV, washing machine, microwave, geyser (timed)",
-      "includes": "5kW inverter, 5kWh lithium battery, 10 x 550W panels, mounting kit and installation",
-      "daily_kwh": 15
+      "name": "Home 5kVA",
+      "price": 1865,
+      "daily_kwh": 10,
+      "powers": "Everything in the 3.2kVA plus a washing machine, a second fridge and a small borehole pump. A geyser or small aircon in the daytime only",
+      "includes": "5kVA hybrid inverter, 5.12kWh lithium battery, 5 x 590W solar panels (2.95kW), mounting kit, protection kit, cabling and installation"
     },
     {
       "id": "4",
-      "name": "Business 10kW",
-      "price": 6500,
-      "powers": "Shops, small offices, workshops and clinics with heavier loads",
-      "includes": "10kW inverter, 10kWh lithium battery, 18 x 550W panels, mounting kit and installation",
-      "daily_kwh": 30
+      "name": "Family 6.2kVA",
+      "price": 1895,
+      "daily_kwh": 10.5,
+      "powers": "Whole-house essentials: lights, TV, fridges and freezer, washing machine, borehole pump up to 1.5HP, microwave and kettle. A geyser or aircon in the daytime",
+      "includes": "6.2kVA hybrid inverter, 51.2V 100Ah lithium battery (5.12kWh), 5 x 550W solar panels (2.75kW), mounting kit, protection kit, cabling and installation"
+    },
+    {
+      "id": "5",
+      "name": "Business 10kVA",
+      "price": 4150,
+      "daily_kwh": 24,
+      "powers": "A large home, shop, office or clinic: lights, fridges and freezers, computers, aircon, geyser and a borehole pump up to 2HP, mostly in the daytime",
+      "includes": "10kVA hybrid inverter, 2 x 51.2V 100Ah lithium batteries (10.24kWh), 12 x 590W solar panels (7.08kW), mounting kit, protection kit, cabling and installation"
     }
   ],
   "towns": [
@@ -285,6 +293,66 @@
       ],
       "answer": "Reply *menu* and choose to speak to our team, and we will share our contact details and arrange a call or visit.",
       "title": "📍 Contact & location"
+    },
+    {
+      "keys": [
+        "your services",
+        "services you offer"
+      ],
+      "title": "🛠️ Our services",
+      "answer": "GieBee Engineering installs solar systems (hybrid inverters with lithium batteries), solar borehole and water pumping, electrical wiring, CCTV and alarm systems, and solar geysers. Tell me what you need and I will arrange a quotation."
+    },
+    {
+      "keys": [
+        "borehole pump",
+        "solar water pump",
+        "water tank"
+      ],
+      "title": "💧 Solar water pumping",
+      "answer": "Yes, we install solar borehole pumping. A complete installation (DC submersible pump, solar panels, cabling and installation) is typically about USD 790 for 0.75HP, USD 1,050 for 1HP, USD 1,550-1,590 for 1.5-2HP and USD 1,760 for 3HP. A 5,000L tank is about USD 345 and a 3m tank stand about USD 260 extra. The exact price depends on the borehole depth and distance, so tell me the depth, how much water you need per day and where you are, and we will quote."
+    },
+    {
+      "keys": [
+        "battery prices",
+        "panel prices",
+        "inverter prices"
+      ],
+      "title": "🔋 Component prices",
+      "answer": "Our current prices (USD, equipment only): solar panels 450W about 75, 550W about 90, 590W about 105. Lithium batteries 12V 100Ah about 235, 25.6V 100Ah about 360, 5.12kWh about 650-700, 10kWh about 1,670. Hybrid inverters 1kVA about 120, 3.2kVA about 180, 5kVA and 6.2kVA about 325, 10kVA about 870-950. Mounting, protection kit and installation are extra. Tell me what you need and I will quote."
+    },
+    {
+      "keys": [
+        "what the quotation includes",
+        "installation labour",
+        "transport charges"
+      ],
+      "title": "📋 What's in a quote?",
+      "answer": "Our systems are quoted complete: hybrid inverter, lithium battery, solar panels, mounting kit, protection kit (breakers and surge protection), cabling and installation labour. Labour is usually USD 150-200, transport USD 60-150 depending on distance, the mounting kit USD 90-150 and the protection kit USD 60-70. The final price is confirmed in a written quotation."
+    },
+    {
+      "keys": [
+        "cctv",
+        "security cameras",
+        "alarm system"
+      ],
+      "title": "📹 CCTV & security",
+      "answer": "Yes, we install CCTV and alarm systems. Most CCTV installations are quoted at around USD 800, and small ones start from about USD 200, depending on the number of cameras, the recorder, the screen and the cabling. Tell me how many cameras and where, and we will send a quotation."
+    },
+    {
+      "keys": [
+        "electrical work",
+        "house wiring",
+        "db boards"
+      ],
+      "title": "🔌 Electrical work",
+      "answer": "Yes, we do wiring for houses and buildings: DB boards, sockets, switches and lighting. Electrical jobs are usually quoted at around USD 670, and small jobs start from about USD 120, depending on size. Tell me the type of building and the number of rooms, or send a plan, and we will quote."
+    },
+    {
+      "keys": [
+        "solar geyser"
+      ],
+      "title": "🚿 Solar geysers",
+      "answer": "Yes, we install solar geysers. Installations are typically USD 700-1,400 depending on the tank size and your roof. Tell me the geyser size and where you are and we will quote."
     }
   ]
 }

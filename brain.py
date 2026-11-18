@@ -77,9 +77,11 @@ def seed(catalog):
         if slug in known or any(slug == _faq_slug(re.sub(r"^[^\w]+", "", f.get("title") or f["keys"][0]).strip())
                                 for f in catalog.get("faqs", [])):
             rows += [(slug, p) for p in phrases]
+    retired = [(name, t) for name, phrases in (data.get("retired_examples") or {}).items() for t in phrases]
+    removed = db.delete_seed_examples([r for r in retired if r not in set(rows)]) if retired else 0
     added = db.add_examples_bulk(rows, "seed")
     db.set_setting("nlu_seed_version", str(version))
-    log.info("NLU seed: %d new example phrases", added)
+    log.info("NLU seed: %d new example phrases, %d retired", added, removed)
     return True
 
 
@@ -820,8 +822,12 @@ def _fill_awaiting(ctx):
         s["_town"] = e["location"]
         return True
     # a clear greeting/thanks/etc. is not an answer; neither is a different, confident request
+    # (a weak FAQ match that is not a question is still the details we asked for: "1HP Lorentz pump, 4 hours a day"
+    # looks a little like the pump FAQ, but it is the customer's answer)
+    faq = (a["intent"] or "").startswith("faq_")
     if a["intent"] in ("greeting", "thanks", "goodbye", "deny", "talk_to_human", "complaint", "price", "contact_info",
-                       "bot_identity", "off_topic") or (a["intent"] or "").startswith("faq_"):
+                       "bot_identity", "off_topic") or (faq and (slot != "details" or a["confidence"] >= 0.5
+                                                                  or is_question(raw))):
         return False
     if slot == "details":
         # anything that is not a question is taken as the details we asked for

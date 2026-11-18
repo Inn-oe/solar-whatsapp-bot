@@ -445,6 +445,20 @@ def add_examples_bulk(rows, source="seed"):
         return added
 
 
+def delete_seed_examples(rows):
+    """rows: [(intent, text)]. Removes starting phrases (source 'seed') that a later version of the training file
+    retired; phrases staff added or confirmed themselves are never touched. Returns how many were removed."""
+    wanted = {(i, " ".join(str(t or "").split())[:500]) for i, t in rows}
+    removed = 0
+    with Session() as s:
+        for row in s.scalars(select(NluExample).where(NluExample.source == "seed")):
+            if (row.intent, row.text) in wanted:
+                s.delete(row)
+                removed += 1
+        s.commit()
+    return removed
+
+
 def delete_example(example_id):
     with Session() as s:
         s.query(NluExample).filter(NluExample.id == example_id).delete()
