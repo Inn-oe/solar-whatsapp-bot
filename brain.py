@@ -253,6 +253,10 @@ def analyze(text, towns=None, existing_customer=False, context=""):
         if guess and conf >= 0.5 and guess in _intents:
             intent, via = guess, "llm"
             res = dict(res, intent=guess, confidence=min(res["confidence"], 0.39))  # low: staff review it later
+    # "Marii 3kva" / "how much for 5kva": a price question, even when the model is unsure
+    if intent in (None, "qa_ambiguous") and "price" in _intents and PRICE_ASK.search(text) \
+            and not FAULT_WORDS.search(t):
+        intent, via = "price", "rules"
     # still unsure, but it plainly describes a solar fault ("solar not giving power"): treat it as a fault report
     if intent in (None, "qa_ambiguous") and "maintenance_fault" in _intents and _looks_like_fault(text, t):
         intent, via = "maintenance_fault", "rules"
@@ -281,8 +285,19 @@ QUESTION_START = re.compile(r"\s*(can|could|do|does|will|would|is|are|how|what|w
 AGREES = re.compile(r"\s*(yes|yeah|yep|ok|okay|sure|please|go ahead|ehe|send)\b", re.I)
 
 
+# Shona and English question words that need no "?": "marii 3kva", "zvinoita sei", "did you understand"
+QUESTION_WORDS = re.compile(r"\b(marii|imarii|zvii|chii|sei|ndeipi|ripi|kupi|rini|how much|how many|"
+                            r"did you|do you|can you|could you|have you|what did|what does|what is|whats)\b"
+                            r"|^\s*ko\b|\bhere\s*[.!]*\s*$", re.I)   # Shona "ko ..." and "... here" mark a question
+PRICE_ASK = re.compile(r"\b(marii|imarii|mari(?:yei)?|how much|price[sd]?|pricing|cost[s]?|kangani|charge[s]?)\b", re.I)
+META = re.compile(r"(did you (?:understand|get (?:that|it|me|what)|hear|read)|do you understand|understand me|"
+                  r"what did i (?:say|tell you|ask|just say)|you (?:didn'?t|did not|don'?t|do not) (?:understand|answer|get|"
+                  r"listen|read)|are you (?:there|listening|following)|anyone there|you there|hello\s*\?|"
+                  r"wanzwa|wandinzwa|wanzwisisa|unonzwa|wafamba nazvo|ndati chii)", re.I)
+
+
 def is_question(text):
-    return "?" in text or bool(QUESTION_START.match(text))
+    return "?" in text or bool(QUESTION_START.match(text)) or bool(QUESTION_WORDS.search(text))
 
 
 # ---------------------------------------------------------------- wording helpers
@@ -385,6 +400,14 @@ def _respond(phone, name, text, s):
         ctx = Ctx(phone, name, text, s, a)
         return _h_maintenance(ctx)
 
+    # "did you understand?" / "what did I say?": answer like a person, with what we have so far
+    if not tap and META.search(text):
+        return _meta_reply(ctx)
+    # a price question in the middle of a quotation: give the price, keep the size, carry on
+    if (not tap and s.get("flow") == "purchase" and PRICE_ASK.search(text)
+            and s.get("awaiting") not in ("contact", "name")):
+        return _price_in_quote(ctx)
+
     # 1. is the customer answering the question we just asked?
     filled = _fill_awaiting(ctx)
     if filled == "more":
@@ -410,6 +433,8 @@ def _respond(phone, name, text, s):
     accepts_offer = (s.get("pending") == "quote_offer" and intent in (None, "affirm", "buy_system", "site_visit")
                      and not is_question(text) and bool(AGREES.match(text)))
     if intent is None and not accepts_offer:
+        if s.get("flow") in ("purchase", "maintenance") and s.get("awaiting") in RESUME:
+            return _not_understood_in_flow(ctx)
         return _not_understood(ctx)
     if accepts_offer:
         handler = "affirm"
@@ -1056,7 +1081,9 @@ def _fill_awaiting(ctx):
         else:
             place = e.get("location", "")
         if not place:
-            if ("?" not in raw and len(raw.split()) >= 2 and s.get("flow") in ("purchase", "maintenance")
+            has_detail = any(e.get(k) for k in ("appliances", "kwh", "size_kva", "budget", "products", "phone"))
+            if (not is_question(raw) and len(raw.split()) >= 2
+                    and (s.get("flow") == "maintenance" or has_detail)
                     and a["intent"] not in ("greeting", "thanks", "goodbye", "deny", "talk_to_human", "complaint")):
                 return "more"   # more detail about the request: keep it and ask for the town again
             return False
@@ -1094,6 +1121,101 @@ def _fill_awaiting(ctx):
             return True
         return False
     return False
+
+
+def _summary_so_far(ctx):
+    """What the bot has understood of the current request, in one line."""
+    s = ctx.s
+    slots = _slots(s)
+    if s.get("flow") == "purchase":
+        bits = [slots["need"]] if slots.get("need") else []
+        est = _estimate_line(ctx)
+        if est:
+            bits.append(f"closest package {est}")
+        if slots.get("location"):
+            bits.append(f"in {slots['location']}")
+        return "your quotation request" + (": " + ", ".join(bits) if bits else "")
+    if s.get("flow") == "maintenance":
+        issue = "; ".join(x for x in (slots.get("reported"), slots.get("issue")) if x)
+        code = slots.get("inverter_code")
+        return ("your problem report" + (f": {core().clip(issue, 120)}" if issue else "")
+                + (f" (inverter: {code})" if code and code != NO_CODE else ""))
+    return ""
+
+
+def _meta_reply(ctx):
+    """'Did you understand?' / 'What did I say?': show what we understood, then ask the one thing still needed."""
+    s = ctx.s
+    so_far = _summary_so_far(ctx)
+    slot = s.get("awaiting")
+    if so_far and slot in RESUME:
+        nxt = _ask(ctx, slot)
+        return (say(["Yes{first_comma}, I'm following.", "Yes, I understood{first_comma}."], s, **ctx.kw())
+                + f" So far I have {so_far}.\n\n" + nxt)
+    last = s.get("_last_quote")
+    _offer(s, MENU)
+    if last:
+        return (f"Yes{', ' + ctx.first if ctx.first else ''}, I'm here. Your last request was {last['summary']}, "
+                "and it's with our team. What would you like to do next?")
+    return say(["Yes, I'm here{first_comma}. Sorry if I missed something. What can I help you with?"], s, **ctx.kw())
+
+
+def _price_line(ctx, size=None):
+    c = core()
+    p = None
+    if size:
+        sized = [p for p in ctx.catalog["packages"] if c.package_size(p)]
+        p = min(sized, key=lambda p: abs(c.package_size(p) - size)) if sized else None
+    p = p or _estimate(ctx)
+    if not p:
+        return None
+    town = _slots(ctx.s).get("location", "")
+    lead = (f"For {size:g}kVA, our closest package is the *{p['name']}* at" if size and c.package_size(p) != size
+            else f"The *{p['name']}* is")
+    return (f"{lead} {c.price_text(p, town)} installed. ⚡ It powers: {p['powers']}. The final price is confirmed "
+            "on a free site visit.")
+
+
+def _price_in_quote(ctx):
+    """A price question during a quotation: answer it, keep any size they gave, and carry on with the request."""
+    s, e = ctx.s, ctx.ents
+    slots = _slots(s)
+    slot = s.get("awaiting")
+    size = e.get("size_kva")
+    named = any(p["name"].lower() in nlu.clean(ctx.text) for p in ctx.catalog["packages"])
+    if size or named or e.get("appliances") or e.get("kwh"):
+        if slot in ("repeat", "need", "change", "confirm") or not slots.get("need"):
+            for k in ("need", "kwh", "size_kva", "confirmed"):
+                slots.pop(k, None)
+            _gather(ctx)
+            s.pop("awaiting", None)
+        line = _price_line(ctx, size)
+        if line:
+            return line + "\n\n" + _advance(ctx)
+    line = _price_line(ctx)
+    if not line:
+        pkgs = "\n".join(f"• *{p['name']}*: {core().price_text(p, slots.get('location', ''))}"
+                         for p in ctx.catalog["packages"])
+        line = "Here are our installed prices:\n\n" + pkgs
+    return line + ("\n\n" + _ask(ctx, slot, resumed=True) if slot in RESUME else "")
+
+
+def _not_understood_in_flow(ctx):
+    """Unclear message mid-request: say so honestly and ask the same question again (with its buttons)."""
+    s = ctx.s
+    try:
+        db.add_unmatched(ctx.phone, ctx.text, ctx.a["guess"] or "", ctx.a["confidence"])
+    except Exception:
+        log.exception("could not store unmatched message")
+    s["_unknown"] = s.get("_unknown", 0) + 1
+    if s["_unknown"] >= 3:   # three misses in a row: a person takes over
+        s["_unknown"] = 0
+        return _not_understood(ctx)
+    sorry = say(["Sorry{first_comma}, I didn't quite get that.", "Sorry, I'm not sure I understood that."],
+                s, **ctx.kw())
+    so_far = _summary_so_far(ctx)
+    return (sorry + (f" So far I have {so_far}." if so_far else "") + "\n\n"
+            + _ask(ctx, s["awaiting"]))
 
 
 def _keep_detail_and_reask(ctx):

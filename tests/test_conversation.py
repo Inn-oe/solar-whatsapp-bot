@@ -276,3 +276,41 @@ def test_plain_fault_statements_are_understood_without_a_menu(chat):
     chat.say("it works now")                                 # close that conversation
     second = chat.say("inverter showing E05")
     assert "did that fix it" in second.lower() and "error code" not in second.lower()   # code known: straight to the fix
+
+
+def test_screenshot_price_question_and_did_you_understand(chat):
+    """'Marii 3kva' gets the price and keeps the size; 'did you understand' / 'what did I say' get a recap of
+    what the bot has, then the question it still needs answered (never a fake 'got it')."""
+    chat.say("I want a 3.2kva system")
+    chat.say("Masvingo")
+    chat.tap("send")
+    assert "already sent" in chat.say("Get a quotation")
+    price = chat.say("Marii 3kva")
+    assert "Home 3.2kVA* at USD 1,200" in price and "town" in price.lower()
+    for meta in ("Did you understand", "What did I say", "wanzwa here"):
+        reply = chat.say(meta)
+        assert "following" in reply or "understood" in reply, meta
+        assert "3kVA" in reply and "town" in reply.lower() and "Got it" not in reply
+    assert "Shall I send it" in chat.say("Masvingo")
+
+
+def test_price_question_while_asked_for_the_town(chat):
+    chat.say("I want a 5kva system")                        # asked for the town
+    reply = chat.say("how much is it")
+    assert "Home 5kVA" in reply and "1,865" in reply and "town" in reply.lower()
+
+
+def test_unclear_reply_mid_request_is_admitted_not_faked(chat):
+    chat.say("my solar is not charging")                   # asked what the inverter shows
+    chat.say("no")                                          # first fix
+    reply = chat.say("purple monkey dishwasher")
+    assert "did that fix it" in reply.lower() or "sorry" in reply.lower()
+    assert "Got it, thanks" not in reply
+
+
+def test_shona_question_without_a_question_mark_is_a_question():
+    import brain
+    for t in ("marii 3kva", "zvinoita sei", "did you understand me", "ko kuisa kunotora mazuva mangani"):
+        assert brain.is_question(t), t
+    assert not brain.is_question("Borrowdale, Harare")
+    assert not brain.is_question("the inverter is here in the garage and it is still beeping")
