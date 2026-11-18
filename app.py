@@ -252,9 +252,10 @@ def first_name(name):
     return parts[0].capitalize()[:30] if parts else ""
 
 
-# A reply is plain text. The customer chats in their own words; there are no buttons or menus.
+# A reply is text, optionally with buttons (up to 3) or list rows (up to 10) for the question it ends with.
+# Options are {"id": "btn:<key>", "title": ..., "description": ...}; the customer can always type instead.
 def R(text, options=(), button=""):
-    return {"text": text, "options": [], "button": ""}
+    return {"text": text, "options": [dict(o) for o in (options or [])][:10], "button": button or ""}
 
 
 def as_reply(r):
@@ -412,7 +413,8 @@ def handle(phone, name, text):
         log.exception("could not load chat state")
         s = {}
     try:
-        return R(brain.respond(phone, name, text, s))
+        r = brain.respond(phone, name, text, s)
+        return R(r["text"], r.get("options"), r.get("button")) if isinstance(r, dict) else R(r)
     except Exception:
         log.exception("brain failed")
         return R("Sorry, something went wrong on my side. A member of our team will follow up with you.")
@@ -442,9 +444,70 @@ def send_text(to, body):
     return True
 
 
+BODY_LIMIT = 1024   # WhatsApp: interactive message body
+BUTTON_TITLE = 20   # reply button title
+ROW_TITLE, ROW_DESC, LIST_LABEL = 24, 72, 20
+
+
+def interactive_payload(text, options, button=""):
+    """The WhatsApp "interactive" object for a reply: buttons for up to 3 short choices, a list otherwise.
+    Returns (lead_text, interactive): lead_text is sent first as plain text when the body would be too long."""
+    options = [o for o in options if o.get("id") and o.get("title")][:10]
+    if not options:
+        return text, None
+    lead, body = "", text.strip()
+    if len(body) > BODY_LIMIT:
+        paras = body.split("\n\n")
+        lead, body = "\n\n".join(paras[:-1]), paras[-1]
+        if len(body) > BODY_LIMIT or len(lead) > 4000:
+            lead, body = text.strip(), "Please choose an option, or type your answer:"
+    use_buttons = (len(options) <= 3 and all(len(o["title"]) <= BUTTON_TITLE for o in options)
+                   and not any(o.get("description") for o in options))
+    if use_buttons:
+        action = {"buttons": [{"type": "reply", "reply": {"id": o["id"][:256], "title": o["title"][:BUTTON_TITLE]}}
+                              for o in options]}
+        return lead, {"type": "button", "body": {"text": body}, "action": action}
+    rows = []
+    for o in options:
+        row = {"id": o["id"][:200], "title": short(o["title"], ROW_TITLE)}
+        if o.get("description"):
+            row["description"] = short(o["description"], ROW_DESC)
+        rows.append(row)
+    label = short(button or "Choose", LIST_LABEL)
+    return lead, {"type": "list", "body": {"text": body},
+                  "action": {"button": label, "sections": [{"title": "Options", "rows": rows}]}}
+
+
+def send_interactive(to, interactive):
+    if not (WHATSAPP_TOKEN and PHONE_NUMBER_ID):
+        log.warning("WHATSAPP_TOKEN/PHONE_NUMBER_ID not set; would send buttons to %s", to)
+        return False
+    r = requests.post(
+        f"https://graph.facebook.com/{GRAPH_VERSION}/{PHONE_NUMBER_ID}/messages",
+        headers={"Authorization": f"Bearer {WHATSAPP_TOKEN}"},
+        json={"messaging_product": "whatsapp", "to": to, "type": "interactive", "interactive": interactive},
+        timeout=15,
+    )
+    if r.status_code >= 300:
+        log.error("interactive send failed %s: %s", r.status_code, r.text[:300])
+        return False
+    return True
+
+
 def send_reply(to, reply):
-    """Send a bot reply as a normal WhatsApp text message."""
-    return send_text(to, as_reply(reply)["text"])
+    """Send a bot reply: with buttons or a list when it offers choices, plain text otherwise. If WhatsApp
+    refuses the buttons, the text still goes out with the choices written in, so the customer can type one."""
+    r = as_reply(reply)
+    if not r["options"]:
+        return send_text(to, r["text"])
+    lead, interactive = interactive_payload(r["text"], r["options"], r["button"])
+    try:
+        if (not lead or send_text(to, lead)) and send_interactive(to, interactive):
+            return True
+    except Exception:
+        log.exception("interactive send failed")
+    choices = " · ".join(re.sub(r"^\W+", "", o["title"]) for o in r["options"])
+    return send_text(to, (r["text"] if not lead else interactive["body"]["text"]) + f"\n\n(Reply with: {choices})")
 
 
 def valid_signature(req):
@@ -491,7 +554,8 @@ def incoming():
                     elif kind == "interactive":
                         i = m["interactive"]
                         picked = i.get("button_reply") or i.get("list_reply") or {}
-                        text = shown = picked.get("title") or picked.get("id", "")
+                        shown = picked.get("title") or picked.get("id", "")
+                        text = picked.get("id") or shown   # "btn:<key>": the bot reads the button, not its title
                     elif kind == "button":  # quick-reply button on a template message
                         text = m.get("button", {}).get("payload") or m.get("button", {}).get("text", "")
                     else:
@@ -504,7 +568,7 @@ def incoming():
                         send_text(phone, staff_summary())
                         continue
                     contact = db.touch_contact(phone, names.get(phone, ""), "in")
-                    db.add_message(phone, "in", text or f"[{kind} message]")
+                    db.add_message(phone, "in", shown or text or f"[{kind} message]")
                     if contact["bot_paused"]:
                         # a staff member is handling this chat: no bot reply, but tell them the client wrote
                         st = db.get_state(phone)
@@ -562,13 +626,14 @@ def api_chat():
     text = clip(str(d.get("text", "")), 500)
     if not sid or not text:
         return jsonify(error="Missing message."), 400
+    shown = clip(str(d.get("shown") or ""), 100)   # the title of a tapped button, for the chat history
     who = "web:" + sid
     db.touch_contact(who, "", "in")
     reply = handle(who, "", text)
-    db.add_message(who, "in", text)
+    db.add_message(who, "in", shown or text)
     db.add_message(who, "out", reply_log_text(reply))
     db.touch_contact(who, direction="out")
-    return jsonify(reply=reply["text"], options=[])
+    return jsonify(reply=reply["text"], options=[{"id": o["id"], "title": o["title"]} for o in reply["options"]])
 
 
 @app.post("/api/lead")

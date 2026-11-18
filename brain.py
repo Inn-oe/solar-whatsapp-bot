@@ -1,9 +1,11 @@
-"""Conversation brain: reads what the customer typed, understands it (nlu.py) and answers in plain text.
+"""Conversation brain: reads what the customer typed, understands it (nlu.py) and answers like a person.
 
-There are no menus or buttons. The customer writes however they like ("hi, my inverter keeps beeping"),
-the language model works out what they want, and the bot talks it through like a person would:
-asking one thing at a time, remembering what was already said, answering side questions without losing
-its place, and handing over to the team when it is not sure.
+The customer can write however they like ("hi, my inverter keeps beeping"); the language model works out what
+they want and the bot talks it through: one thing at a time, remembering what was already said, answering side
+questions without losing its place, and handing over to the team when it is not sure. Closed choices also come
+with buttons or a list (fixed / still the same, send / change, which package, which problem); open details (what
+is wrong, the error code, the town, the name) are typed. Every button is a shortcut for words the bot already
+understands, so typing always works too.
 
 The three things a customer can want are recorded as an *enquiry* (see db.Enquiry), each with a priority:
   purchase     wants a system, a quote, a price or sizing advice
@@ -16,6 +18,7 @@ import os
 import random
 import re
 import threading
+import time
 from pathlib import Path
 
 import db
@@ -329,6 +332,7 @@ class Ctx:
     def __init__(self, phone, name, text, s, a):
         self.phone, self.name, self.text, self.s, self.a = phone, name, text.strip(), s, a
         self.is_web = phone.startswith("web:")
+        self.tap = None
         self.ents = a["entities"]
         self.first = first_name(s.get("slots", {}).get("name") or name)
         c = core()
@@ -341,18 +345,35 @@ class Ctx:
 
 
 def respond(phone, name, text, s):
-    """The reply text for one message. `s` is the saved conversation state (a dict that is mutated)."""
+    """The reply for one message: {"text", "options", "button"}. `s` is the saved conversation state (mutated).
+
+    `options` are buttons (up to 3) or list rows (up to 10) for the question the reply ends with; empty when the
+    reply needs a typed answer or none at all."""
+    s.pop("_ui", None)
     reply = _respond(phone, name, text, s)
-    s["_last_reply"] = (reply.get("text") if isinstance(reply, dict) else str(reply or ""))[:400]
-    return reply
+    reply = reply.get("text", "") if isinstance(reply, dict) else str(reply or "")
+    ui = s.pop("_ui", None) or {}
+    options = ui.get("options") or []
+    s["_last_opts"] = {_norm_title(o["title"]): o["id"][4:] for o in options}
+    s["_last_reply"] = reply[:400]
+    return {"text": reply, "options": options, "button": ui.get("button", "")}
 
 
 def _respond(phone, name, text, s):
     c = core()
     towns = [t for t in (c.CATALOG.get("towns") or []) if isinstance(t, str)]
+    # a tapped button arrives as "btn:<key>"; typing a button's title ("Still the same") counts as tapping it
+    tap = text.strip()[4:] if text.strip().startswith("btn:") else (s.get("_last_opts") or {}).get(_norm_title(text))
+    if tap:
+        text = _tap_text(tap, c)
     a = analyze(text, towns, context=s.get("_last_reply", ""))
     ctx = Ctx(phone, name, text, s, a)
+    ctx.tap = tap
     s.pop("offer", None)
+    if tap:
+        direct = _direct_tap(ctx)
+        if direct is not None:
+            return direct
 
     # 0. mid-quote, asked what the system should run, but the customer reports a fault ("my inverter is having an
     #    error"): that is a maintenance report, not the quotation's need, so switch flows instead of quoting it
@@ -368,6 +389,19 @@ def _respond(phone, name, text, s):
     filled = _fill_awaiting(ctx)
     if filled == "more":
         return _keep_detail_and_reask(ctx)
+    if filled == "change":
+        s["awaiting"] = "change"
+        return _ask(ctx, "change")
+    if filled == "repeat_new":
+        s.pop("awaiting", None)
+        return _advance(ctx)
+    if filled == "repeat_edit":
+        s["slots"] = dict((s.get("_last_quote") or {}).get("slots") or {})
+        s["_editing_quote"] = True
+        return _ask(ctx, "change")
+    if filled == "edit":
+        s.pop("awaiting", None)
+        return _ask(ctx, "confirm", filled=True)
     if filled:
         return _continue_flow(ctx)
 
@@ -424,6 +458,7 @@ def _not_understood(ctx):
     if len(raw) <= 2 or not re.search(r"[A-Za-z]", raw):
         return say(["👍 Anything else I can help with?", "Okay! Let me know if you need anything."], s)
     if s["_unknown"] == 1:
+        _offer(s, UNSURE_MENU)
         return say(["Sorry{first_comma}, I didn't quite catch that. Are you looking to buy a solar system, "
                     "get a price, or do you need help with a system you already have?",
                     "I want to make sure I get this right{first_comma}. Could you tell me a little more? "
@@ -464,7 +499,7 @@ def _h_reply(ctx):
         core().sig(ctx.phone, "faq", topic)
         if not s.get("_offered_quote") and random.random() < 0.4:
             s["_offered_quote"] = True
-            s["pending"] = "quote_offer"
+            _set_offer(s)
             text += "\n\n" + say(["If you'd like, I can arrange a free quotation for you.",
                                   "Would you like me to prepare a free quotation?"], s)
     return text
@@ -473,6 +508,7 @@ def _h_reply(ctx):
 def _h_greeting(ctx):
     s = ctx.s
     reset_flow(s)
+    _offer(s, MENU)
     return say(_intent_replies(ctx), s, **ctx.kw(greet=greet_word(ctx.text)))
 
 
@@ -512,7 +548,7 @@ def _h_contact(ctx):
     if town and not asks_for_details:
         known = [t.lower() for t in (c.get("towns") or [])]
         if town.lower() in known:
-            s["pending"] = "quote_offer"
+            _set_offer(s)
             return (f"Yes, we install in {town}. Would you like me to arrange a free site visit and a quotation?")
         return (f"I'm not sure we cover {town} yet, but I'll ask the team to confirm. What would you like solar "
                 "for, so I can pass it on?")
@@ -531,7 +567,7 @@ def _h_packages(ctx):
     pkgs = ctx.catalog["packages"]
     if size:
         p = min(pkgs, key=lambda p: abs((c.package_size(p) or p["daily_kwh"] / 3) - size))
-        s["pending"] = "quote_offer"
+        _set_offer(s)
         note = c.market_note(p, town)
         c.sig(ctx.phone, "package", p["name"])
         return (f"For a {size:g}kVA system, our closest is the *{p['name']}* at {c.price_text(p, town)}.\n\n"
@@ -539,7 +575,7 @@ def _h_packages(ctx):
                 + (f"\n\n{note}" if note else "")
                 + "\n\nWould you like me to arrange a free quotation and site visit?")
     lines = "\n".join(f"• *{p['name']}*: {c.price_text(p, town)}" for p in pkgs)
-    s["pending"] = "quote_offer"
+    _set_offer(s)
     return say(["Here are our current packages{first_comma}:\n\n" + lines.replace("{", "{{").replace("}", "}}")
                 + "\n\nTell me what you want to run (fridge, TV, lights, pump...) and I'll suggest the right one, "
                   "or I can arrange a free quotation."], s, **ctx.kw())
@@ -574,7 +610,7 @@ def _sized(ctx, kwh):
     items = ctx.ents.get("appliances")
     basis = f"For {listing(items)} you'd use about {kwh:g} kWh a day" if items else f"For about {kwh:g} kWh a day"
     note = c.market_note(p, town)
-    s["pending"] = "quote_offer"
+    _set_offer(s)
     return (f"{basis}, so I'd suggest the *{p['name']}* ({c.price_text(p, town)}).\n\n⚡ It powers: {p['powers']}."
             + (f"\n\n{note}" if note else "")
             + "\n\nThat's an estimate: a technician confirms the final size on a free site visit. "
@@ -724,7 +760,9 @@ def _gather(ctx, issue_text=True):
     s, e = ctx.s, ctx.ents
     slots = _slots(s)
     if e.get("location"):
-        slots["location"] = e["location"]
+        # keep a fuller address already given ("Borrowdale, Harare") rather than cutting it to the town
+        if e["location"].lower() not in slots.get("location", "").lower():
+            slots["location"] = e["location"]
         s["_town"] = e["location"]
     if e.get("phone"):
         slots["contact"] = e["phone"]
@@ -735,6 +773,7 @@ def _gather(ctx, issue_text=True):
         bits = []
         if e.get("size_kva"):
             bits.append(f"{e['size_kva']:g}kVA system")
+            slots["size_kva"] = e["size_kva"]
         if e.get("appliances"):
             bits.append("to run " + listing(e["appliances"]))
         if e.get("kwh"):
@@ -811,6 +850,8 @@ def _missing(ctx):
         return "contact"
     if not slots.get("name") and not first_name(ctx.name):
         return "name"
+    if s["flow"] == "purchase" and not slots.get("confirmed"):
+        return "confirm"   # read the request back before it reaches the sales team
     return None
 
 
@@ -818,15 +859,15 @@ ASKS = {
     "need": ["Happy to help with that{first_comma}! What would you like the system to run? For example fridge, "
              "TV, lights, a borehole pump, or the size if you know it (like 5kVA).",
              "Sure{first_comma}. So I can size it properly, what do you want to power: lights, fridge, TV, geyser, pump?"],
-    "issue": ["Sorry to hear that{first_comma}, let's get it sorted. What is the system doing? For example "
-              "beeping, an error code on the display, no power, or batteries not holding. And roughly when did "
-              "it start?",
-              "Oh no, that's frustrating{first_comma}. What are you seeing exactly? Any beeping, error code or "
-              "warning light, lights off, or batteries draining fast? And when did it begin?"],
+    "issue": ["Sorry to hear that{first_comma}, let's get it sorted. What is the system doing: beeping, an "
+              "error code, no power, batteries not holding? Pick one below or describe it in your own words, and "
+              "tell me roughly when it started.",
+              "Oh no, that's frustrating{first_comma}. What are you seeing? Choose the closest problem below, or "
+              "type what's happening (any beeping, error code, lights off...) and when it began."],
     "location": ["Which town or suburb is it in?", "Whereabouts are you, which town or suburb?",
                  "And which town or suburb are you in?"],
-    "inverter_code": ["Does the inverter show an error code, beep or flash a warning light? If so, what does it "
-                      "say, for example the code number on the display? If not, just say no."],
+    "inverter_code": ["Does the inverter show an error code, beep or flash a warning light? If there's a code on "
+                      "the display, type it (for example E05). Otherwise tap the option that fits."],
     "contact": ["What's the best phone number (WhatsApp if possible) for our team to reach you on?"],
     "name": ["And may I have your name please?", "Lastly, what name should I put on the request?"],
     "sizing_need": ["What would you like to keep running: fridge, TV, lights, geyser, pump? Or tell me your "
@@ -838,6 +879,9 @@ RESUME = {"details": "When you can, send me those details and I'll pass them to 
           "location": "Back to your request: which town or suburb are you in?",
           "inverter_code": "Back to the inverter: does it show an error code, beep or flash a warning light?",
           "tshoot": "Back to the fix we were trying: did that help, or is it still the same?",
+          "confirm": "Back to your request: shall I send it to our team?",
+          "repeat": "Back to your quotation: is it for another system, or a change to the one you sent?",
+          "change": "Back to your request: what would you like to change?",
           "contact": "Back to your request: what phone number can we reach you on?",
           "name": "Back to your request: what name should I use?",
           "sizing_need": "Back to sizing: what would you like to keep running?"}
@@ -847,6 +891,7 @@ def _ask(ctx, slot, resumed=False, filled=False):
     """The next question. `filled` means the customer just answered the previous one, so acknowledge it first
     (never say 'thanks' before they have given us anything)."""
     ctx.s["awaiting"] = slot
+    _slot_ui(ctx, slot)
     if resumed:
         return RESUME[slot]
     if slot == "tshoot":
@@ -854,11 +899,18 @@ def _ask(ctx, slot, resumed=False, filled=False):
     ack = ""
     if filled:
         ack = say(["Thanks.", "Got it.", "Okay, thanks.", "Noted."], ctx.s) + " "
+    if slot == "confirm":
+        return ack + _confirm_text(ctx)
+    if slot == "change":
+        return ("No problem. What would you like to change? For example the town, or what the system should run "
+                "(like \"fridge, TV and a pump\" or \"10kVA\").")
     slots = _slots(ctx.s)
-    if slots.get("tshoot_result") == "failed" and not slots.get("handoff_said"):
-        slots["handoff_said"] = True   # two fixes did not work: say so once, then collect what the technician needs
+    result = slots.get("tshoot_result")
+    if result in ("failed", "human") and not slots.get("handoff_said"):
+        slots["handoff_said"] = True   # the fixes did not work: say so once, then collect what the technician needs
         ack = ("I'm sorry that didn't solve it. I'll hand this to one of our technicians, with everything we "
-               "tried so they don't repeat it. ")
+               "tried so they don't repeat it. " if result == "failed" else
+               "Of course. I'll hand this to one of our technicians, with everything we've tried so far. ")
     return ack + say(ASKS[slot], ctx.s, **ctx.kw())
 
 
@@ -876,10 +928,10 @@ def _tshoot_message(ctx):
         st = s["tshoot"] = {"guide": troubleshoot.guide_for(_tshoot_text(_slots(s)))["id"], "step": 0}
     guide = troubleshoot.get(st["guide"])
     i = min(st["step"], len(guide["steps"]) - 1)
-    intro = ("Let's try to fix this right now, before a technician has to come out. " if i == 0
-             else "Okay, thanks for trying that. Let's try one more thing. ")
-    return (intro + guide["steps"][i]
-            + "\n\nTell me if it's *fixed*, or if it's *still the same* (and what you see).")
+    intro = ("Before I send a technician, here's a quick fix to try.\n\n" if i == 0
+             else "Thanks for trying that. One more thing to try:\n\n")
+    step = re.sub(r"\s(\d)\) ", r"\n\1) ", guide["steps"][i])   # numbered checks on their own lines
+    return intro + step + "\n\nDid that fix it? Tap below, or tell me what you see now."
 
 
 NOT_PLACE_WORDS = {"no", "not", "yes", "just", "is", "are", "was", "were", "the", "my", "it", "its", "i", "and", "but",
@@ -910,13 +962,16 @@ def _fill_awaiting(ctx):
     a, e, raw = ctx.a, ctx.ents, ctx.text
     slots = _slots(s)
     if slot == "tshoot":
-        # a safety risk or a request for a person overrides the fix-it steps
-        if (nlu.SAFETY.search(nlu.clean(raw))
-                or a["intent"] in ("talk_to_human", "complaint", "greeting", "goodbye", "off_topic")):
-            return False
-        v = troubleshoot.verdict(raw)
-        if v is None or (v == "fixed" and is_question(raw)):
-            return False if is_question(raw) else "more"   # info or a bare "ok": keep it, ask whether it worked
+        if ctx.tap in ("fixed", "notfixed"):
+            v = "fixed" if ctx.tap == "fixed" else "not_fixed"
+        else:
+            # a safety risk or a request for a person overrides the fix-it steps
+            if (nlu.SAFETY.search(nlu.clean(raw))
+                    or a["intent"] in ("talk_to_human", "complaint", "greeting", "goodbye", "off_topic")):
+                return False
+            v = troubleshoot.verdict(raw)
+            if v is None or (v == "fixed" and is_question(raw)):
+                return False if is_question(raw) else "more"   # info or a bare "ok": keep it, ask whether it worked
         st = s.setdefault("tshoot", {"guide": troubleshoot.guide_for(_tshoot_text(slots))["id"], "step": 0})
         guide = troubleshoot.get(st["guide"])
         step = st.get("step", 0)
@@ -930,6 +985,30 @@ def _fill_awaiting(ctx):
             slots["tshoot_done"] = True
             slots["tshoot_result"] = "failed"
         return True
+    if slot == "repeat":
+        if ctx.tap == "new_quote" or re.search(r"\b(another|new|second|different|other|extra|more)\b", raw, re.I):
+            return "repeat_new"
+        if ctx.tap == "edit_quote" or re.search(r"\b(change|update|edit|same|last|that one|first|previous)\b", raw, re.I):
+            return "repeat_edit"
+        if is_question(raw):
+            return False
+        return "repeat_new" if _apply_change(ctx) else False   # new details typed: treat it as another system
+    if slot == "confirm":
+        if ctx.tap == "send" or (not is_question(raw) and CONFIRMS.match(raw) and not DISAGREES.search(raw)):
+            slots["confirmed"] = True
+            return True
+        if ctx.tap == "change" or DISAGREES.match(raw):
+            return "change"
+        if is_question(raw):
+            return False
+        return "edit" if _apply_change(ctx) else False   # new details typed straight away ("make it 10kVA")
+    if slot == "change":
+        if is_question(raw) or ctx.tap in ("send", "change"):
+            if ctx.tap == "send":
+                slots["confirmed"] = True
+                return True
+            return False
+        return "edit" if _apply_change(ctx, force=True) else False
     if slot == "inverter_code":
         # "no" is a real answer here (no code, no beeps), not a refusal to continue
         if re.match(r"\s*(no|none|nope|nothing|not sure|dont know|don't know)\b", raw, re.I):
@@ -1021,6 +1100,7 @@ def _keep_detail_and_reask(ctx):
     """The customer added detail instead of answering ('no error, it is just dead'): keep it, ask again."""
     s = ctx.s
     slots = _slots(s)
+    _slot_ui(ctx, s.get("awaiting"))
     if s.get("awaiting") == "tshoot":
         if len(ctx.text.split()) >= 3:
             _add_detail(slots, "issue", core().clip(ctx.text, 300))
@@ -1060,12 +1140,22 @@ def _advance(ctx, filled=False):
     return _finish_maintenance(ctx)
 
 
+REPEAT_WINDOW = 3 * 24 * 3600   # a new quote request within 3 days of the last one: ask which it is
+
+
 def _h_purchase(ctx):
     c, s = core(), ctx.s
     if s.get("flow") != "purchase":
         reset_flow(s)
         s["flow"] = "purchase"
         c.sig(ctx.phone, "quote_requested")
+        last = s.get("_last_quote")
+        if last and time.time() - last.get("at", 0) < REPEAT_WINDOW:
+            _gather(ctx)
+            s["awaiting"] = "repeat"
+            _offer(s, REPEAT_BTNS)
+            return (f"You already sent us a quotation request ({last['summary']}). Is this for another "
+                    "system, or would you like to change that one?")
     _gather(ctx)
     return _advance(ctx)
 
@@ -1106,11 +1196,13 @@ def _finish_purchase(ctx):
     name = slots.get("name") or ctx.name
     need = slots.get("need") or "Wants a quotation"
     where = slots.get("location", "")
-    rec = None
-    if slots.get("kwh"):
-        rec = c.recommend(slots["kwh"])
+    rec = _estimate(ctx)
+    est = _estimate_line(ctx)
+    updated = bool(s.pop("_editing_quote", None))
+    if rec:
         s["_recommended"] = rec["name"]
         c.sig(ctx.phone, "recommended", rec["name"])
+    if slots.get("kwh"):
         c.sig(ctx.phone, "sized_kwh", round(slots["kwh"], 1))
     c.sig(ctx.phone, "need", c.clip(need, 300))
     if where:
@@ -1121,10 +1213,12 @@ def _finish_purchase(ctx):
     c.sig(ctx.phone, "quote_step", "done")
     if name:
         db.set_contact_name(ctx.phone, name)
-    c.save_lead(ctx.phone, name, location=where, need=c.clip(need, 1000), suggested=s.get("_recommended", ""),
+    c.save_lead(ctx.phone, name, location=where, need=c.clip(("UPDATED: " if updated else "") + need, 1000),
+                suggested=s.get("_recommended", ""),
                 contact=slots.get("contact"))
     c.set_follow_up(ctx.phone, 2)
-    c.alert_team(ctx.phone, name, "quote", f"Needs: {c.clip(need, 300)}" + (f"\nWhere: {where}" if where else "")
+    c.alert_team(ctx.phone, name, "quote", ("UPDATED request (replaces their earlier one)\n" if updated else "")
+                 + f"Needs: {c.clip(need, 300)}" + (f"\nWhere: {where}" if where else "")
                  + (f"\nBot suggested: {s['_recommended']}" if s.get("_recommended") else ""), s)
     try:
         db.upsert_enquiry(ctx.phone, name, "purchase", "buy_system", ctx.a["priority"] if ctx.a["category"] == "purchase" else "high",
@@ -1134,16 +1228,19 @@ def _finish_purchase(ctx):
         log.exception("could not record enquiry")
     first = first_name(name)
     summary = f"{need}" + (f", in {where}" if where else "")
-    suggestion = (f"\n\nFrom what you've told me I'd suggest the *{rec['name']}*, but a technician will confirm the "
-                  "size on a free site visit." if rec else "")
+    suggestion = (f"\n\n💲 Your estimate: {est}. A technician confirms the size and final price on a free site "
+                  "visit." if est else "")
+    s["_last_quote"] = {"at": time.time(), "summary": summary,
+                        "slots": {k: slots[k] for k in ("need", "location", "kwh", "size_kva", "name", "contact")
+                                  if slots.get(k)}}
     reset_flow(s)
     s["_safety_told"] = False
     if ctx.is_web:
         return (f"✅ Thank you{', ' + first if first else ''}! I've saved your request ({summary}). Our team will "
                 f"contact you {ctx.promise} with your quotation.{suggestion}")
-    return (f"✅ Thank you{', ' + first if first else ''}! I've sent your request to our sales team ({summary}). "
-            f"Someone will message you here {ctx.promise} with your quotation and arrange a free site visit."
-            f"{suggestion}\n\nIf you have any other questions in the meantime, just ask.")
+    _offer(s, [opt("question", "Ask a question"), opt("fault", "Report a problem")])
+    return (f"✅ Done{', ' + first if first else ''}! I've sent your {'updated ' if updated else ''}request to our sales team ({summary})."
+            f"{suggestion}\n\nSomeone will message you here {ctx.promise} to book the visit.")
 
 
 def _finish_maintenance(ctx):
@@ -1157,7 +1254,7 @@ def _finish_maintenance(ctx):
     issue_shown = "; ".join(parts) or "Needs maintenance"   # what the customer told us, for their confirmation
     if slots.get("inverter_code"):
         parts.append("Inverter shows: " + slots["inverter_code"])
-    failed = slots.get("tshoot_result") == "failed"
+    failed = slots.get("tshoot_result") in ("failed", "human")
     if slots.get("tried"):
         parts.append("Bot fixes tried, no luck: " + " | ".join(slots["tried"]))
     issue = "; ".join(parts) or "Needs maintenance"
@@ -1225,9 +1322,258 @@ def _finish_resolved(ctx):
     first = first_name(name)
     reset_flow(s)
     s["_safety_told"] = False
+    _offer(s, [opt("quote", "Get a quotation"), opt("question", "Ask a question")])
     return (f"Great news{', ' + first if first else ''}! 🎉 I'm glad that sorted it. If it happens again, message "
             f"me here. If you ever notice smoke, a burning smell or it gets very hot, switch it off and call us on "
             f"{ctx.catalog['phone']}. Anything else I can help with?")
+
+
+# ---------------------------------------------------------------- buttons and lists
+# Closed choices get buttons (up to 3, titles up to 20 characters) or a list (up to 10 rows, titles up to 24).
+# Open information (what is wrong, the error code, the town, the name) is always typed. Every button is a
+# shortcut for a phrase the bot already understands, so a typed answer works just as well.
+def opt(key, title, description=""):
+    o = {"id": "btn:" + key, "title": title}
+    if description:
+        o["description"] = description
+    return o
+
+
+def _offer(s, options, button=""):
+    s["_ui"] = {"options": [o for o in options if o][:10], "button": button}
+
+
+def _set_offer(s):
+    s["pending"] = "quote_offer"
+    _offer(s, OFFER_BTNS)
+
+
+def _norm_title(t):
+    return re.sub(r"[^a-z0-9]+", " ", (t or "").lower()).strip()
+
+
+MENU = [opt("quote", "Get a quotation"), opt("fault", "Fix a problem"), opt("question", "Ask a question")]
+UNSURE_MENU = [opt("quote", "Get a quotation"), opt("fault", "Fix a problem"), opt("human", "Talk to a person")]
+OFFER_BTNS = [opt("yes_quote", "Yes, get a quote"), opt("no_thanks", "No, thanks")]
+CODE_BTNS = [opt("code_none", "No code or beeps"), opt("code_beep", "It's beeping"), opt("code_blank", "Screen is blank")]
+TSHOOT_BTNS = [opt("fixed", "✅ Fixed"), opt("notfixed", "❌ Still the same"), opt("tshoot_human", "👤 Talk to a person")]
+REPEAT_BTNS = [opt("new_quote", "Another system"), opt("edit_quote", "Change that one")]
+CONFIRM_BTNS = [opt("send", "✅ Send request"), opt("change", "✏️ Change details")]
+FAULTS = [  # key, list title, description, what the customer would have typed
+    ("charging", "Not charging", "Batteries or panels not charging", "my solar is not charging"),
+    ("beep", "Beeping or error code", "Alarm, warning light or code", "my inverter is beeping and showing an error"),
+    ("nopower", "No power or dead", "Nothing comes on", "no power, the system is dead"),
+    ("trip", "Trips or switches off", "Shuts down under load", "the inverter keeps tripping and switching off"),
+    ("drain", "Batteries drain fast", "Power runs out early", "the batteries drain too fast"),
+    ("low", "Low solar output", "Panels produce little", "the panels are producing very little power"),
+    ("appliance", "Geyser or pump issue", "Won't run on solar", "my geyser or pump is not working on solar"),
+    ("other", "Something else", "Describe it in your own words", ""),
+]
+FAQ_ORDER = ("pay", "warrant", "batter", "night", "install", "site", "geyser", "borehole", "zesa", "last", "brand")
+CONFIRMS = re.compile(r"\s*(yes|yeah|yep|ok|okay|sure|please|go ahead|ehe|send|correct|right|that'?s right|perfect|"
+                      r"fine|confirm\w*)\b", re.I)
+DISAGREES = re.compile(r"\b(no|not right|wrong|incorrect|change|edit|mistake|not correct)\b", re.I)
+
+
+def _tap_text(tap, c):
+    """What a tapped button means in words, so the rest of the bot treats it like a typed answer."""
+    words = {"fixed": "fixed", "notfixed": "still the same", "code_none": "no",
+             "code_beep": "it is beeping, I didn't see a code", "code_blank": "the display is blank",
+             "yes_quote": "yes please", "no_thanks": "no thanks", "send": "yes, send it",
+             "change": "I want to change the details", "quote": "I would like a quotation",
+             "fault": "I have a problem with my system", "question": "I have a question",
+             "human": "I want to talk to a person", "tshoot_human": "I want to talk to a person",
+             "new_quote": "another system", "edit_quote": "change the last one"}
+    words.update({"fault_" + k: text or "something else" for k, _, _, text in FAULTS})
+    for p in c.CATALOG.get("packages", []):
+        words[f"pkg_{p['id']}"] = f"I'd like the {p['name']} package"
+    return words.get(tap) or tap.split(":")[-1].replace("_", " ")
+
+
+def _force(ctx, intent):
+    meta = _intents.get(intent) or {}
+    ctx.a = dict(ctx.a, intent=intent, category=meta.get("category", "enquiry"), understood=True,
+                 handler=meta.get("handler", "reply"), confidence=1.0)
+    return ctx
+
+
+def _faq_options():
+    """The common questions as list rows (titles are the catalog FAQ titles, at most 24 characters)."""
+    rows = [opt("prices", "💲 Prices & packages", "What each system costs and runs")]
+    faqs = []
+    for f in core().CATALOG.get("faqs", []):
+        title = f.get("title") or ""
+        slug = _faq_slug(re.sub(r"^[^\w]+", "", title).strip()) if title else ""
+        if slug in _intents and 0 < len(title) <= 24:
+            rank = next((i for i, w in enumerate(FAQ_ORDER) if w in slug), None)
+            if rank is not None:
+                faqs.append((rank, title, slug))
+    for _, title, slug in sorted(faqs)[:8]:
+        rows.append(opt("faq:" + slug, title))
+    rows.append(opt("ask_own", "✍️ Type my own question"))
+    return rows[:10]
+
+
+def _direct_tap(ctx):
+    """Buttons that start or steer a conversation directly. None: let the normal flow read the tap's words."""
+    s, tap, slots = ctx.s, ctx.tap, _slots(ctx.s)
+    if tap == "quote":
+        reset_flow(s)
+        return _h_purchase(_force(ctx, "buy_system"))
+    if tap == "fault":
+        reset_flow(s)
+        s["flow"] = "maintenance"
+        return _ask(ctx, "issue")
+    if tap == "fault_other":
+        if s.get("flow") != "maintenance":
+            reset_flow(s)
+            s["flow"] = "maintenance"
+        s["awaiting"] = "issue"
+        return say(["Okay{first_comma}, please tell me in your own words what the system is doing, and roughly "
+                    "when it started."], s, **ctx.kw())
+    if tap == "question":
+        _offer(s, _faq_options(), "Choose a topic")
+        return say(["Sure{first_comma}! Pick a topic below, or just type your question.",
+                    "Of course{first_comma}. Choose a topic, or type your question in your own words."],
+                   s, **ctx.kw())
+    if tap == "ask_own":
+        return say(["Go ahead{first_comma}, type your question and I'll answer it."], s, **ctx.kw())
+    if tap == "prices":
+        return _with_resume(ctx, _h_packages(_force(ctx, "price")))
+    if tap.startswith("faq:"):
+        slug = tap[4:]
+        if slug not in _intents:
+            return None
+        text = _h_reply(_force(ctx, slug))
+        if s.get("pending") != "quote_offer":
+            _offer(s, [opt("quote", "Get a quotation"), opt("question", "Another question")])
+        return _with_resume(ctx, text)
+    if tap.startswith("pkg_"):
+        p = next((p for p in ctx.catalog["packages"] if f"pkg_{p['id']}" == tap), None)
+        if p is None:
+            return None
+        fresh = s.get("flow") != "purchase"
+        if fresh:
+            reset_flow(s)
+            s["flow"] = "purchase"
+            core().sig(ctx.phone, "quote_requested")
+        core().sig(ctx.phone, "package", p["name"])
+        slots = _slots(s)
+        _add_detail(slots, "need", p["name"])
+        if core().package_size(p):
+            slots["size_kva"] = core().package_size(p)
+        s.pop("awaiting", None)
+        return _advance(ctx, filled=not fresh)
+    if tap in ("human", "tshoot_human"):
+        if tap == "tshoot_human" and s.get("flow") == "maintenance" and s.get("awaiting") == "tshoot":
+            st = s.get("tshoot") or {}
+            guide = troubleshoot.get(st.get("guide", "generic"))
+            slots.setdefault("tried", []).append(f"{guide['title']}: asked for a person at step {st.get('step', 0) + 1}")
+            slots["tshoot_done"], slots["tshoot_result"] = True, "human"
+            s.pop("awaiting", None)
+            return _advance(ctx)
+        return _h_human(_force(ctx, "talk_to_human"))
+    return None
+
+
+def _with_resume(ctx, text):
+    """A side answer in the middle of a request: answer, then go back to the question we were asking."""
+    s = ctx.s
+    if s.get("flow") in ("purchase", "maintenance") and s.get("awaiting"):
+        return text + "\n\n" + _ask(ctx, s["awaiting"], resumed=True)
+    return text
+
+
+def _slot_ui(ctx, slot):
+    """The buttons or list that go with a question (none for questions that need a typed answer)."""
+    s = ctx.s
+    if slot == "need":
+        rows = [opt(f"pkg_{p['id']}", core().short(p["name"], 24),
+                    core().short(f"{core().price_text(p, s.get('_town', ''))} · {p['powers']}", 72))
+                for p in ctx.catalog["packages"]][:10]
+        _offer(s, rows, "See packages")
+    elif slot == "issue":
+        _offer(s, [opt("fault_" + k, t, d) for k, t, d, _ in FAULTS], "Choose a problem")
+    elif slot == "inverter_code":
+        _offer(s, CODE_BTNS)
+    elif slot == "tshoot":
+        _offer(s, TSHOOT_BTNS)
+    elif slot == "confirm":
+        _offer(s, CONFIRM_BTNS)
+    elif slot == "repeat":
+        _offer(s, REPEAT_BTNS)
+    else:
+        s.pop("_ui", None)
+
+
+def _estimate(ctx):
+    """The package that fits what the customer asked for: one they named, the closest size, or sized from kWh."""
+    c, slots = core(), _slots(ctx.s)
+    pkgs = ctx.catalog["packages"]
+    need = (slots.get("need") or "").lower()
+    named = [p for p in pkgs if p["name"].lower() in need]
+    if named:
+        return named[-1]
+    if slots.get("size_kva"):
+        sized = [p for p in pkgs if c.package_size(p)]
+        if sized:
+            return min(sized, key=lambda p: abs(c.package_size(p) - slots["size_kva"]))
+    if slots.get("kwh"):
+        return c.recommend(slots["kwh"])
+    return None
+
+
+def _estimate_line(ctx):
+    p = _estimate(ctx)
+    if not p:
+        return ""
+    return f"*{p['name']}*, {core().price_text(p, _slots(ctx.s).get('location', ''))} installed"
+
+
+def _confirm_text(ctx):
+    c, s = core(), ctx.s
+    slots = _slots(s)
+    lines = [f"• *System:* {slots.get('need') or 'a quotation'}", f"• *Where:* {slots.get('location') or 'not given'}"]
+    est = _estimate_line(ctx)
+    if est:
+        lines.append(f"• *Estimate:* {est} (final price after a free site visit)")
+    if slots.get("name"):
+        lines.append(f"• *Name:* {slots['name']}")
+    if slots.get("contact"):
+        lines.append(f"• *Phone:* {slots['contact']}")
+    return ("Here's your quotation request:\n\n" + "\n".join(lines)
+            + "\n\nShall I send it to our team, or would you like to change something?")
+
+
+def _apply_change(ctx, force=False):
+    """Update the quotation request from a correction. True when something changed."""
+    s, e, raw = ctx.s, ctx.ents, ctx.text
+    slots = _slots(s)
+    names = [p["name"].lower() for p in ctx.catalog["packages"]]
+    if any(e.get(k) for k in ("appliances", "kwh", "size_kva", "budget", "products")) \
+            or any(n in nlu.clean(raw) for n in names):
+        for k in ("need", "kwh", "size_kva"):
+            slots.pop(k, None)
+        _gather(ctx)
+        return True
+    if e.get("location"):
+        slots["location"] = e["location"]
+        s["_town"] = e["location"]
+        return True
+    if e.get("phone") or e.get("name"):
+        _gather(ctx)
+        return True
+    if not force:
+        return False
+    if _looks_like_place(raw):
+        slots["location"] = s["_town"] = raw.strip(" .,!").title()
+        return True
+    if len(raw.split()) >= 2:
+        slots["need"] = core().clip(raw, 200)
+        slots.pop("kwh", None)
+        slots.pop("size_kva", None)
+        return True
+    return False
 
 
 _HANDLERS = {

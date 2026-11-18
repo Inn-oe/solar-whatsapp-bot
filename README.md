@@ -1,8 +1,9 @@
 # Solar WhatsApp assistant
 
-Chats with customers on WhatsApp (and a web chat) in plain language. No buttons or menus: the customer
-writes however they like, a trained language model works out what they want, and the bot replies like a
-person would. Everything it learns about a customer is stored for the business platform.
+Chats with customers on WhatsApp (and a web chat) in plain language. The customer writes however they like, a
+trained language model works out what they want, and the bot replies like a person would. Closed choices also come
+with WhatsApp buttons or a list, but typing always works too. Everything it learns about a customer is stored for
+the business platform.
 
 ## How it understands people
 
@@ -43,6 +44,28 @@ bot picks one at random so it does not sound like a script.
 
 The starting intents live in `nlu_seed.json` (and one intent per FAQ in `catalog.json`). Seeding only adds what
 is missing, so your edits are never overwritten.
+
+## Buttons and typed answers
+
+Buttons are shortcuts for closed choices; open details are always typed. Every button stands for words the bot
+already understands, and typing a button's title counts as tapping it.
+
+| Step | Question | Buttons / list | Typed |
+|---|---|---|---|
+| Greeting / unsure | How can I help? | Get a quotation · Fix a problem · Ask a question (or Talk to a person) | anything |
+| Quote: what to power | What should it run? | list of packages with prices | appliances, kVA, budget |
+| Quote: where | Town or suburb? | none | the address |
+| Quote: confirm | Read-back with an instant estimate | ✅ Send request · ✏️ Change details | a correction |
+| Quote again (3 days) | Another system, or change the last? | Another system · Change that one | |
+| Fault: what's wrong | What is the system doing? | list of 8 common problems | a description |
+| Fault: display | Error code, beeping or warning light? | No code or beeps · It's beeping · Screen is blank | the code |
+| Fault: each fix | Did that fix it? | ✅ Fixed · ❌ Still the same · 👤 Talk to a person | what they see |
+| Ask a question | Pick a topic | list of common topics | own question |
+| Quote offers | Want a free quotation? | Yes, get a quote · No, thanks | yes / no |
+
+WhatsApp limits are enforced in `interactive_payload` (3 buttons of 20 characters, or a list of 10 rows of 24);
+a long message is sent as text first, with the question and its buttons after it. If WhatsApp refuses the
+buttons, the reply goes out as text with the choices written in.
 
 ## Conversations
 

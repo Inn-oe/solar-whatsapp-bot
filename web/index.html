@@ -105,10 +105,10 @@ function chips(options) {
 async function say(text, silent, shown) {
   if (!silent) add(shown || text, "me");
   try {
-    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text})});
+    const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text, shown: shown || ""})});
     const j = await r.json();
     add(r.ok ? j.reply : (j.error || "Something went wrong."), "bot");
-
+    chips(r.ok ? j.options : []);
   } catch(e) { add("Connection problem. Please try again.", "bot"); }
 }
 $("#chatForm").addEventListener("submit", e => {

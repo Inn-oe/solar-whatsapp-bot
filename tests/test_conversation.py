@@ -22,7 +22,10 @@ def test_buying_a_system_conversation(chat):
     r2 = chat.say("fridge, tv, lights and wifi")
     assert "town" in r2.lower() or "suburb" in r2.lower()  # then where
     r3 = chat.say("Borrowdale, Harare")
-    assert "sales team" in r3 and "Harare" in r3           # request saved and confirmed
+    assert "Borrowdale, Harare" in r3 and "btn:send" in chat.keys()   # read back before it is sent
+    assert not db.list_leads() or all(l["phone"] != chat.who for l in db.list_leads())
+    r4 = chat.tap("send")
+    assert "I've sent your request to our sales team" in r4 and "Harare" in r4
     e = last_enquiry(chat.who, "purchase")
     assert e and e["priority"] in ("high", "urgent") and "Harare" in e["summary"]
     leads = [l for l in db.list_leads() if l["phone"] == chat.who]
@@ -31,7 +34,8 @@ def test_buying_a_system_conversation(chat):
 
 def test_details_given_up_front_are_not_asked_again(chat):
     reply = chat.say("I need a 5kva system with fridge and tv installed in Bulawayo")
-    assert "sales team" in reply                           # everything was in the first message
+    assert "Shall I send it" in reply and "Bulawayo" in reply   # everything was in the first message: confirm
+    assert "I've sent" in chat.say("yes")                       # a typed yes works as well as the button
     assert last_enquiry(chat.who, "purchase")["priority"] == "high"
 
 
@@ -49,7 +53,7 @@ def test_ordinary_fault_is_high_priority_and_escalates_after_two_failed_fixes(ch
     first = chat.say("my batteries are not charging anymore")
     assert "error code" in first.lower()                   # a technician's first question: what does it show?
     fix1 = chat.say("no")
-    assert "pv" in fix1.lower() and "fixed" in fix1.lower()      # first fix to try, asks if it worked
+    assert "pv" in fix1.lower() and "did that fix it" in fix1.lower()      # first fix to try, asks if it worked
     fix2 = chat.say("still the same")
     assert "restart" in fix2.lower()                        # a different second fix
     ask_town = chat.say("no change")
@@ -67,7 +71,8 @@ def test_side_question_is_answered_and_the_thread_resumes(chat):
     reply = chat.say("how much do your packages cost?")
     assert "$" in reply or "USD" in reply                  # answers the price question
     assert "town" in reply.lower() or "suburb" in reply.lower()   # and goes back to the town
-    assert "sales team" in chat.say("Harare")
+    assert "Shall I send it" in chat.say("Harare")
+    assert "I've sent" in chat.say("yes please")
 
 
 def test_unknown_twice_hands_over_to_a_person(chat):
@@ -161,7 +166,7 @@ def test_vague_fault_gets_a_human_follow_up_not_a_bare_location_question(chat):
     r2 = chat.say("it keeps beeping since this morning")
     assert r2.startswith(("Thanks", "Got it", "Okay", "Noted")) and "error code" in r2.lower()
     r3 = chat.say("it shows E12 on the display")
-    assert "restart" not in r3.lower() and "fixed" in r3.lower()     # first fix, for a code/beeping fault
+    assert "restart" not in r3.lower() and "did that fix it" in r3.lower()     # first fix, for a code/beeping fault
     assert "restart" in chat.say("still beeping").lower()            # second fix
     assert "town" in chat.say("same").lower()                        # both failed: now collect where
     r6 = chat.say("Harare")
@@ -198,7 +203,7 @@ def test_yes_please_after_an_answer_starts_the_quote(chat):
 def test_no_code_answer_keeps_the_extra_detail(chat):
     chat.say("my inverter is off and the lights are out")           # asked what the inverter shows
     reply = chat.say("no error just dead")                          # "no" answers it; "just dead" is kept
-    assert "fixed" in reply.lower() and "No Error" not in reply     # moves on to the first fix
+    assert "did that fix it" in reply.lower() and "No Error" not in reply     # moves on to the first fix
     chat.say("still the same")
     assert "town" in chat.say("same").lower()
     done = chat.say("Kwekwe")
@@ -218,7 +223,7 @@ def test_fault_reported_while_asked_what_to_run_is_a_maintenance_report(chat):
     first = chat.say("I also need another quotation").lower()
     assert "run" in first or "power" in first                  # asks what the system should run
     assert "error code" in chat.say("My inverter is having an error").lower()
-    assert "fixed" in chat.say("E05 on the display").lower()
+    assert "did that fix it" in chat.say("E05 on the display").lower()
     chat.say("still the same")
     assert "town" in chat.say("no change").lower()
     done = chat.say("Harare")
@@ -257,7 +262,7 @@ def test_safety_risk_mid_fix_stops_the_fixes_and_goes_to_a_person(chat):
     chat.say("my solar is not charging")
     chat.say("no")
     reply = chat.say("wait, there is smoke coming from the inverter")
-    assert "do not touch" in reply.lower() and "fixed" not in reply.lower()   # safety first, no more DIY fixes
+    assert "do not touch" in reply.lower() and "did that fix it" not in reply.lower()   # safety first, no more DIY fixes
     done = chat.say("Harare")
     assert "URGENT" in done and "fixes we tried" not in done
     assert last_enquiry(chat.who, "maintenance")["priority"] == "urgent"
@@ -270,4 +275,4 @@ def test_plain_fault_statements_are_understood_without_a_menu(chat):
     chat.say("no")
     chat.say("it works now")                                 # close that conversation
     second = chat.say("inverter showing E05")
-    assert "fixed" in second.lower() and "error code" not in second.lower()   # code known: straight to the fix
+    assert "did that fix it" in second.lower() and "error code" not in second.lower()   # code known: straight to the fix

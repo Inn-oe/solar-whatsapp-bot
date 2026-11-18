@@ -33,7 +33,16 @@ class Chat:
 
     def say(self, text):
         db.touch_contact(self.who, self.name, "in")
-        return bot.handle(self.who, self.name, text)["text"]
+        self.last = bot.handle(self.who, self.name, text)
+        return self.last["text"]
+
+    def tap(self, key):
+        """Tap one of the buttons the bot just offered (fails if it was not offered)."""
+        assert "btn:" + key in self.keys(), (key, self.keys())
+        return self.say("btn:" + key)
+
+    def keys(self):
+        return [o["id"] for o in self.last["options"]]
 
 
 @pytest.fixture()
