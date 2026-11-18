@@ -336,6 +336,16 @@ def _respond(phone, name, text, s):
     ctx = Ctx(phone, name, text, s, a)
     s.pop("offer", None)
 
+    # 0. mid-quote, asked what the system should run, but the customer reports a fault ("my inverter is having an
+    #    error"): that is a maintenance report, not the quotation's need, so switch flows instead of quoting it
+    if s.get("flow") == "purchase" and s.get("awaiting") == "need" and FAULT_WORDS.search(nlu.clean(text)) \
+            and not is_question(text):
+        reset_flow(s)
+        a = dict(a, intent=a["intent"] or "maintenance_fault", category="maintenance", handler="maintenance",
+                 priority="high")
+        ctx = Ctx(phone, name, text, s, a)
+        return _h_maintenance(ctx)
+
     # 1. is the customer answering the question we just asked?
     filled = _fill_awaiting(ctx)
     if filled == "more":
@@ -676,6 +686,10 @@ SYMPTOM = re.compile(
     r"smok\w*|burn\w*|spark\w*|low|weak|slow|dim|only|fell|dropp\w*|keeps?|since|every)\b")
 
 
+FAULT_WORDS = re.compile(r"\b(error|fault|beep\w*|alarm|code|flash\w*|blink\w*|smok\w*|burn\w*|spark\w*|broken|dead|"
+                         r"not (?:charg\w*|work\w*|switch\w*|hold\w*|turn\w*|giving))\b")
+
+
 def _specific_issue(text, a):
     """True when the message says what is wrong ('keeps beeping', 'batteries not charging'), not just that
     something is wrong ('my solar is malfunctioning')."""
@@ -746,6 +760,8 @@ def _missing(ctx):
     for slot in order:
         if not slots.get(slot):
             return slot
+    if s["flow"] == "maintenance" and not slots.get("routine") and not slots.get("inverter_code"):
+        return "inverter_code"   # a fault: what the inverter shows (error code, beeps, warning light)
     if ctx.is_web and not slots.get("contact"):
         return "contact"
     if not slots.get("name") and not first_name(ctx.name):
@@ -764,6 +780,8 @@ ASKS = {
               "warning light, lights off, or batteries draining fast? And when did it begin?"],
     "location": ["Which town or suburb is it in?", "Whereabouts are you, which town or suburb?",
                  "And which town or suburb are you in?"],
+    "inverter_code": ["Does the inverter show an error code, beep or flash a warning light? If so, what does it "
+                      "say, for example the code number on the display? If not, just say no."],
     "contact": ["What's the best phone number (WhatsApp if possible) for our team to reach you on?"],
     "name": ["And may I have your name please?", "Lastly, what name should I put on the request?"],
     "sizing_need": ["What would you like to keep running: fridge, TV, lights, geyser, pump? Or tell me your "
@@ -773,6 +791,7 @@ RESUME = {"details": "When you can, send me those details and I'll pass them to 
           "need": "Back to your request: what would you like the system to run?",
           "issue": "Back to your problem: what exactly is happening with the system?",
           "location": "Back to your request: which town or suburb are you in?",
+          "inverter_code": "Back to the inverter: does it show an error code, beep or flash a warning light?",
           "contact": "Back to your request: what phone number can we reach you on?",
           "name": "Back to your request: what name should I use?",
           "sizing_need": "Back to sizing: what would you like to keep running?"}
@@ -817,6 +836,15 @@ def _fill_awaiting(ctx):
         return False
     a, e, raw = ctx.a, ctx.ents, ctx.text
     slots = _slots(s)
+    if slot == "inverter_code":
+        # "no" is a real answer here (no code, no beeps), not a refusal to continue
+        if re.match(r"\s*(no|none|nope|nothing|not sure|dont know|don't know)\b", raw, re.I):
+            slots["inverter_code"] = "no error code or warning shown"
+            return True
+        if is_question(raw) or not re.search(r"[A-Za-z0-9]", raw):
+            return False
+        slots["inverter_code"] = core().clip(raw, 200)
+        return True
     if slot == "location" and e.get("location") and "?" not in raw and len(raw.split()) <= 8:
         slots["location"] = raw.strip(" .,!").title() if len(raw.split()) <= 4 else e["location"]
         s["_town"] = e["location"]
@@ -913,7 +941,7 @@ def _continue_flow(ctx):
         kwh = ctx.ents.get("kwh") or ctx.ents.get("appliance_kwh")
         return _sized(ctx, kwh)
     answered = s.get("awaiting")
-    _gather(ctx, issue_text=answered not in ("location", "contact", "name"))
+    _gather(ctx, issue_text=answered not in ("location", "contact", "name", "inverter_code"))
     s.pop("awaiting", None)
     return _advance(ctx, filled=True)
 
@@ -1020,6 +1048,8 @@ def _finish_maintenance(ctx):
     for x in (slots.get("reported"), slots.get("issue")):
         if x and x not in parts:
             parts.append(x)
+    if slots.get("inverter_code"):
+        parts.append("Inverter shows: " + slots["inverter_code"])
     issue = "; ".join(parts) or "Needs maintenance"
     where = slots.get("location", "")
     routine = bool(slots.get("routine"))
