@@ -1,9 +1,9 @@
 {
-  "company": "Your Solar Company",
+  "company": "GieBee Engineering",
   "currency": "USD",
-  "phone": "+000 000 000 000",
-  "email": "info@example.com",
-  "address": "Your address, City",
+  "phone": "+263 774 040 059",
+  "email": "giebeeengineering@gmail.com",
+  "address": "108 Central Avenue, Room 8, 1st Floor, Harare",
   "hours": "Mon-Fri 8:00-17:00, Sat 8:00-13:00",
   "market_prices": true,
   "utc_offset": 2,
@@ -34,7 +34,7 @@
       "13:00"
     ]
   },
-  "note": "SAMPLE DATA - edit prices, packages and FAQs below to match your business, then redeploy.",
+  "note": "Company details are GieBee Engineering's. The packages, prices and FAQ answers below are still SAMPLE DATA: replace them with real ones on the bot's /admin page or here before relying on them.",
   "packages": [
     {
       "id": "1",
