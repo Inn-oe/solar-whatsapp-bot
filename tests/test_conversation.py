@@ -1,4 +1,6 @@
 """Whole conversations, typed the way customers write. No buttons, menus or numbers to press."""
+import time
+
 import db
 
 
@@ -86,8 +88,16 @@ def test_no_reply_contains_buttons(chat):
 
 def test_internal_endpoints_need_the_key(client):
     assert client.post("/internal/nlu/train").status_code == 403
-    ok = client.post("/internal/nlu/train", headers={"X-Internal-Key": "test-key"})
+    ok = client.post("/internal/nlu/train", json={"wait": True}, headers={"X-Internal-Key": "test-key"})
     assert ok.status_code == 200 and ok.get_json()["trained"]
+    bg = client.post("/internal/nlu/train", headers={"X-Internal-Key": "test-key"})
+    assert bg.status_code == 200 and bg.get_json()["training"] is True
+    for _ in range(300):   # the background run finishes and the status says so
+        status = client.get("/internal/nlu/status", headers={"X-Internal-Key": "test-key"}).get_json()
+        if not status["training"]:
+            break
+        time.sleep(0.1)
+    assert status["training"] is False and status["trained"] and not status["train_error"]
     t = client.post("/internal/nlu/test", json={"text": "my inverter is beeping"}, headers={"X-Internal-Key": "test-key"})
     assert t.get_json()["category"] == "maintenance"
 

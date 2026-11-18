@@ -826,19 +826,51 @@ def _internal_ok():
     return bool(INTERNAL_KEY) and hmac.compare_digest(key.encode(), INTERNAL_KEY.encode())
 
 
+_train_lock = threading.Lock()
+_train_state = {"running": False, "error": "", "finished_at": None}
+
+
+def _train_status():
+    return dict(nlu.engine.info, training=_train_state["running"], train_error=_train_state["error"],
+                trained_at=_train_state["finished_at"])
+
+
+def _train_in_background():
+    try:
+        brain.retrain()
+        _train_state["error"] = ""
+    except Exception as exc:
+        log.exception("training failed")
+        _train_state["error"] = f"Training failed ({type(exc).__name__}). The previous model is still answering."
+    finally:
+        _train_state["finished_at"] = int(time.time())
+        _train_state["running"] = False
+        _train_lock.release()
+
+
 @app.get("/internal/nlu/status")
 def nlu_status():
     if not _internal_ok():
         return jsonify(error="Forbidden."), 403
-    return jsonify(nlu.engine.info)
+    return jsonify(_train_status())
 
 
 @app.post("/internal/nlu/train")
 def nlu_train():
-    """Rebuild the model from the example phrases in the database (after staff edit them)."""
+    """Rebuild the model from the example phrases in the database (after staff edit them).
+
+    Training takes ~40 s on a small server, longer than the platform's web requests may wait, so it runs in the
+    background: this answers at once with training=true and the platform polls /internal/nlu/status until it is
+    false. Send {"wait": true} to train synchronously instead (tests, scripts)."""
     if not _internal_ok():
         return jsonify(error="Forbidden."), 403
-    return jsonify(brain.retrain())
+    if (request.get_json(silent=True) or {}).get("wait"):
+        with _train_lock:
+            return jsonify(brain.retrain())
+    if _train_lock.acquire(blocking=False):
+        _train_state.update(running=True, error="")
+        threading.Thread(target=_train_in_background, daemon=True, name="nlu-train").start()
+    return jsonify(_train_status())
 
 
 @app.post("/internal/nlu/test")
