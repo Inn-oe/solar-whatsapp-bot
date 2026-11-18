@@ -53,7 +53,13 @@ is missing, so your edits are never overwritten.
 
 ## Environment variables
 
-See the docstring of `app.py`. New ones: `NLU_BACKEND` (`tfidf` or `transformer`), `NLU_MODEL`.
+See the docstring of `app.py`. New ones: `NLU_BACKEND` (`tfidf`, `transformer` or `remote`), `NLU_MODEL`,
+`NLU_REMOTE_URL`, `NLU_REMOTE_KEY`, `NLU_REMOTE_TIMEOUT` (seconds, default 4).
+
+**Remote embeddings (for small servers).** `embedding_service/` is a tiny API that runs the transformer on a free
+Hugging Face Space (Gradio SDK, 16 GB RAM). Set `EMBED_API_KEY` as a secret on the Space, then on the bot set
+`NLU_BACKEND=remote`, `NLU_REMOTE_URL=https://<user>-<space>.hf.space` and `NLU_REMOTE_KEY=<same key>`. The quick
+model answers while the service wakes up or if it is ever unreachable.
 `INTERNAL_KEY` also protects `/internal/nlu/train|test|status`, which the platform calls.
 
 ## Tests

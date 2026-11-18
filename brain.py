@@ -131,7 +131,12 @@ def retrain():
     # "Train now" never wait on a model download.
     info = nlu.engine.train(examples, backend="tfidf")
     _intents = intents
-    if os.getenv("NLU_BACKEND", "tfidf").lower() == "transformer":
+    wanted = os.getenv("NLU_BACKEND", "tfidf").lower()
+    if wanted == "remote":
+        _upgrade_to_transformer(examples, "remote")      # the model runs on the embedding service: no memory needed here
+        info = dict(info, note="Connecting to the embedding service in the background. The quick model answers "
+                               "until it is ready; check this page again in a minute.")
+    elif wanted == "transformer":
         problem = _memory_problem()
         if problem:
             log.warning(problem)
@@ -172,15 +177,17 @@ def _memory_problem():
 _upgrade_lock = threading.Lock()
 
 
-def _upgrade_to_transformer(examples):
+def _upgrade_to_transformer(examples, backend="transformer"):
     if not _upgrade_lock.acquire(blocking=False):
         return  # one is already running; it will pick up the phrases at its next run
 
     def run():
         try:
-            nlu.engine.train(examples, backend="transformer")
-        except Exception:
-            log.exception("transformer training failed; staying on the quick model")
+            nlu.engine.train(examples, backend=backend)
+        except Exception as exc:
+            log.exception("%s training failed; staying on the quick model", backend)
+            nlu.engine.info["note"] = (f"The {backend} model could not be reached ({type(exc).__name__}); "
+                                       "the quick model is answering. Press Train now to try again.")
         finally:
             _upgrade_lock.release()
 

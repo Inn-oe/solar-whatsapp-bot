@@ -21,6 +21,7 @@ import logging
 import os
 import re
 import threading
+import time
 import unicodedata
 
 import numpy as np
@@ -263,6 +264,58 @@ class _Transformer:
         return self._embed(texts)
 
 
+class _Remote:
+    """Sentence embeddings computed by the separate embedding service (embedding_service/, e.g. a free Hugging
+    Face Space), so the model never has to fit in this server's memory.
+    Set NLU_BACKEND=remote, NLU_REMOTE_URL and NLU_REMOTE_KEY."""
+    name = "remote"
+    similarity_floor = 0.6
+    BATCH = 64
+
+    def __init__(self):
+        self.url = os.getenv("NLU_REMOTE_URL", "").rstrip("/")
+        self.key = os.getenv("NLU_REMOTE_KEY", "")
+        if not self.url:
+            raise RuntimeError("NLU_REMOTE_URL is not set")
+        self.model_name = f"remote embeddings ({self.url})"
+        self.timeout = float(os.getenv("NLU_REMOTE_TIMEOUT", "4"))
+        self._cache = {}
+
+    def _post(self, texts, timeout):
+        import requests
+        r = requests.post(self.url + "/embed", json={"texts": texts}, timeout=timeout,
+                          headers={"Authorization": f"Bearer {self.key}"})
+        r.raise_for_status()
+        data = r.json()
+        self.model_name = f"{data.get('model', 'remote')} (remote)"
+        return normalize(np.asarray(data["vectors"], dtype=np.float32))
+
+    def fit(self, texts):
+        """Embed every training phrase. The first call may wake a sleeping Space, so it is patient and retries."""
+        out = []
+        for i in range(0, len(texts), self.BATCH):
+            chunk = list(texts[i:i + self.BATCH])
+            for attempt in range(4):
+                try:
+                    out.append(self._post(chunk, timeout=90))
+                    break
+                except Exception:
+                    if attempt == 3:
+                        raise
+                    time.sleep(5 * (attempt + 1))
+        return np.vstack(out)
+
+    def transform(self, texts):
+        """One customer message: short timeout, small cache; raises on failure (the engine then uses the quick model)."""
+        miss = [t for t in texts if t not in self._cache]
+        if miss:
+            for t, v in zip(miss, self._post(miss, timeout=self.timeout)):
+                if len(self._cache) > 2000:
+                    self._cache.clear()
+                self._cache[t] = v
+        return np.vstack([self._cache[t] for t in texts])
+
+
 def _cosine_max(a, b):
     """Highest cosine similarity of each row of a against the rows of b (all rows L2-normalised)."""
     sims = a @ b.T
@@ -278,9 +331,12 @@ class Engine:
         self._model = None
         self.info = {"trained": False}
         self._transformer = None
+        self._quick = None   # the TF-IDF model: answers whenever the remote embedding service is unreachable
 
     # ---- training
     def _featurizer(self, backend):
+        if backend == "remote":
+            return _Remote()
         if backend == "transformer":
             if self._transformer is None:
                 self._transformer = _Transformer()
@@ -310,6 +366,8 @@ class Engine:
         model = {"feat": feat, "clf": clf, "x": x, "y": y, "texts": texts}
         with self._lock:
             self._model = model
+            if feat.name == "tfidf":
+                self._quick = model
             self.info = {"trained": True, "backend": feat.name, "examples": len(data), "intents": len(labels),
                          "accuracy": None, "note": note,
                          "model": getattr(feat, "model_name", "scikit-learn TF-IDF + logistic regression")}
@@ -352,15 +410,23 @@ class Engine:
         """-> {'intent', 'confidence', 'similarity', 'ranked': [(intent, p)], 'matched': nearest example}"""
         with self._lock:
             m = self._model
+            quick = self._quick
         t = clean(text)
         if m is None or not t:
             return {"intent": None, "confidence": 0.0, "similarity": 0.0, "ranked": [], "matched": ""}
-        v = m["feat"].transform([t])
+        try:
+            v = m["feat"].transform([t])
+        except Exception as exc:   # embedding service asleep or unreachable: fall back to the quick model
+            if quick is None or quick is m:
+                raise
+            log.warning("remote embeddings failed (%s); using the quick model for this message", type(exc).__name__)
+            m = quick
+            v = m["feat"].transform([t])
         proba = m["clf"].predict_proba(v)[0]
         order = np.argsort(proba)[::-1][:top]
         classes = m["clf"].classes_
         sim, idx = _cosine_max(v, m["x"])
-        return {"intent": str(classes[order[0]]), "confidence": float(proba[order[0]]),
+        return {"intent": str(classes[order[0]]), "confidence": float(proba[order[0]]), "backend": m["feat"].name,
                 "similarity": float(sim[0]), "ranked": [(str(classes[i]), float(proba[i])) for i in order],
                 "matched": m["texts"][int(idx[0])]}
 
@@ -372,7 +438,8 @@ class Engine:
         it was taught (similarity); gibberish fails both."""
         if not result["intent"]:
             return False
-        floor = _Transformer.similarity_floor if self.info.get("backend") == "transformer" else _Tfidf.similarity_floor
+        backend = result.get("backend") or self.info.get("backend")
+        floor = _Tfidf.similarity_floor if backend in (None, "tfidf") else _Transformer.similarity_floor
         ranked = result.get("ranked") or []
         margin = ranked[0][1] / max(ranked[1][1], 1e-9) if len(ranked) > 1 else 99
         return result["confidence"] >= min_confidence and result["similarity"] >= floor and margin >= min_margin
