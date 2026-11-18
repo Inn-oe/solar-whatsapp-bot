@@ -21,6 +21,7 @@ from pathlib import Path
 import db
 import llm
 import nlu
+import troubleshoot
 
 log = logging.getLogger("solar-bot.brain")
 SEED_FILE = Path(__file__).parent / "nlu_seed.json"
@@ -214,6 +215,20 @@ def start(catalog):
 LEADING_YES_NO = re.compile(r"^\s*(no+|nope|yes|yeah|yep|ok|okay|sure|ehe|aiwa|hongu|kwete)\b[\s,.!-]*", re.I)
 
 
+EQUIPMENT = re.compile(r"\b(solar|inverter|batter\w*|panels?|geyser|borehole|pump|power|electricity|lights?|system|"
+                       r"charger|controller)\b")
+NOT_A_FAULT = re.compile(r"\b(buy|quot\w*|price|prices|cost|how much|install\w*|new system|upgrade)\b")
+
+
+def _looks_like_fault(raw, t):
+    """A plain statement about solar equipment that matches a known fault pattern (never a question or a purchase)."""
+    if "?" in raw or re.match(r"\s*(can|could|do|does|will|would|is|are|how|what|which|why|when|where|who)\b", raw, re.I):
+        return False
+    if not EQUIPMENT.search(t) or NOT_A_FAULT.search(t):
+        return False
+    return troubleshoot.guide_for(t)["id"] != "generic" or bool(FAULT_WORDS.search(t))
+
+
 def analyze(text, towns=None, existing_customer=False, context=""):
     """Everything the model knows about one message (also used by the 'test a phrase' tool).
 
@@ -235,6 +250,9 @@ def analyze(text, towns=None, existing_customer=False, context=""):
         if guess and conf >= 0.5 and guess in _intents:
             intent, via = guess, "llm"
             res = dict(res, intent=guess, confidence=min(res["confidence"], 0.39))  # low: staff review it later
+    # still unsure, but it plainly describes a solar fault ("solar not giving power"): treat it as a fault report
+    if intent in (None, "qa_ambiguous") and "maintenance_fault" in _intents and _looks_like_fault(text, t):
+        intent, via = "maintenance_fault", "rules"
     # safety words mean a fault report, unless the person is clearly talking about buying something
     category_now = (_intents.get(intent) or {}).get("category")
     if nlu.SAFETY.search(t) and category_now not in ("maintenance", "purchase") and "maintenance_fault" in _intents:
@@ -683,7 +701,8 @@ SYMPTOM = re.compile(
     r"\b(beep\w*|error|fault|code|alarm|flash\w*|blink\w*|trip\w*|overload\w*|not (?:charg\w*|work\w*|switch\w*|"
     r"hold\w*|turn\w*|giving|supply\w*)|no (?:power|output|electricity|lights?|charge)|stopp?\w*|dead|flat|drain\w*|"
     r"run\w* out|finish\w*|last|noise|hot|warm|blank|display|shut\w*|cut\w*|off|leak\w*|crack\w*|broken|damag\w*|"
-    r"smok\w*|burn\w*|spark\w*|low|weak|slow|dim|only|fell|dropp\w*|keeps?|since|every)\b")
+    r"smok\w*|burn\w*|spark\w*|low|weak|slow|dim|only|fell|dropp\w*|keeps?|since|every|[ef]-?\d{1,3})\b")
+CODE_RX = re.compile(r"\b(?:e|f|err|error)[ -]?\d{1,3}\b")
 
 
 FAULT_WORDS = re.compile(r"\b(error|fault|beep\w*|alarm|code|flash\w*|blink\w*|smok\w*|burn\w*|spark\w*|broken|dead|"
@@ -737,6 +756,13 @@ def _gather(ctx, issue_text=True):
             slots["kwh"] = e.get("kwh") or e["appliance_kwh"]
     elif kind == "maintenance":
         t = ctx.text
+        code = CODE_RX.search(nlu.clean(t))
+        if code and not slots.get("inverter_code"):
+            slots["inverter_code"] = code.group(0).upper().replace(" ", "")   # said up front: do not ask again
+        if ctx.a["intent"] == "warranty_claim":
+            slots["no_tshoot"] = True   # a warranty claim goes straight to a person
+        if nlu.SAFETY.search(nlu.clean(t)):
+            slots["safety"] = True      # smoke, fire, sparks, shock: a person and safety advice, not DIY fixes
         if ctx.a["category"] == "maintenance":
             rank = {"low": 0, "medium": 1, "high": 2, "urgent": 3}
             if rank.get(ctx.a["priority"], 1) >= rank.get(slots.get("priority", "low"), 0):
@@ -753,15 +779,34 @@ def _gather(ctx, issue_text=True):
             _add_detail(slots, "reported", core().clip(t, 300))
 
 
+NO_CODE = "no error code or warning shown"
+
+
+def _can_troubleshoot(s):
+    """A plain fault gets first-line help from the bot; services, warranty claims and safety risks go to a person."""
+    sl = _slots(s)
+    return (s.get("flow") == "maintenance" and not sl.get("routine") and not sl.get("no_tshoot")
+            and not sl.get("safety"))
+
+
 def _missing(ctx):
     s = ctx.s
     slots = _slots(s)
-    order = ["need", "location"] if s["flow"] == "purchase" else ["issue", "location"]
+    if s["flow"] == "maintenance" and slots.get("tshoot_result") == "fixed":
+        return None   # solved: nothing more to collect
+    if s["flow"] == "purchase":
+        order = ["need", "location"]
+    elif _can_troubleshoot(s):
+        # like a technician: what does the inverter show, try two fixes, and only then collect where and who
+        order = ["issue", "inverter_code", "tshoot", "location"]
+    else:
+        order = ["issue", "location"] + ([] if slots.get("routine") else ["inverter_code"])
     for slot in order:
-        if not slots.get(slot):
+        if slot == "tshoot":
+            if not slots.get("tshoot_done"):
+                return slot
+        elif not slots.get(slot):
             return slot
-    if s["flow"] == "maintenance" and not slots.get("routine") and not slots.get("inverter_code"):
-        return "inverter_code"   # a fault: what the inverter shows (error code, beeps, warning light)
     if ctx.is_web and not slots.get("contact"):
         return "contact"
     if not slots.get("name") and not first_name(ctx.name):
@@ -792,6 +837,7 @@ RESUME = {"details": "When you can, send me those details and I'll pass them to 
           "issue": "Back to your problem: what exactly is happening with the system?",
           "location": "Back to your request: which town or suburb are you in?",
           "inverter_code": "Back to the inverter: does it show an error code, beep or flash a warning light?",
+          "tshoot": "Back to the fix we were trying: did that help, or is it still the same?",
           "contact": "Back to your request: what phone number can we reach you on?",
           "name": "Back to your request: what name should I use?",
           "sizing_need": "Back to sizing: what would you like to keep running?"}
@@ -803,10 +849,37 @@ def _ask(ctx, slot, resumed=False, filled=False):
     ctx.s["awaiting"] = slot
     if resumed:
         return RESUME[slot]
+    if slot == "tshoot":
+        return _tshoot_message(ctx)
     ack = ""
     if filled:
         ack = say(["Thanks.", "Got it.", "Okay, thanks.", "Noted."], ctx.s) + " "
+    slots = _slots(ctx.s)
+    if slots.get("tshoot_result") == "failed" and not slots.get("handoff_said"):
+        slots["handoff_said"] = True   # two fixes did not work: say so once, then collect what the technician needs
+        ack = ("I'm sorry that didn't solve it. I'll hand this to one of our technicians, with everything we "
+               "tried so they don't repeat it. ")
     return ack + say(ASKS[slot], ctx.s, **ctx.kw())
+
+
+def _tshoot_text(slots):
+    """What the customer described, for choosing the right troubleshooting guide."""
+    code = slots.get("inverter_code", "")
+    return " ".join(x for x in (slots.get("issue"), slots.get("reported"), "" if code == NO_CODE else code) if x)
+
+
+def _tshoot_message(ctx):
+    """The next fix to try, worded the way a technician would walk a customer through it."""
+    s = ctx.s
+    st = s.get("tshoot")
+    if not st:
+        st = s["tshoot"] = {"guide": troubleshoot.guide_for(_tshoot_text(_slots(s)))["id"], "step": 0}
+    guide = troubleshoot.get(st["guide"])
+    i = min(st["step"], len(guide["steps"]) - 1)
+    intro = ("Let's try to fix this right now, before a technician has to come out. " if i == 0
+             else "Okay, thanks for trying that. Let's try one more thing. ")
+    return (intro + guide["steps"][i]
+            + "\n\nTell me if it's *fixed*, or if it's *still the same* (and what you see).")
 
 
 NOT_PLACE_WORDS = {"no", "not", "yes", "just", "is", "are", "was", "were", "the", "my", "it", "its", "i", "and", "but",
@@ -836,10 +909,33 @@ def _fill_awaiting(ctx):
         return False
     a, e, raw = ctx.a, ctx.ents, ctx.text
     slots = _slots(s)
+    if slot == "tshoot":
+        # a safety risk or a request for a person overrides the fix-it steps
+        if (nlu.SAFETY.search(nlu.clean(raw))
+                or a["intent"] in ("talk_to_human", "complaint", "greeting", "goodbye", "off_topic")):
+            return False
+        v = troubleshoot.verdict(raw)
+        if v is None or (v == "fixed" and is_question(raw)):
+            return False if is_question(raw) else "more"   # info or a bare "ok": keep it, ask whether it worked
+        st = s.setdefault("tshoot", {"guide": troubleshoot.guide_for(_tshoot_text(slots))["id"], "step": 0})
+        guide = troubleshoot.get(st["guide"])
+        step = st.get("step", 0)
+        if v == "fixed":
+            slots["tshoot_result"] = "fixed"
+            slots["fixed_by"] = f"{guide['title']}, step {step + 1}"
+            return True
+        slots.setdefault("tried", []).append(f"{guide['title']} step {step + 1}: \"{core().clip(raw, 80)}\"")
+        st["step"] = step + 1
+        if st["step"] >= troubleshoot.attempts(guide):
+            slots["tshoot_done"] = True
+            slots["tshoot_result"] = "failed"
+        return True
     if slot == "inverter_code":
         # "no" is a real answer here (no code, no beeps), not a refusal to continue
         if re.match(r"\s*(no|none|nope|nothing|not sure|dont know|don't know)\b", raw, re.I):
-            slots["inverter_code"] = "no error code or warning shown"
+            slots["inverter_code"] = NO_CODE
+            if len(raw.split()) >= 3:   # "no error just dead": the extra words describe the fault
+                _add_detail(slots, "issue", core().clip(raw, 200))
             return True
         if is_question(raw) or not re.search(r"[A-Za-z0-9]", raw):
             return False
@@ -925,6 +1021,11 @@ def _keep_detail_and_reask(ctx):
     """The customer added detail instead of answering ('no error, it is just dead'): keep it, ask again."""
     s = ctx.s
     slots = _slots(s)
+    if s.get("awaiting") == "tshoot":
+        if len(ctx.text.split()) >= 3:
+            _add_detail(slots, "issue", core().clip(ctx.text, 300))
+        return (say(["Thanks, noted.", "Okay, thanks.", "Got it."], s)
+                + " Did that fix it, or is it still the same? Reply *fixed* or *still the same*.")
     if s.get("flow") == "maintenance":
         _add_detail(slots, "issue", core().clip(ctx.text, 300))
     else:
@@ -941,7 +1042,7 @@ def _continue_flow(ctx):
         kwh = ctx.ents.get("kwh") or ctx.ents.get("appliance_kwh")
         return _sized(ctx, kwh)
     answered = s.get("awaiting")
-    _gather(ctx, issue_text=answered not in ("location", "contact", "name", "inverter_code"))
+    _gather(ctx, issue_text=answered not in ("location", "contact", "name", "inverter_code", "tshoot"))
     s.pop("awaiting", None)
     return _advance(ctx, filled=True)
 
@@ -952,7 +1053,11 @@ def _advance(ctx, filled=False):
     slot = _missing(ctx)
     if slot:
         return _ask(ctx, slot, filled=filled)
-    return _finish_purchase(ctx) if s["flow"] == "purchase" else _finish_maintenance(ctx)
+    if s["flow"] == "purchase":
+        return _finish_purchase(ctx)
+    if _slots(s).get("tshoot_result") == "fixed":
+        return _finish_resolved(ctx)
+    return _finish_maintenance(ctx)
 
 
 def _h_purchase(ctx):
@@ -973,7 +1078,8 @@ def _h_maintenance(ctx):
         s["flow"] = "maintenance"
     _gather(ctx)
     prefix = ""
-    if fresh and ctx.a["priority"] != "urgent" and _missing(ctx) != "issue":
+    risk = bool(_slots(s).get("safety"))
+    if fresh and not risk and _missing(ctx) != "issue":
         # the next question is not the symptom question (which already says sorry), so be human first
         if ctx.a["intent"] == "maintenance_service":
             prefix = say(["Happy to arrange that{first_comma}.", "Of course{first_comma}, we can look at it."],
@@ -981,7 +1087,7 @@ def _h_maintenance(ctx):
         else:
             prefix = say(["Sorry to hear that{first_comma}.", "Sorry about the trouble{first_comma}.",
                           "That sounds frustrating{first_comma}, let's get it fixed."], s, **ctx.kw()) + " "
-    if ctx.a["priority"] == "urgent" and not s.get("_safety_told"):
+    if risk and not s.get("_safety_told"):
         s["_safety_told"] = True
         sheet = _intent_replies(ctx)
         prefix = ("⚠️ " + sheet[0] + "\n\n") if sheet else (
@@ -1048,8 +1154,12 @@ def _finish_maintenance(ctx):
     for x in (slots.get("reported"), slots.get("issue")):
         if x and x not in parts:
             parts.append(x)
+    issue_shown = "; ".join(parts) or "Needs maintenance"   # what the customer told us, for their confirmation
     if slots.get("inverter_code"):
         parts.append("Inverter shows: " + slots["inverter_code"])
+    failed = slots.get("tshoot_result") == "failed"
+    if slots.get("tried"):
+        parts.append("Bot fixes tried, no luck: " + " | ".join(slots["tried"]))
     issue = "; ".join(parts) or "Needs maintenance"
     where = slots.get("location", "")
     routine = bool(slots.get("routine"))
@@ -1083,10 +1193,41 @@ def _finish_maintenance(ctx):
         return (f"{hello} I've booked in your service request ({c.clip(what, 90)}){where_txt}, and our technical "
                 f"team will contact you {ctx.promise} to arrange a visit.")
     how = {"urgent": "as URGENT", "high": "as a priority"}.get(priority, "")
-    return (f"{hello} I've logged your report ({c.clip(issue, 90)}){where_txt} {how}".replace("  ", " ").rstrip()
+    if failed:
+        return (f"{hello} I've passed your report ({c.clip(issue_shown, 90)}){where_txt} to our technical team "
+                f"{how}, together with the fixes we tried, so they won't repeat them. A person will contact you "
+                f"{ctx.promise} to arrange a visit.".replace("  ", " ")
+                + "\n\nUntil then, please don't open the inverter or touch any wiring. If you notice smoke, a "
+                  f"burning smell or it gets very hot, switch it off and call us on {ctx.catalog['phone']}.")
+    return (f"{hello} I've logged your report ({c.clip(issue_shown, 90)}){where_txt} {how}".replace("  ", " ").rstrip()
             + f", and our technical team will contact you {ctx.promise} to arrange a visit."
             "\n\nUntil then, please don't open the inverter or touch any wiring. If you notice smoke, a burning "
             f"smell or it gets very hot, switch it off and call us on {ctx.catalog['phone']}.")
+
+
+def _finish_resolved(ctx):
+    """The customer's own fix worked: log it as handled (no team alert) and wish them well."""
+    c, s = core(), ctx.s
+    slots = _slots(s)
+    name = slots.get("name") or ctx.name
+    parts = [x for x in (slots.get("reported"), slots.get("issue")) if x]
+    if slots.get("inverter_code") and slots["inverter_code"] != NO_CODE:
+        parts.append("Inverter shows: " + slots["inverter_code"])
+    issue = "; ".join(dict.fromkeys(parts)) or "Fault reported"
+    note = f"{issue} (solved by bot: {slots.get('fixed_by', 'troubleshooting')})"
+    c.sig(ctx.phone, "maintenance_resolved", c.clip(note, 300))
+    try:
+        db.upsert_enquiry(ctx.phone, name, "maintenance", "maintenance_fault", "low", ctx.text, summary=note,
+                          reasons=["Fixed by the customer with the bot's help"], confidence=ctx.a["confidence"])
+        db.close_enquiry(ctx.phone, "maintenance")
+    except Exception:
+        log.exception("could not record resolved enquiry")
+    first = first_name(name)
+    reset_flow(s)
+    s["_safety_told"] = False
+    return (f"Great news{', ' + first if first else ''}! 🎉 I'm glad that sorted it. If it happens again, message "
+            f"me here. If you ever notice smoke, a burning smell or it gets very hot, switch it off and call us on "
+            f"{ctx.catalog['phone']}. Anything else I can help with?")
 
 
 _HANDLERS = {

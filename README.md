@@ -48,6 +48,15 @@ is missing, so your edits are never overwritten.
 
 * **Buying**: asks what to power, then where, then confirms; skips anything already said ("5kVA with fridge and TV in Bulawayo" is complete in one message).
 * **Maintenance**: faults and services, with safety advice first for smoke, fire, sparks or shocks (urgent).
+* **Troubleshooting** (`troubleshoot.py`): for a plain fault the bot acts like a technician. It asks what the
+  inverter shows (error code, beeps, warning light), then walks the customer through up to **two** safe fixes,
+  asking after each whether it worked. Fixed: logged as handled, no staff alert. Still broken after both: it
+  collects the town and hands over to the team as a priority, with the fixes already tried in the lead so nobody
+  repeats them. Guides cover not charging, overload/tripping, fast-draining batteries, low production, geyser/pump
+  not running, no power, and error codes or beeping, plus a generic one. Steps only use switches, breakers, the
+  display and what can be seen from the ground, never opening equipment. Smoke, fire, sparks or shock skip the fixes
+  and go straight to safety advice and an urgent alert; services and warranty claims go straight to a person.
+  Add or change guides in `troubleshoot.py`.
 * **Side questions** are answered without losing your place, then the bot returns to the question it was asking.
 * **Not sure twice in a row**: hands over to the team and alerts staff.
 

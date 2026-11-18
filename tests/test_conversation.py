@@ -45,13 +45,20 @@ def test_urgent_fault_gets_safety_advice_and_urgent_priority(chat):
     assert any(l["kind"] == "maintenance" for l in db.list_leads() if l["phone"] == chat.who)
 
 
-def test_ordinary_fault_is_high_priority_and_asks_where(chat):
-    reply = chat.say("my batteries are not charging anymore")
-    assert "town" in reply.lower() or "suburb" in reply.lower()
-    assert "error code" in chat.say("Gweru").lower()       # asks what the inverter shows
-    done = chat.say("no")
-    assert "technical team" in done
-    assert last_enquiry(chat.who, "maintenance")["priority"] in ("high", "urgent")
+def test_ordinary_fault_is_high_priority_and_escalates_after_two_failed_fixes(chat):
+    first = chat.say("my batteries are not charging anymore")
+    assert "error code" in first.lower()                   # a technician's first question: what does it show?
+    fix1 = chat.say("no")
+    assert "pv" in fix1.lower() and "fixed" in fix1.lower()      # first fix to try, asks if it worked
+    fix2 = chat.say("still the same")
+    assert "restart" in fix2.lower()                        # a different second fix
+    ask_town = chat.say("no change")
+    assert "sorry" in ask_town.lower() and ("town" in ask_town.lower() or "suburb" in ask_town.lower())
+    done = chat.say("Gweru")
+    assert "technical team" in done and "fixes we tried" in done
+    e = last_enquiry(chat.who, "maintenance")
+    assert e["priority"] in ("high", "urgent") and e["status"] == "open"
+    assert "Bot fixes tried" in e["summary"] and "no change" in e["summary"]
 
 
 def test_side_question_is_answered_and_the_thread_resumes(chat):
@@ -146,18 +153,19 @@ def test_transformer_is_not_started_on_a_small_server(monkeypatch):
 
 
 def test_vague_fault_gets_a_human_follow_up_not_a_bare_location_question(chat):
-    """The screenshot case: 'My solar is malfunctioning' must not jump straight to 'Whereabouts is it?'."""
+    """'My solar is malfunctioning' must ask what is happening, then what the inverter shows, then help."""
     r1 = chat.say("My solar is malfunctioning")
     assert "sorry" in r1.lower() or "frustrating" in r1.lower()
     assert "beeping" in r1.lower() or "error" in r1.lower()          # asks what the system is doing
-    assert "town" not in r1.lower() and not r1.startswith("Thanks")  # location comes later; no pointless thanks
+    assert "town" not in r1.lower() and not r1.startswith("Thanks")  # no pointless thanks, no town yet
     r2 = chat.say("it keeps beeping since this morning")
-    assert r2.startswith(("Thanks", "Got it", "Okay", "Noted")) and "town" in r2.lower()
-    r3 = chat.say("Harare")
-    assert "error code" in r3.lower()                                 # now asks what the inverter shows
-    r4 = chat.say("it shows E12 on the display")
-    assert "beeping" in r4 and "Harare" in r4                         # the report is repeated back
-    assert "don't open" in r4                                         # and a safety tip
+    assert r2.startswith(("Thanks", "Got it", "Okay", "Noted")) and "error code" in r2.lower()
+    r3 = chat.say("it shows E12 on the display")
+    assert "restart" not in r3.lower() and "fixed" in r3.lower()     # first fix, for a code/beeping fault
+    assert "restart" in chat.say("still beeping").lower()            # second fix
+    assert "town" in chat.say("same").lower()                        # both failed: now collect where
+    r6 = chat.say("Harare")
+    assert "beeping" in r6 and "Harare" in r6 and "don't open" in r6
     e = last_enquiry(chat.who, "maintenance")
     assert e and "malfunctioning" in e["summary"] and "beeping" in e["summary"] and "E12" in e["summary"]
 
@@ -165,7 +173,7 @@ def test_vague_fault_gets_a_human_follow_up_not_a_bare_location_question(chat):
 def test_specific_fault_is_acknowledged_with_sympathy(chat):
     reply = chat.say("my batteries are not charging anymore")
     assert reply.lower().startswith(("sorry", "that sounds"))
-    assert "town" in reply.lower()
+    assert "error code" in reply.lower()
 
 
 def test_coverage_question_is_answered_not_a_contact_card(chat):
@@ -187,12 +195,13 @@ def test_yes_please_after_an_answer_starts_the_quote(chat):
     assert "run" in reply.lower() or "power" in reply.lower()      # the quote conversation starts
 
 
-def test_extra_detail_is_not_taken_as_the_town(chat):
-    chat.say("my inverter is off and the lights are out")           # asked for the town
-    reply = chat.say("no error just dead")
-    assert "town" in reply.lower() and "No Error" not in reply     # keeps the detail, asks again
-    assert "error code" in chat.say("Kwekwe").lower()      # the town is kept; now the inverter question
-    done = chat.say("no")
+def test_no_code_answer_keeps_the_extra_detail(chat):
+    chat.say("my inverter is off and the lights are out")           # asked what the inverter shows
+    reply = chat.say("no error just dead")                          # "no" answers it; "just dead" is kept
+    assert "fixed" in reply.lower() and "No Error" not in reply     # moves on to the first fix
+    chat.say("still the same")
+    assert "town" in chat.say("same").lower()
+    done = chat.say("Kwekwe")
     assert "Kwekwe" in done and "no error just dead" in done.lower()
 
 
@@ -204,12 +213,61 @@ def test_service_request_keeps_the_complaint_and_is_not_marked_priority(chat):
 
 
 def test_fault_reported_while_asked_what_to_run_is_a_maintenance_report(chat):
-    """The screenshot case: 'I also need another quotation', then 'My inverter is having an error' must not
-    become the quotation's 'need'. It is a fault report: ask where, then what the inverter shows."""
-    assert "run" in chat.say("I also need another quotation").lower()
-    assert "town" in chat.say("My inverter is having an error").lower()
-    assert "error code" in chat.say("Harare").lower()
-    done = chat.say("E05 on the display")
+    """'I also need another quotation', then 'My inverter is having an error' must not become the quotation's
+    'need'. It is a fault report: ask what the inverter shows, try fixes, then hand over."""
+    first = chat.say("I also need another quotation").lower()
+    assert "run" in first or "power" in first                  # asks what the system should run
+    assert "error code" in chat.say("My inverter is having an error").lower()
+    assert "fixed" in chat.say("E05 on the display").lower()
+    chat.say("still the same")
+    assert "town" in chat.say("no change").lower()
+    done = chat.say("Harare")
     assert "technical team" in done and "sales team" not in done
     assert "E05" in last_enquiry(chat.who, "maintenance")["summary"]
     assert not any(l["kind"] == "quote" for l in db.list_leads() if l["phone"] == chat.who)
+
+def test_fault_fixed_on_the_first_try_is_logged_as_handled_without_alerting_staff(chat):
+    chat.say("my solar is not charging")
+    chat.say("no")
+    done = chat.say("yes it's working now, thank you")
+    assert "glad" in done.lower() and "technical team" not in done
+    e = last_enquiry(chat.who, "maintenance")
+    assert e["status"] == "handled" and "solved by bot" in e["summary"]
+    assert not any(l["kind"] == "maintenance" for l in db.list_leads() if l["phone"] == chat.who)
+
+
+def test_fault_fixed_on_the_second_try(chat):
+    chat.say("my inverter keeps tripping and shutting down")
+    chat.say("no")
+    assert "culprit" in chat.say("no, still trips").lower()  # second fix: find the appliance that trips it
+    done = chat.say("fixed, it was the geyser")
+    assert "glad" in done.lower()
+    assert last_enquiry(chat.who, "maintenance")["status"] == "handled"
+
+
+def test_side_question_during_a_fix_is_answered_and_the_fix_resumes(chat):
+    chat.say("my solar is not charging")
+    chat.say("no")                                          # now trying the first fix
+    reply = chat.say("how much do your packages cost?")
+    assert "$" in reply or "USD" in reply
+    assert "back to the fix" in reply.lower()
+
+
+def test_safety_risk_mid_fix_stops_the_fixes_and_goes_to_a_person(chat):
+    chat.say("my solar is not charging")
+    chat.say("no")
+    reply = chat.say("wait, there is smoke coming from the inverter")
+    assert "do not touch" in reply.lower() and "fixed" not in reply.lower()   # safety first, no more DIY fixes
+    done = chat.say("Harare")
+    assert "URGENT" in done and "fixes we tried" not in done
+    assert last_enquiry(chat.who, "maintenance")["priority"] == "urgent"
+
+
+def test_plain_fault_statements_are_understood_without_a_menu(chat):
+    """Fault phrases the trained model is unsure about must still start troubleshooting, not a 'what would you
+    like?' menu. An error code said up front is kept, so the bot does not ask for it again."""
+    assert "error code" in chat.say("solar not giving power").lower()
+    chat.say("no")
+    chat.say("it works now")                                 # close that conversation
+    second = chat.say("inverter showing E05")
+    assert "fixed" in second.lower() and "error code" not in second.lower()   # code known: straight to the fix

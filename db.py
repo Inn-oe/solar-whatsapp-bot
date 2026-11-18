@@ -542,6 +542,15 @@ def upsert_enquiry(who, name, category, intent, priority, text, summary="", reas
         return _enquiry(row)
 
 
+def close_enquiry(who, category):
+    """Mark the open enquiry handled (used when the bot solved the problem itself)."""
+    with Session() as s:
+        row = _open_enquiry(s, who, category)
+        if row:
+            row.status = "handled"
+            s.commit()
+
+
 def set_enquiry_summary(who, category, summary):
     with Session() as s:
         row = _open_enquiry(s, who, category)
