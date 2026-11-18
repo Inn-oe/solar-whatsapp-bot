@@ -3,7 +3,9 @@
 The intent classifier (nlu.py) is fast and runs on the bot's small server, but it only knows phrasings close to
 its examples. When it is unsure, this asks an instruction-tuned LLM (Mistral, Qwen, Llama, ...) through any
 OpenAI-compatible chat API to pick one of the bot's own intents. The LLM never writes the reply to the customer:
-it only chooses the intent, so the answers stay the ones staff wrote on the Train page.
+it only chooses the intent. With LLM_REPLIES on (default) it also rewords the staff-written answer naturally for the
+conversation (natural_reply) and answers unmatched questions from the company facts only (answer_from_facts); every
+number must come from the approved text, otherwise the approved text is sent unchanged.
 
 Environment variables (all optional; without LLM_API_KEY the fallback is off):
   LLM_API_KEY    API key of the provider
@@ -38,7 +40,8 @@ def model_name():
 
 
 def status():
-    return dict(_status, enabled=enabled(), model=model_name() if enabled() else None)
+    return dict(_status, enabled=enabled(), model=model_name() if enabled() else None,
+                replies=dict(_compose_status))
 
 
 def set_menu(intents, examples, per_intent=4):
@@ -120,3 +123,90 @@ def _parse(content):
         conf = 0.5
     known = {n for n, _, _ in _menu}
     return (intent, conf) if intent in known else (None, 0.0)
+
+
+# ---------------------------------------------------------------- natural replies
+# The training answers say WHAT to tell the customer; the LLM says it the way a person would in this chat. Every
+# number in its reply must come from the approved text, so prices and facts cannot drift. Any problem (no key,
+# slow, a changed number, too long) and the bot simply sends the approved text.
+STYLE = (
+    "You are the WhatsApp assistant of {company}, a solar company in Zimbabwe, chatting with a customer. Rewrite the "
+    "APPROVED ANSWER as your own natural reply to the customer's latest message, the way a friendly, professional "
+    "solar technician would text. Rules: keep every fact, price and number exactly as given; add no new facts, "
+    "prices, promises or products; answer what the customer actually asked first; keep it about as short as the "
+    "approved answer (WhatsApp style, no headings); keep any question the approved answer asks; use the customer's "
+    "first name at most once; if the customer wrote in Shona, you may reply in simple Shona mixed with English. "
+    "Reply with the message text only."
+)
+ANSWER = (
+    "You are the WhatsApp assistant of {company}, a solar company in Zimbabwe. Answer the customer's question using "
+    "ONLY the COMPANY FACTS below, in a short, friendly WhatsApp reply (2-4 sentences). Keep every number exactly as in "
+    "the facts and add nothing that is not there. If the facts do not answer the question, reply with exactly: UNKNOWN"
+)
+_NUM = re.compile(r"\d[\d,]*(?:\.\d+)?")
+_compose_status = {"calls": 0, "used": 0, "rejected": 0}
+
+
+def _chat(system, user, max_tokens=350, temperature=0.6):
+    import requests
+    url = os.getenv("LLM_API_URL", "https://api.mistral.ai/v1").rstrip("/") + "/chat/completions"
+    body = {"model": model_name(), "temperature": temperature, "max_tokens": max_tokens,
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
+    r = requests.post(url, json=body, timeout=float(os.getenv("LLM_TIMEOUT", "8")),
+                      headers={"Authorization": f"Bearer {os.getenv('LLM_API_KEY')}"})
+    r.raise_for_status()
+    return (r.json()["choices"][0]["message"]["content"] or "").strip()
+
+
+def _numbers(text):
+    return {n.replace(",", "") for n in _NUM.findall(text or "")}
+
+
+def _safe(reply, source, limit):
+    """The reply only uses numbers found in the source, is not empty and not much longer than allowed."""
+    reply = (reply or "").strip().strip('"').strip()
+    if not reply or reply.upper().startswith("UNKNOWN") or len(reply) > limit:
+        return None
+    if not _numbers(reply) <= _numbers(source):
+        return None
+    return reply
+
+
+def _history(turns):
+    return "\n".join(f"{'Customer' if who == 'in' else 'You'}: {text[:300]}" for who, text in (turns or [])[-6:])
+
+
+def natural_reply(approved, customer_text, company, turns=None, first_name=""):
+    """The approved answer reworded for this conversation, or None to send the approved text as it is."""
+    if not enabled() or not os.getenv("LLM_REPLIES", "on").lower() in ("on", "1", "true", "yes") or not approved:
+        return None
+    _compose_status["calls"] += 1
+    user = (f"Conversation so far:\n{_history(turns)}\n\nCustomer's latest message: \"{customer_text[:500]}\"\n"
+            f"Customer's first name: {first_name or 'unknown'}\n\nAPPROVED ANSWER:\n{approved}")
+    try:
+        out = _safe(_chat(STYLE.format(company=company), user), approved, max(400, int(len(approved) * 1.6)))
+    except Exception as exc:
+        _status["errors"] += 1
+        _status["last_error"] = f"{type(exc).__name__}: {str(exc)[:160]}"
+        log.warning("LLM reply failed: %s", _status["last_error"])
+        return None
+    _compose_status["used" if out else "rejected"] += 1
+    return out
+
+
+def answer_from_facts(question, facts, company, turns=None):
+    """A short answer built only from the company's facts, or None when they do not cover the question."""
+    if not enabled() or not facts or not os.getenv("LLM_REPLIES", "on").lower() in ("on", "1", "true", "yes"):
+        return None
+    _compose_status["calls"] += 1
+    user = (f"COMPANY FACTS:\n{facts}\n\nConversation so far:\n{_history(turns)}\n\n"
+            f"Customer's question: \"{question[:500]}\"")
+    try:
+        out = _safe(_chat(ANSWER.format(company=company), user, temperature=0.3), facts, 700)
+    except Exception as exc:
+        _status["errors"] += 1
+        _status["last_error"] = f"{type(exc).__name__}: {str(exc)[:160]}"
+        log.warning("LLM answer failed: %s", _status["last_error"])
+        return None
+    _compose_status["used" if out else "rejected"] += 1
+    return out

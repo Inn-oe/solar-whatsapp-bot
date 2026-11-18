@@ -13,7 +13,8 @@ def test_catalog_is_valid_and_is_giebees():
 def test_packages_are_real_sizes_in_order():
     pk = bot.CATALOG["packages"]
     assert [p["name"] for p in pk] == ["Starter 1.5kVA", "Home 3.2kVA", "Home 5kVA", "Family 6.2kVA", "Business 10kVA"]
-    assert [p["price"] for p in pk] == sorted(p["price"] for p in pk)                 # bigger system, bigger price
+    import quote   # prices are the itemised totals of GieBee's own quotations for each size
+    assert [p["price"] for p in pk] == [round(quote.build(bot.package_size(p))["total"]) for p in pk]
     assert [p["daily_kwh"] for p in pk] == sorted(p["daily_kwh"] for p in pk)         # so recommend() walks up the list
     assert bot.package_size(pk[1]) == 3.2 and bot.package_size(pk[4]) == 10.0
     assert bot.recommend(5)["name"] == "Home 3.2kVA" and bot.recommend(9)["name"] == "Home 5kVA"
@@ -22,7 +23,7 @@ def test_packages_are_real_sizes_in_order():
 
 def test_package_prices_are_shown_as_the_catalog_price(chat):
     reply = chat.say("what packages do you have")
-    assert "Home 5kVA" in reply and "1,865" in reply and "Business 10kVA" in reply
+    assert "Home 5kVA" in reply and "1,985" in reply and "Business 10kVA" in reply
 
 
 def test_services_questions_get_the_right_answer():

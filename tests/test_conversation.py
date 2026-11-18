@@ -286,7 +286,7 @@ def test_screenshot_price_question_and_did_you_understand(chat):
     chat.tap("send")
     assert "already sent" in chat.say("Get a quotation")
     price = chat.say("Marii 3kva")
-    assert "Home 3.2kVA* at USD 1,200" in price and "town" in price.lower()
+    assert "3kVA system: *USD 1,210*" in price and "450W solar panels" in price and "town" in price.lower()
     for meta in ("Did you understand", "What did I say", "wanzwa here"):
         reply = chat.say(meta)
         assert "following" in reply or "understood" in reply, meta
@@ -297,7 +297,7 @@ def test_screenshot_price_question_and_did_you_understand(chat):
 def test_price_question_while_asked_for_the_town(chat):
     chat.say("I want a 5kva system")                        # asked for the town
     reply = chat.say("how much is it")
-    assert "Home 5kVA" in reply and "1,865" in reply and "town" in reply.lower()
+    assert "5kVA" in reply and "1,985" in reply and "town" in reply.lower()
 
 
 def test_unclear_reply_mid_request_is_admitted_not_faked(chat):

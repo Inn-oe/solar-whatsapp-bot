@@ -45,6 +45,30 @@ bot picks one at random so it does not sound like a script.
 The starting intents live in `nlu_seed.json` (and one intent per FAQ in `catalog.json`). Seeding only adds what
 is missing, so your edits are never overwritten.
 
+## Quotations learned from GieBee's own
+
+`quote_book.json` holds, for every inverter size GieBee quotes often (1.5 to 20kVA), the parts of a typical
+quotation with the median unit price and quantity from its 2026 quotations (300 quotations, about 2,000 line items,
+read-only from the ERP database; only aggregated prices are kept, no customer data). `quote.py` turns a size into an
+itemised quotation in GieBee's format: inverter, battery, panels, protection kit, mounting, cabling and labour, with
+a total, plus the transport and deposit notes. The bot uses it for price questions ("marii 3kva"), the read-back
+before sending, and the quotation it sends with the confirmation; the staff alert and the lead carry the same
+figures. The catalog's package prices are the matching itemised totals. Refresh the book after new quotations:
+
+```bash
+ERP_DATABASE_URL=postgresql://... python training/build_quote_book.py     # or: ... build_quote_book.py items.csv
+```
+
+## Natural replies (language model)
+
+The trained model (TF-IDF or the transformer) recognises what a message is about; the answers staff wrote in the
+training sheet say what to tell the customer. With `LLM_API_KEY` set, the bot also asks the language model to say
+that answer the way a person would in this conversation (`llm.natural_reply`), and to answer questions the trained
+model does not recognise from the company's facts only: FAQ answers, packages and quotation prices
+(`llm.answer_from_facts`). Every number in a reworded reply must appear in the approved text, otherwise the approved
+text is sent unchanged; the same happens when the key is missing or the model is slow. Turn rewording off with
+`LLM_REPLIES=off`. Questions answered this way still go to the Review queue so staff can teach the trained model.
+
 ## Buttons and typed answers
 
 Buttons are shortcuts for closed choices; open details are always typed. Every button stands for words the bot

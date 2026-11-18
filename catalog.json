@@ -34,47 +34,47 @@
       "13:00"
     ]
   },
-  "note": "Company details and packages are GieBee Engineering's: prices are the median of its 2026 quotations (USD, installed). 'Powers' is an engineering estimate from the inverter, battery and panel sizes, not something the quotations state. Edit on the bot's /admin page. The older FAQ answers were written for a generic solar company: review them.",
+  "note": "Company details and packages are GieBee Engineering's: prices are the itemised totals of the matching system in quote_book.json (median unit prices from its 2026 quotations, USD, installed; transport extra). 'Powers' is an engineering estimate from the inverter, battery and panel sizes, not something the quotations state. Edit on the bot's /admin page. The older FAQ answers were written for a generic solar company: review them.",
   "packages": [
     {
       "id": "1",
       "name": "Starter 1.5kVA",
-      "price": 830,
+      "price": 775,
       "daily_kwh": 2.5,
       "powers": "Lights, phone and laptop charging, TV, WiFi router and a small fridge (not all at once)",
-      "includes": "1-1.5kVA hybrid inverter, 12V 100Ah lithium battery (1.28kWh), 1-2 x 450W solar panels, mounting kit, protection kit, cabling and installation"
+      "includes": "1.5kVA hybrid inverter, 12V 100Ah lithium battery, 2 x 450W solar panels, Protection kit, 2 panel mounting kit, Cabling and management and installation labour"
     },
     {
       "id": "2",
       "name": "Home 3.2kVA",
-      "price": 1200,
+      "price": 1175,
       "daily_kwh": 6,
       "powers": "Lights, TV, WiFi, laptops, phone charging, a fridge and a deep freezer. Not a geyser, stove or aircon",
-      "includes": "3.2kVA hybrid inverter, 25.6V 100Ah lithium battery (2.56kWh), 4 x 450W solar panels (1.8kW), mounting kit, protection kit, cabling and installation"
+      "includes": "3.2kVA hybrid inverter, 25.6V 100Ah lithium battery, 4 x 450W solar panels, Protection kit, Solar mounting kit, Cabling and management and installation labour"
     },
     {
       "id": "3",
       "name": "Home 5kVA",
-      "price": 1865,
+      "price": 1985,
       "daily_kwh": 10,
       "powers": "Everything in the 3.2kVA plus a washing machine, a second fridge and a small borehole pump. A geyser or small aircon in the daytime only",
-      "includes": "5kVA hybrid inverter, 5.12kWh lithium battery, 5 x 590W solar panels (2.95kW), mounting kit, protection kit, cabling and installation"
+      "includes": "5kVA hybrid inverter, 48V 100Ah lithium battery, 6 x 550W solar panels, Protection kit, Solar mounting kit, Cabling and management and installation labour"
     },
     {
       "id": "4",
       "name": "Family 6.2kVA",
-      "price": 1895,
+      "price": 1975,
       "daily_kwh": 10.5,
       "powers": "Whole-house essentials: lights, TV, fridges and freezer, washing machine, borehole pump up to 1.5HP, microwave and kettle. A geyser or aircon in the daytime",
-      "includes": "6.2kVA hybrid inverter, 51.2V 100Ah lithium battery (5.12kWh), 5 x 550W solar panels (2.75kW), mounting kit, protection kit, cabling and installation"
+      "includes": "6.2kVA hybrid inverter, 5.12kWh lithium battery, 6 x 590W solar panels, Protection kit, Solar mounting kit, Cabling and management and installation labour"
     },
     {
       "id": "5",
       "name": "Business 10kVA",
-      "price": 4150,
+      "price": 4045,
       "daily_kwh": 24,
       "powers": "A large home, shop, office or clinic: lights, fridges and freezers, computers, aircon, geyser and a borehole pump up to 2HP, mostly in the daytime",
-      "includes": "10kVA hybrid inverter, 2 x 51.2V 100Ah lithium batteries (10.24kWh), 12 x 590W solar panels (7.08kW), mounting kit, protection kit, cabling and installation"
+      "includes": "10kVA hybrid inverter, 2 x 48V 100Ah lithium battery, 12 x 590W solar panels, Protection kit, Solar mounting kit, Cabling and management and installation labour"
     }
   ],
   "towns": [

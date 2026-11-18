@@ -24,6 +24,7 @@ from pathlib import Path
 import db
 import llm
 import nlu
+import quote
 import troubleshoot
 
 log = logging.getLogger("solar-bot.brain")
@@ -433,7 +434,13 @@ def _respond(phone, name, text, s):
     accepts_offer = (s.get("pending") == "quote_offer" and intent in (None, "affirm", "buy_system", "site_visit")
                      and not is_question(text) and bool(AGREES.match(text)))
     if intent is None and not accepts_offer:
-        if s.get("flow") in ("purchase", "maintenance") and s.get("awaiting") in RESUME:
+        in_flow = s.get("flow") in ("purchase", "maintenance") and s.get("awaiting") in RESUME
+        if is_question(text) or not in_flow:
+            answer = _answer_from_facts(ctx)   # the language model, from the company's facts only
+            if answer:
+                s["_unknown"] = 0
+                return answer + ("\n\n" + _ask(ctx, s["awaiting"], resumed=True) if in_flow else "")
+        if in_flow:
             return _not_understood_in_flow(ctx)
         return _not_understood(ctx)
     if accepts_offer:
@@ -517,7 +524,7 @@ def _h_reply(ctx):
     s = ctx.s
     if not replies:
         return _not_understood(ctx)
-    text = say(replies, s, **ctx.kw(greet=greet_word(ctx.text)))
+    text = _naturally(ctx, say(replies, s, **ctx.kw(greet=greet_word(ctx.text))))
     name = ctx.a["intent"]
     if name.startswith("faq_"):
         topic = "payment" if any(w in name for w in ("pay", "deposit")) else name[4:]
@@ -534,7 +541,7 @@ def _h_greeting(ctx):
     s = ctx.s
     reset_flow(s)
     _offer(s, MENU)
-    return say(_intent_replies(ctx), s, **ctx.kw(greet=greet_word(ctx.text)))
+    return _naturally(ctx, say(_intent_replies(ctx), s, **ctx.kw(greet=greet_word(ctx.text))))
 
 
 def _h_thanks(ctx):
@@ -648,7 +655,7 @@ def _h_answer_team(ctx):
     replies = _intent_replies(ctx)
     if not replies:
         return _not_understood(ctx)
-    text = say(replies, s, **ctx.kw())
+    text = _naturally(ctx, say(replies, s, **ctx.kw()))
     offer = s.get("pending")
     reset_flow(s)
     if offer:
@@ -1123,6 +1130,48 @@ def _fill_awaiting(ctx):
     return False
 
 
+def _turns(ctx):
+    """The last few messages of this chat, oldest first, for the language model's context."""
+    try:
+        return [(m["direction"], m["text"]) for m in db.thread(ctx.phone, limit=8)]
+    except Exception:
+        return []
+
+
+def _naturally(ctx, approved):
+    """Say the approved (trained) answer the way a person would in this conversation; the approved text if the
+    language model is off, slow, or changes any number."""
+    out = llm.natural_reply(approved, ctx.text, ctx.catalog["company"], _turns(ctx), ctx.first)
+    return out or approved
+
+
+def _company_facts(ctx):
+    """Everything the bot may say about the company, for answering questions the model did not recognise."""
+    c = ctx.catalog
+    lines = [f"Company: {c['company']}. Phone {c['phone']}, email {c['email']}, address {c['address']}, "
+             f"hours {c['hours']}."]
+    for p in c["packages"]:
+        lines.append(f"Package {p['name']}: {core().price_text(p)} installed. Powers: {p['powers']}. "
+                     f"Includes: {p['includes']}.")
+    for q in (quote.build(sz) for sz in quote.sizes()):
+        lines.append(f"{q['size_kva']:g}kVA system quotation total {quote.money(q['total'])} installed: "
+                     + "; ".join(f"{l['qty']:g} x {l['item']} at {quote.money(l['unit'])}" for l in q["lines"]) + ".")
+    lines.append(quote.book()["transport_note"] + " " + quote.book()["payment_note"])
+    for f in c.get("faqs", []):
+        lines.append(f"{re.sub(r'^[^\w]+', '', f.get('title') or f['keys'][0])}: {_clean_answer(f['answer'])}")
+    return "\n".join(lines)
+
+
+def _answer_from_facts(ctx):
+    out = llm.answer_from_facts(ctx.text, _company_facts(ctx), ctx.catalog["company"], _turns(ctx))
+    if out:
+        try:
+            db.add_unmatched(ctx.phone, ctx.text, ctx.a["guess"] or "", ctx.a["confidence"])  # staff can teach it
+        except Exception:
+            log.exception("could not queue message for review")
+    return out
+
+
 def _summary_so_far(ctx):
     """What the bot has understood of the current request, in one line."""
     s = ctx.s
@@ -1161,6 +1210,18 @@ def _meta_reply(ctx):
 
 
 def _price_line(ctx, size=None):
+    """A price answer in GieBee's quotation terms: the total and what it is made of."""
+    q = quote.build(size or _quote_size(ctx))
+    if q:
+        parts = ", ".join(f"{l['qty']:g} × {l['item']}" for l in q["lines"] if l["item"] != "Labour")
+        lead = (f"For {size:g}kVA, our closest standard system is {q['size_kva']:g}kVA" if size and
+                abs(q["size_kva"] - size) >= 0.25 else f"A {q['size_kva']:g}kVA system")
+        return (f"{lead}: *{quote.money(q['total'])}* installed. That's {parts}, plus installation labour. "
+                "The final price is confirmed on a free site visit.")
+    return _price_line_package(ctx, size)
+
+
+def _price_line_package(ctx, size=None):
     c = core()
     p = None
     if size:
@@ -1320,6 +1381,7 @@ def _finish_purchase(ctx):
     where = slots.get("location", "")
     rec = _estimate(ctx)
     est = _estimate_line(ctx)
+    q = _quote_for(ctx)
     updated = bool(s.pop("_editing_quote", None))
     if rec:
         s["_recommended"] = rec["name"]
@@ -1335,13 +1397,18 @@ def _finish_purchase(ctx):
     c.sig(ctx.phone, "quote_step", "done")
     if name:
         db.set_contact_name(ctx.phone, name)
-    c.save_lead(ctx.phone, name, location=where, need=c.clip(("UPDATED: " if updated else "") + need, 1000),
+    if q:
+        c.sig(ctx.phone, "quoted_total", q["total"])
+    c.save_lead(ctx.phone, name, location=where,
+                need=c.clip(("UPDATED: " if updated else "") + need + (f" | Bot quote: {quote.as_summary(q)}" if q else ""),
+                            1000),
                 suggested=s.get("_recommended", ""),
                 contact=slots.get("contact"))
     c.set_follow_up(ctx.phone, 2)
     c.alert_team(ctx.phone, name, "quote", ("UPDATED request (replaces their earlier one)\n" if updated else "")
                  + f"Needs: {c.clip(need, 300)}" + (f"\nWhere: {where}" if where else "")
-                 + (f"\nBot suggested: {s['_recommended']}" if s.get("_recommended") else ""), s)
+                 + (f"\nBot suggested: {s['_recommended']}" if s.get("_recommended") else "")
+                 + (f"\nBot quoted: {q['size_kva']:g}kVA, {quote.money(q['total'])}" if q else ""), s)
     try:
         db.upsert_enquiry(ctx.phone, name, "purchase", "buy_system", ctx.a["priority"] if ctx.a["category"] == "purchase" else "high",
                           ctx.text, summary=f"{need}" + (f" in {where}" if where else ""),
@@ -1351,18 +1418,21 @@ def _finish_purchase(ctx):
     first = first_name(name)
     summary = f"{need}" + (f", in {where}" if where else "")
     suggestion = (f"\n\n💲 Your estimate: {est}. A technician confirms the size and final price on a free site "
-                  "visit." if est else "")
+                  "visit." if est and not q else "")
+    sheet = ("\n\n" + quote.as_text(q, ctx.catalog["company"], first_name(name), where, quote.reference(ctx.phone))
+             if q else "")
     s["_last_quote"] = {"at": time.time(), "summary": summary,
                         "slots": {k: slots[k] for k in ("need", "location", "kwh", "size_kva", "name", "contact")
                                   if slots.get(k)}}
     reset_flow(s)
     s["_safety_told"] = False
     if ctx.is_web:
-        return (f"✅ Thank you{', ' + first if first else ''}! I've saved your request ({summary}). Our team will "
-                f"contact you {ctx.promise} with your quotation.{suggestion}")
+        return (f"✅ Thank you{', ' + first if first else ''}! I've saved your request ({summary}).{sheet}"
+                f"{suggestion}\n\nOur team will contact you {ctx.promise} to book the site visit.")
     _offer(s, [opt("question", "Ask a question"), opt("fault", "Report a problem")])
-    return (f"✅ Done{', ' + first if first else ''}! I've sent your {'updated ' if updated else ''}request to our sales team ({summary})."
-            f"{suggestion}\n\nSomeone will message you here {ctx.promise} to book the visit.")
+    return (f"✅ Done{', ' + first if first else ''}! I've sent your {'updated ' if updated else ''}request to our sales team ({summary}). "
+            f"Here's your quotation:{sheet}{suggestion}\n\nSomeone will message you here {ctx.promise} to book the "
+            "free site visit.")
 
 
 def _finish_maintenance(ctx):
@@ -1645,7 +1715,24 @@ def _estimate(ctx):
     return None
 
 
+def _quote_size(ctx):
+    """The system size to quote: the kVA asked for, else the size of the package that fits."""
+    slots = _slots(ctx.s)
+    if slots.get("size_kva"):
+        return slots["size_kva"]
+    p = _estimate(ctx)
+    return core().package_size(p) if p else None
+
+
+def _quote_for(ctx):
+    size = _quote_size(ctx)
+    return quote.build(size) if size else None
+
+
 def _estimate_line(ctx):
+    q = _quote_for(ctx)
+    if q:
+        return f"*{q['size_kva']:g}kVA system*, {quote.money(q['total'])} installed"
     p = _estimate(ctx)
     if not p:
         return ""
@@ -1658,7 +1745,7 @@ def _confirm_text(ctx):
     lines = [f"• *System:* {slots.get('need') or 'a quotation'}", f"• *Where:* {slots.get('location') or 'not given'}"]
     est = _estimate_line(ctx)
     if est:
-        lines.append(f"• *Estimate:* {est} (final price after a free site visit)")
+        lines.append(f"• *Estimate:* {est} (itemised quotation when you send)")
     if slots.get("name"):
         lines.append(f"• *Name:* {slots['name']}")
     if slots.get("contact"):

@@ -1,0 +1,596 @@
+{
+ "source": "Median unit prices and typical quantities per inverter size from GieBee Engineering's own 2026 quotations (300 quotations, about 2,000 line items, read-only from the ERP database on 2026-11-18). Only aggregated prices are kept here; no customer data. Rebuild with training/build_quote_book.py.",
+ "currency": "USD",
+ "transport_note": "Transport is quoted after the site visit (usually USD 60-150, depending on distance).",
+ "payment_note": "We accept a deposit to book (typically 50-70%) with the balance on installation.",
+ "systems": [
+  {
+   "size_kva": 1.5,
+   "quotes": 2,
+   "lines": [
+    {
+     "item": "1.5kVA hybrid inverter",
+     "qty": 1,
+     "unit": 145
+    },
+    {
+     "item": "12V 100Ah lithium battery",
+     "qty": 1,
+     "unit": 245
+    },
+    {
+     "item": "450W solar panels",
+     "qty": 2,
+     "unit": 75
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 45
+    },
+    {
+     "item": "2 panel mounting kit",
+     "qty": 1,
+     "unit": 40
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 50
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 100
+    }
+   ],
+   "transport": 100
+  },
+  {
+   "size_kva": 3,
+   "quotes": 6,
+   "lines": [
+    {
+     "item": "3kVA hybrid inverter",
+     "qty": 1,
+     "unit": 180
+    },
+    {
+     "item": "24V 100Ah lithium battery",
+     "qty": 1,
+     "unit": 360
+    },
+    {
+     "item": "450W solar panels",
+     "qty": 4,
+     "unit": 75
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 100
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 150
+  },
+  {
+   "size_kva": 3.2,
+   "quotes": 14,
+   "lines": [
+    {
+     "item": "3.2kVA hybrid inverter",
+     "qty": 1,
+     "unit": 180
+    },
+    {
+     "item": "25.6V 100Ah lithium battery",
+     "qty": 1,
+     "unit": 360
+    },
+    {
+     "item": "450W solar panels",
+     "qty": 4,
+     "unit": 75
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 80
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 50
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 145
+    }
+   ],
+   "transport": 80
+  },
+  {
+   "size_kva": 3.5,
+   "quotes": 5,
+   "lines": [
+    {
+     "item": "3.5kVA hybrid inverter",
+     "qty": 1,
+     "unit": 200
+    },
+    {
+     "item": "25.6V 100Ah lithium battery",
+     "qty": 1,
+     "unit": 360
+    },
+    {
+     "item": "450W solar panels",
+     "qty": 4,
+     "unit": 78
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 65
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 80
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 50
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 57
+  },
+  {
+   "size_kva": 3.6,
+   "quotes": 3,
+   "lines": [
+    {
+     "item": "3.6kVA hybrid inverter",
+     "qty": 1,
+     "unit": 200
+    },
+    {
+     "item": "24V 100Ah lithium battery",
+     "qty": 1,
+     "unit": 360
+    },
+    {
+     "item": "450W solar panels",
+     "qty": 4,
+     "unit": 80
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 90
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 50
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 140
+  },
+  {
+   "size_kva": 4,
+   "quotes": 5,
+   "lines": [
+    {
+     "item": "4kVA hybrid inverter",
+     "qty": 1,
+     "unit": 220
+    },
+    {
+     "item": "25.6V 100Ah lithium battery",
+     "qty": 1,
+     "unit": 360
+    },
+    {
+     "item": "450W solar panels",
+     "qty": 4,
+     "unit": 85
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 50
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 100
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 50
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 65
+  },
+  {
+   "size_kva": 5,
+   "quotes": 18,
+   "lines": [
+    {
+     "item": "5kVA hybrid inverter",
+     "qty": 1,
+     "unit": 320
+    },
+    {
+     "item": "48V 100Ah lithium battery",
+     "qty": 1,
+     "unit": 720
+    },
+    {
+     "item": "550W solar panels",
+     "qty": 6,
+     "unit": 92.5
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 120
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 135
+  },
+  {
+   "size_kva": 5.2,
+   "quotes": 4,
+   "lines": [
+    {
+     "item": "5.2kVA hybrid inverter",
+     "qty": 1,
+     "unit": 320
+    },
+    {
+     "item": "5.12kWh lithium battery",
+     "qty": 1,
+     "unit": 700
+    },
+    {
+     "item": "550W solar panels",
+     "qty": 6,
+     "unit": 92.5
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting structure",
+     "qty": 1,
+     "unit": 135
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 80
+  },
+  {
+   "size_kva": 6,
+   "quotes": 5,
+   "lines": [
+    {
+     "item": "6kVA hybrid inverter",
+     "qty": 1,
+     "unit": 450
+    },
+    {
+     "item": "5.12kWh lithium battery",
+     "qty": 1,
+     "unit": 700
+    },
+    {
+     "item": "600W solar panels",
+     "qty": 5,
+     "unit": 95
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting structure",
+     "qty": 1,
+     "unit": 120
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 80
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 80
+  },
+  {
+   "size_kva": 6.2,
+   "quotes": 20,
+   "lines": [
+    {
+     "item": "6.2kVA hybrid inverter",
+     "qty": 1,
+     "unit": 320
+    },
+    {
+     "item": "5.12kWh lithium battery",
+     "qty": 1,
+     "unit": 700
+    },
+    {
+     "item": "590W solar panels",
+     "qty": 6,
+     "unit": 95
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 120
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 55
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 150
+    }
+   ],
+   "transport": 85
+  },
+  {
+   "size_kva": 8,
+   "quotes": 5,
+   "lines": [
+    {
+     "item": "8kVA hybrid inverter",
+     "qty": 1,
+     "unit": 1250
+    },
+    {
+     "item": "48V 100Ah lithium battery",
+     "qty": 2,
+     "unit": 925
+    },
+    {
+     "item": "550W solar panels",
+     "qty": 10,
+     "unit": 105
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 70
+    },
+    {
+     "item": "Solar mounting structure",
+     "qty": 1,
+     "unit": 150
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 70
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 225
+    }
+   ],
+   "transport": 50
+  },
+  {
+   "size_kva": 10,
+   "quotes": 12,
+   "lines": [
+    {
+     "item": "10kVA hybrid inverter",
+     "qty": 1,
+     "unit": 950
+    },
+    {
+     "item": "48V 100Ah lithium battery",
+     "qty": 2,
+     "unit": 700
+    },
+    {
+     "item": "590W solar panels",
+     "qty": 12,
+     "unit": 95
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Solar mounting kit",
+     "qty": 1,
+     "unit": 150
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 60
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 285
+    }
+   ],
+   "transport": 125
+  },
+  {
+   "size_kva": 12,
+   "quotes": 9,
+   "lines": [
+    {
+     "item": "12kVA hybrid inverter",
+     "qty": 1,
+     "unit": 1460
+    },
+    {
+     "item": "5.12kWh lithium battery",
+     "qty": 2,
+     "unit": 805
+    },
+    {
+     "item": "590W solar panels",
+     "qty": 16,
+     "unit": 105
+    },
+    {
+     "item": "Protection kit",
+     "qty": 1,
+     "unit": 85
+    },
+    {
+     "item": "Mounting kit",
+     "qty": 1,
+     "unit": 250
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 80
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 300
+    }
+   ],
+   "transport": 100
+  },
+  {
+   "size_kva": 20,
+   "quotes": 3,
+   "lines": [
+    {
+     "item": "20kVA 3 phase hybrid inverter",
+     "qty": 1,
+     "unit": 3700
+    },
+    {
+     "item": "10.14kWh lithium battery",
+     "qty": 2,
+     "unit": 1700
+    },
+    {
+     "item": "590W solar panels",
+     "qty": 34,
+     "unit": 112.5
+    },
+    {
+     "item": "Solar mounting structure",
+     "qty": 1,
+     "unit": 1175
+    },
+    {
+     "item": "Cabling and management",
+     "qty": 1,
+     "unit": 350
+    },
+    {
+     "item": "AC combiner box",
+     "qty": 1,
+     "unit": 80
+    },
+    {
+     "item": "Labour",
+     "qty": 1,
+     "unit": 2300
+    }
+   ],
+   "transport": 100
+  }
+ ]
+}

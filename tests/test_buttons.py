@@ -77,12 +77,12 @@ def test_quote_by_buttons_with_estimate_change_and_send(chat):
     assert chat.last["button"] == "See packages"
     walk(chat, [("tap", "pkg_3")])
     confirm = chat.say("Harare")
-    assert "Home 5kVA" in confirm and "USD 1,865" in confirm and chat.keys() == ["btn:send", "btn:change"]
+    assert "Home 5kVA" in confirm and "USD 1,985" in confirm and chat.keys() == ["btn:send", "btn:change"]
     assert "what would you like to change" in chat.tap("change").lower()
     confirm = chat.say("Bulawayo")
     assert "Bulawayo" in confirm and "Harare" not in confirm
     done = chat.tap("send")
-    assert "I've sent your request" in done and "USD 1,865" in done
+    assert "I've sent your request" in done and "*Total: USD 1,985*" in done and "550W solar panels" in done
     lead = [l for l in db.list_leads() if l["phone"] == chat.who][0]
     assert lead["location"] == "Bulawayo" and lead["suggested"] == "Home 5kVA"
 
@@ -90,7 +90,7 @@ def test_quote_by_buttons_with_estimate_change_and_send(chat):
 def test_a_correction_typed_at_the_confirm_step_is_applied(chat):
     walk(chat, [("say", "I want a 5kva system"), ("say", "Harare")])
     confirm = chat.say("make it 10kva")
-    assert "10kVA" in confirm and "Business 10kVA" in confirm and "Shall I send it" in confirm
+    assert "10kVA" in confirm and "USD 4,045" in confirm and "Shall I send it" in confirm
 
 
 def test_second_quote_request_asks_new_or_change(chat):
@@ -100,7 +100,7 @@ def test_second_quote_request_asks_new_or_change(chat):
     assert "already sent" in reply and chat.keys() == ["btn:new_quote", "btn:edit_quote"]
     walk(chat, [("tap", "edit_quote"), ("say", "make it 10kva")])
     done = chat.tap("send")
-    assert "updated request" in done and "Business 10kVA" in done
+    assert "updated request" in done and "10kVA hybrid inverter" in done and "USD 4,045" in done
     assert any(l["need"].startswith("UPDATED") for l in db.list_leads() if l["phone"] == chat.who)
 
 
