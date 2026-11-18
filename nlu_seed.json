@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "faq_examples": {
     "faq_is_it_genuine": ["are you a registered company", "are you legit", "how do i know you are not scammers", "is this a real business",
       "can i trust your company", "are your products original", "do you have a company registration", "i have been scammed before, are you genuine",
@@ -81,7 +81,14 @@
         "ndinoda inverter nemabatteries", "could you quote me for solar and batteries", "i need a quote for solar installation",
         "quote please", "give me a quote", "can i have a quote for my house", "i want to get a quotation for a solar system",
         "we want solar at our school", "we need solar for our clinic", "i want to put solar at my farm",
-        "i am looking for someone to install solar", "who can install solar for me", "i need a solar installer"]
+        "i am looking for someone to install solar", "who can install solar for me", "i need a solar installer",
+        "i need a new system", "new system", "a new system please", "i want a new system", "i need new system",
+        "i need a new solar system", "i want a new solar system", "no i need a new system", "no i want a new system",
+        "no i need new system", "no i want to buy a new one", "a new one", "i need a new one", "new installation",
+        "i want a new installation", "i do not have solar yet", "i dont have a system yet", "no i dont have solar",
+        "i have no solar yet i want one", "i am looking for a new system", "looking for a new solar system",
+        "for my home i need a new system", "for my house", "for my home", "for my business", "for my shop",
+        "ndinoda system itsva", "ndinoda solar itsva"]
     },
     {
       "name": "price", "category": "purchase", "priority": "medium", "handler": "packages",

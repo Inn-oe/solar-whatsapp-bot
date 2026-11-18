@@ -35,6 +35,7 @@ from flask import Flask, jsonify, request, send_from_directory, session
 import brain
 import db
 import leads
+import llm
 import market
 import nlu
 
@@ -832,7 +833,7 @@ _train_state = {"running": False, "error": "", "finished_at": None}
 
 def _train_status():
     return dict(nlu.engine.info, training=_train_state["running"], train_error=_train_state["error"],
-                trained_at=_train_state["finished_at"])
+                trained_at=_train_state["finished_at"], llm=llm.status())
 
 
 def _train_in_background():

@@ -60,6 +60,11 @@ See the docstring of `app.py`. New ones: `NLU_BACKEND` (`tfidf`, `transformer` o
 Hugging Face Space (Gradio SDK, 16 GB RAM). Set `EMBED_API_KEY` as a secret on the Space, then on the bot set
 `NLU_BACKEND=remote`, `NLU_REMOTE_URL=https://<user>-<space>.hf.space` and `NLU_REMOTE_KEY=<same key>`. The quick
 model answers while the service wakes up or if it is ever unreachable.
+**AI fallback (large language model).** When the quick model is unsure, `llm.py` asks an LLM to pick one of the
+bot's intents (it never writes the reply itself). It works with any OpenAI-compatible API: set `LLM_API_KEY`, and
+optionally `LLM_API_URL` (default Mistral, `https://api.mistral.ai/v1`; Groq `https://api.groq.com/openai/v1`;
+OpenRouter `https://openrouter.ai/api/v1`), `LLM_MODEL` (default `mistral-small-latest`) and `LLM_TIMEOUT` (default 8 s).
+Messages it classifies are queued on the Train page for staff to confirm, so the quick model learns them too.
 `INTERNAL_KEY` also protects `/internal/nlu/train|test|status`, which the platform calls.
 
 ## Tests

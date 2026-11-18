@@ -19,6 +19,7 @@ import threading
 from pathlib import Path
 
 import db
+import llm
 import nlu
 
 log = logging.getLogger("solar-bot.brain")
@@ -131,6 +132,7 @@ def retrain():
     # "Train now" never wait on a model download.
     info = nlu.engine.train(examples, backend="tfidf")
     _intents = intents
+    llm.set_menu({n: i for n, i in intents.items() if n in ok}, examples)
     wanted = os.getenv("NLU_BACKEND", "tfidf").lower()
     if wanted == "remote":
         _upgrade_to_transformer(examples, "remote")      # the model runs on the embedding service: no memory needed here
@@ -207,12 +209,30 @@ def start(catalog):
 
 
 # ---------------------------------------------------------------- understanding
-def analyze(text, towns=None, existing_customer=False):
-    """Everything the model knows about one message (also used by the 'test a phrase' tool)."""
+LEADING_YES_NO = re.compile(r"^\s*(no+|nope|yes|yeah|yep|ok|okay|sure|ehe|aiwa|hongu|kwete)\b[\s,.!-]*", re.I)
+
+
+def analyze(text, towns=None, existing_customer=False, context=""):
+    """Everything the model knows about one message (also used by the 'test a phrase' tool).
+
+    `context` is the bot's previous message, so the language-model fallback can read short answers."""
     res = nlu.engine.predict(text)
     ents = nlu.extract_entities(text, towns)
     t = nlu.clean(text)
     intent = res["intent"] if nlu.engine.understood(res) else None
+    via = "model" if intent else None
+    # "No I need new system": the leading yes/no answers our question, the rest says what they want
+    rest = LEADING_YES_NO.sub("", text, count=1)
+    if intent is None and rest != text and len(rest.split()) >= 2:
+        res2 = nlu.engine.predict(rest)
+        if nlu.engine.understood(res2):
+            res, intent, via = res2, res2["intent"], "model"
+    # still unsure: ask the large language model (if one is configured) to pick one of our intents
+    if intent is None and llm.enabled():
+        guess, conf = llm.classify(text, context)
+        if guess and conf >= 0.5 and guess in _intents:
+            intent, via = guess, "llm"
+            res = dict(res, intent=guess, confidence=min(res["confidence"], 0.39))  # low: staff review it later
     # safety words mean a fault report, unless the person is clearly talking about buying something
     category_now = (_intents.get(intent) or {}).get("category")
     if nlu.SAFETY.search(t) and category_now not in ("maintenance", "purchase") and "maintenance_fault" in _intents:
@@ -231,7 +251,7 @@ def analyze(text, towns=None, existing_customer=False):
     return {"intent": intent, "guess": res["intent"], "confidence": round(res["confidence"], 3),
             "similarity": round(res["similarity"], 3), "ranked": res["ranked"], "matched": res["matched"],
             "category": category, "priority": priority, "reasons": reasons, "entities": ents,
-            "handler": meta.get("handler", "reply"), "understood": intent is not None}
+            "handler": meta.get("handler", "reply"), "understood": intent is not None, "via": via}
 
 
 QUESTION_START = re.compile(r"\s*(can|could|do|does|will|would|is|are|how|what|which|why|when|where|who)\b", re.I)
@@ -302,9 +322,15 @@ class Ctx:
 
 def respond(phone, name, text, s):
     """The reply text for one message. `s` is the saved conversation state (a dict that is mutated)."""
+    reply = _respond(phone, name, text, s)
+    s["_last_reply"] = (reply.get("text") if isinstance(reply, dict) else str(reply or ""))[:400]
+    return reply
+
+
+def _respond(phone, name, text, s):
     c = core()
     towns = [t for t in (c.CATALOG.get("towns") or []) if isinstance(t, str)]
-    a = analyze(text, towns)
+    a = analyze(text, towns, context=s.get("_last_reply", ""))
     ctx = Ctx(phone, name, text, s, a)
     s.pop("offer", None)
 
