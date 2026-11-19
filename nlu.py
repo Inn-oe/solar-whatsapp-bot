@@ -17,6 +17,7 @@ There is no model file: the model is rebuilt from the examples at start-up and a
 database is the only thing that has to be kept.
 """
 import difflib
+import gc
 import json
 import logging
 import os
@@ -255,9 +256,16 @@ class _Tfidf:
     name = "tfidf"
 
     def fit(self, texts):
-        self.word = TfidfVectorizer(ngram_range=(1, 2), sublinear_tf=True, min_df=1)
-        self.char = TfidfVectorizer(analyzer="char_wb", ngram_range=(2, 5), sublinear_tf=True, min_df=1)
-        return normalize(hstack([self.word.fit_transform(texts), self.char.fit_transform(texts)]).tocsr())
+        # Memory matters here: the logistic regression keeps one weight per intent per feature and its optimiser holds
+        # ~20 copies, so training 96 intents on the 512 MB free plan was killed (out of memory). Character n-grams of
+        # 2-4 letters that occur in at least two phrases (n-grams seen once only describe that single phrase) and
+        # 32-bit numbers cut the training peak from +234 MB to +105 MB with the same answers on typo tests.
+        self.word = TfidfVectorizer(ngram_range=(1, 2), sublinear_tf=True, min_df=1, dtype=np.float32)
+        self.char = TfidfVectorizer(analyzer="char_wb", ngram_range=(2, 4), sublinear_tf=True, min_df=2,
+                                    dtype=np.float32)
+        w, c = self.word.fit_transform(texts), self.char.fit_transform(texts)
+        self.word.stop_words_ = self.char.stop_words_ = None   # the list of dropped n-grams is only kept for inspection
+        return normalize(hstack([w, c]).tocsr())
 
     def transform(self, texts):
         return normalize(hstack([self.word.transform(texts), self.char.transform(texts)]).tocsr())
@@ -404,6 +412,7 @@ class Engine:
         x = feat.fit(texts)
         clf = LogisticRegression(C=20.0, max_iter=300, tol=1e-3, class_weight="balanced")
         clf.fit(x, y)
+        gc.collect()   # hand the optimiser's large temporary arrays back before the next request arrives
         model = {"feat": feat, "clf": clf, "x": x, "y": y, "texts": texts}
         with self._lock:
             self._model = model
