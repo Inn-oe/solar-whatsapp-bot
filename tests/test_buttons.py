@@ -49,7 +49,8 @@ def test_fault_buttons_offered_at_each_step(chat):
     assert "btn:fault_charging" in chat.keys() and "btn:fault_other" in chat.keys()   # a list of problems
     chat.tap("fault_beep")
     assert chat.keys() == ["btn:code_none", "btn:code_beep", "btn:code_blank"]
-    reply = chat.say("E05")                                    # the code itself is typed
+    assert "which brand" in chat.say("E05").lower()            # the code itself is typed; a bare code needs the brand
+    reply = chat.say("not sure")
     assert "did that fix it" in reply.lower() and chat.keys() == ["btn:fixed", "btn:notfixed", "btn:tshoot_human"]
     assert "glad" in chat.tap("fixed").lower()
     assert last_enquiry(chat.who, "maintenance")["status"] == "handled"

@@ -30,14 +30,16 @@ from functools import wraps
 from pathlib import Path
 
 import requests
-from flask import Flask, jsonify, request, send_from_directory, session
+from flask import Flask, Response, jsonify, request, send_from_directory, session
 
 import brain
+import components
 import db
 import leads
 import llm
 import market
 import nlu
+import quote as quote_mod
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("solar-bot")
@@ -184,6 +186,83 @@ def market_note(p, town=""):
             f"current prices at {r['sources']} sellers{when}. Your exact price comes with your quotation.")
 
 
+def live_price(size, town=""):
+    """The current advertised market price for a system size ({"median","size","count","sources","when"}), or None."""
+    if not CATALOG.get("market_prices", True) or CATALOG.get("currency", "").upper() not in ("USD", "US$", "$"):
+        return None
+    try:
+        r = market.range_for(size, town)
+        if not r:
+            return None
+        when = ""
+        try:
+            when = dt.datetime.fromisoformat(market.summary()["refreshed"]).strftime("%d %b").lstrip("0")
+        except (TypeError, ValueError):
+            pass
+        return {"median": r["median"], "size": r["size"], "count": r["count"], "sources": r["sources"], "when": when}
+    except Exception:
+        log.exception("live price failed")
+        return None
+
+
+def live_parts(size):
+    if not CATALOG.get("market_prices", True):
+        return None
+    try:
+        return components.live_parts(size) or None
+    except Exception:
+        log.exception("live parts failed")
+        return None
+
+
+def components_loop():
+    time.sleep(40)
+    while True:
+        try:
+            last = db.get_setting("component_prices")
+            stale = True
+            if last:
+                when = json.loads(last).get("refreshed")
+                stale = not when or dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(when) > timedelta(hours=24)
+            if stale:
+                components.refresh()
+        except Exception:
+            log.exception("component refresh failed")
+        time.sleep(1800)
+
+
+def test_quote_reply():
+    """A sample 5kVA quotation with its PDF and buttons, exactly as a customer would receive it."""
+    q = quote_mod.build(5, live_price(5), live_parts(5))
+    ref = "TEST-" + dt.date.today().strftime("%y%m%d")
+    token = save_quote(q, "Test Client", "Harare", ref)
+    text = (f"🧪 TEST quotation ({q['size_kva']:g}kVA, {quote_mod.money(q['total'])}). If you can open the PDF above "
+            "and these buttons work, WhatsApp delivery is fine.")
+    return R(text, [{"id": "btn:visit", "title": "Book site visit"}, {"id": "btn:question", "title": "Ask a question"},
+                    {"id": "btn:fault", "title": "Report a problem"}],
+             document={"token": token, "title": "Download quotation (PDF)", "caption": f"Quotation {ref}",
+                       "short_text": text})
+
+
+def save_quote(q, client="", where="", ref=""):
+    """Store a quotation so its PDF can be fetched (web link) or regenerated (WhatsApp). Returns the secret token."""
+    token = secrets.token_urlsafe(12)
+    db.set_setting("quote:" + token, json.dumps({"q": q, "client": client, "where": where, "ref": ref,
+                                                  "made": dt.date.today().isoformat()}))
+    return token
+
+
+def quote_pdf(token):
+    raw = db.get_setting("quote:" + re.sub(r"[^A-Za-z0-9_-]", "", token or ""))
+    if not raw:
+        return None, None
+    d = json.loads(raw)
+    c = CATALOG
+    pdf = quote_mod.pdf_bytes(d["q"], c["company"], {k: c.get(k, "") for k in ("phone", "email", "address")},
+                              d.get("client", ""), d.get("where", ""), d.get("ref", ""))
+    return pdf, f"GieBee-Quotation-{d.get('ref') or 'quote'}.pdf"
+
+
 def money(n):
     return f"{CATALOG['currency']} {n:,.0f}"
 
@@ -254,8 +333,9 @@ def first_name(name):
 
 # A reply is text, optionally with buttons (up to 3) or list rows (up to 10) for the question it ends with.
 # Options are {"id": "btn:<key>", "title": ..., "description": ...}; the customer can always type instead.
-def R(text, options=(), button=""):
-    return {"text": text, "options": [dict(o) for o in (options or [])][:10], "button": button or ""}
+def R(text, options=(), button="", document=None):
+    return {"text": text, "options": [dict(o) for o in (options or [])][:10], "button": button or "",
+            "document": document or None}
 
 
 def as_reply(r):
@@ -414,7 +494,7 @@ def handle(phone, name, text):
         s = {}
     try:
         r = brain.respond(phone, name, text, s)
-        return R(r["text"], r.get("options"), r.get("button")) if isinstance(r, dict) else R(r)
+        return R(r["text"], r.get("options"), r.get("button"), r.get("document")) if isinstance(r, dict) else R(r)
     except Exception:
         log.exception("brain failed")
         return R("Sorry, something went wrong on my side. A member of our team will follow up with you.")
@@ -494,10 +574,39 @@ def send_interactive(to, interactive):
     return True
 
 
+def send_document(to, pdf, filename, caption=""):
+    """Upload a PDF to WhatsApp and send it as a document. True when WhatsApp accepted it."""
+    if not (WHATSAPP_TOKEN and PHONE_NUMBER_ID):
+        log.warning("WHATSAPP_TOKEN/PHONE_NUMBER_ID not set; would send %s to %s", filename, to)
+        return False
+    base = f"https://graph.facebook.com/{GRAPH_VERSION}/{PHONE_NUMBER_ID}"
+    auth = {"Authorization": f"Bearer {WHATSAPP_TOKEN}"}
+    up = requests.post(base + "/media", headers=auth, data={"messaging_product": "whatsapp", "type": "application/pdf"},
+                       files={"file": (filename, pdf, "application/pdf")}, timeout=30)
+    if up.status_code >= 300 or not up.json().get("id"):
+        log.error("media upload failed %s: %s", up.status_code, up.text[:300])
+        return False
+    r = requests.post(base + "/messages", headers=auth, timeout=15,
+                      json={"messaging_product": "whatsapp", "to": to, "type": "document",
+                            "document": {"id": up.json()["id"], "filename": filename, "caption": caption[:900]}})
+    if r.status_code >= 300:
+        log.error("document send failed %s: %s", r.status_code, r.text[:300])
+        return False
+    return True
+
+
 def send_reply(to, reply):
     """Send a bot reply: with buttons or a list when it offers choices, plain text otherwise. If WhatsApp
     refuses the buttons, the text still goes out with the choices written in, so the customer can type one."""
     r = as_reply(reply)
+    doc = r.get("document")
+    if doc:
+        try:
+            pdf, name = quote_pdf(doc["token"])
+            if pdf and send_document(to, pdf, name, doc.get("caption", "")):
+                r = dict(r, text=doc.get("short_text") or r["text"])   # the PDF has the itemised list
+        except Exception:
+            log.exception("could not send quotation PDF")   # the full itemised text still goes out below
     if not r["options"]:
         return send_text(to, r["text"])
     lead, interactive = interactive_payload(r["text"], r["options"], r["button"])
@@ -563,6 +672,9 @@ def incoming():
                     if phone in ALERT_NUMBERS and text.strip().lower() in {"market", "market prices"}:
                         send_text(phone, market_summary_text())
                         continue
+                    if phone in ALERT_NUMBERS and text.strip().lower() in {"test quote", "testquote", "/testquote"}:
+                        send_reply(phone, test_quote_reply())   # lets staff check the PDF and buttons on a real phone
+                        continue
                     if phone in ALERT_NUMBERS and text.strip().lower() in {"leads", "report", "today"}:
                         # staff asking for today's list; this also keeps their 24-hour alert window open
                         send_text(phone, staff_summary())
@@ -617,6 +729,15 @@ def api_catalog():
                    | {"packages": packages, "whatsapp": PUBLIC_WHATSAPP})
 
 
+@app.get("/quote/<token>.pdf")
+def quote_download(token):
+    pdf, name = quote_pdf(token)
+    if not pdf:
+        return "Quotation not found.", 404
+    return Response(pdf, mimetype="application/pdf", headers={"Content-Disposition": f'inline; filename="{name}"',
+                                                              "Cache-Control": "private, max-age=3600"})
+
+
 @app.post("/api/chat")
 def api_chat():
     if limited("chat:" + client_ip(), 30):
@@ -633,7 +754,10 @@ def api_chat():
     db.add_message(who, "in", shown or text)
     db.add_message(who, "out", reply_log_text(reply))
     db.touch_contact(who, direction="out")
-    return jsonify(reply=reply["text"], options=[{"id": o["id"], "title": o["title"]} for o in reply["options"]])
+    doc = reply.get("document")
+    return jsonify(reply=reply["text"], options=[{"id": o["id"], "title": o["title"]} for o in reply["options"]],
+                   document=({"url": f"/quote/{doc['token']}.pdf", "title": doc.get("title", "Download quotation (PDF)")}
+                             if doc else None))
 
 
 @app.post("/api/lead")
@@ -956,6 +1080,7 @@ brain.start(CATALOG)
 
 if os.getenv("MARKET_AUTO", "1") != "0":
     threading.Thread(target=market.loop, daemon=True, name="market-refresh").start()
+    threading.Thread(target=components_loop, daemon=True, name="parts-refresh").start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5001)), debug=False)

@@ -3,7 +3,7 @@
 The intent classifier (nlu.py) is fast and runs on the bot's small server, but it only knows phrasings close to
 its examples. When it is unsure, this asks an instruction-tuned LLM (Mistral, Qwen, Llama, ...) through any
 OpenAI-compatible chat API to pick one of the bot's own intents. The LLM never writes the reply to the customer:
-it only chooses the intent. With LLM_REPLIES on (default) it also rewords the staff-written answer naturally for the
+it only chooses the intent. With LLM_REWORD=on (default off) it also rewords the staff-written answer naturally for the
 conversation (natural_reply) and answers unmatched questions from the company facts only (answer_from_facts); every
 number must come from the approved text, otherwise the approved text is sent unchanged.
 
@@ -176,9 +176,13 @@ def _history(turns):
     return "\n".join(f"{'Customer' if who == 'in' else 'You'}: {text[:300]}" for who, text in (turns or [])[-6:])
 
 
+def _flag(name, default):
+    return os.getenv(name, default).strip().lower() in ("on", "1", "true", "yes")
+
+
 def natural_reply(approved, customer_text, company, turns=None, first_name=""):
     """The approved answer reworded for this conversation, or None to send the approved text as it is."""
-    if not enabled() or not os.getenv("LLM_REPLIES", "on").lower() in ("on", "1", "true", "yes") or not approved:
+    if not enabled() or not _flag("LLM_REWORD", "off") or not approved:
         return None
     _compose_status["calls"] += 1
     user = (f"Conversation so far:\n{_history(turns)}\n\nCustomer's latest message: \"{customer_text[:500]}\"\n"
@@ -196,7 +200,7 @@ def natural_reply(approved, customer_text, company, turns=None, first_name=""):
 
 def answer_from_facts(question, facts, company, turns=None):
     """A short answer built only from the company's facts, or None when they do not cover the question."""
-    if not enabled() or not facts or not os.getenv("LLM_REPLIES", "on").lower() in ("on", "1", "true", "yes"):
+    if not enabled() or not facts or not _flag("LLM_ANSWERS", "on"):
         return None
     _compose_status["calls"] += 1
     user = (f"COMPANY FACTS:\n{facts}\n\nConversation so far:\n{_history(turns)}\n\n"

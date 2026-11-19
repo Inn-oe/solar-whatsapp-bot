@@ -1,0 +1,275 @@
+{
+ "_note": "Fault meanings copied from manufacturer manuals/Victron docs; 'check' steps are customer-safe first checks only. Anything not listed is escalated to a technician, never guessed.",
+ "tables": {
+  "deye": {
+   "name": "Deye / Sunsynk hybrid inverter (F-codes)",
+   "aliases": [
+    "deye",
+    "sunsynk",
+    "sun-5k",
+    "sun-8k",
+    "sun-12k",
+    "solarman"
+   ],
+   "source": "https://manualshive.com/en/manual/sunsynk/g01lp1-us-eu/1400613?page=43",
+   "codes": {
+    "F01": [
+     "DC input polarity reversed",
+     "stop",
+     "Panel (PV) wires may be connected the wrong way round. Switch the solar isolator OFF and have a technician check the polarity."
+    ],
+    "F02": [
+     "DC insulation failure",
+     "stop",
+     "Poor insulation between the solar wiring and earth, often water in connectors. Switch the solar isolator OFF; a technician must test it."
+    ],
+    "F13": [
+     "Working mode changed / grid mode changed",
+     "info",
+     "Usually clears by itself after the grid or settings change. If it repeats every few minutes, a technician should check the grid and settings."
+    ],
+    "F18": [
+     "AC overcurrent (hardware)",
+     "stop",
+     "Often an overload or surge on the AC output. Switch off big appliances and restart once; if it returns, a technician must check it."
+    ],
+    "F20": [
+     "DC overcurrent (hardware)",
+     "stop",
+     "Switch off and restart once; if it returns, a technician must check the DC side."
+    ],
+    "F23": [
+     "AC leakage current / transient overcurrent",
+     "stop",
+     "An earthing or insulation problem on PV or AC, often moisture. Do not keep resetting it: a technician must test the earthing."
+    ],
+    "F24": [
+     "DC insulation impedance too low",
+     "stop",
+     "Solar array insulation to earth is low, often wet MC4 connectors. Switch the solar isolator OFF; a technician must test it."
+    ],
+    "F26": [
+     "DC bus unbalanced",
+     "restart",
+     "Restart the system once. With a big difference between L1 and L2 loads (split phase) it can also appear. If it keeps coming back, a technician should check."
+    ],
+    "F35": [
+     "No AC grid detected",
+     "check",
+     "Check that the grid supply and the grid breaker are on. If ZESA power is on and it still shows, a technician should check the wiring."
+    ],
+    "F41": [
+     "Parallel system stopped",
+     "check",
+     "In a parallel setup, one inverter being off can stop the others. Check that every inverter is switched on; if it still shows, a technician should check."
+    ],
+    "F58": [
+     "BMS communication fault",
+     "check",
+     "The inverter cannot talk to the battery. Check that the battery is on and the battery comms cable is plugged firmly into the inverter's BMS port, then restart."
+    ],
+    "F64": [
+     "Heatsink / IGBT over-temperature",
+     "check",
+     "The inverter is too hot. Make sure the vents are clear and it is in shade with airflow, reduce the load, and let it cool for 30 minutes."
+    ]
+   }
+  },
+  "voltronic": {
+   "name": "Axpert / Voltronic family: Axpert, Mecer, Kodak, Conversol, MPP Solar, Must, Voltacon and similar (numbered faults)",
+   "aliases": [
+    "axpert",
+    "voltronic",
+    "mecer",
+    "kodak",
+    "conversol",
+    "mpp",
+    "voltacon",
+    "infini",
+    "must",
+    "ph1800",
+    "pv1800",
+    "ph3000"
+   ],
+   "source": "https://manualshive.com/en/manual/axpert/mlv-5kva-48v/3041283?page=32",
+   "codes": {
+    "01": [
+     "Fan locked",
+     "check",
+     "Check that the vents are clear and the fan is not blocked; if the fan is stuck a technician must replace it."
+    ],
+    "02": [
+     "Over temperature (internal over 100 °C)",
+     "check",
+     "Too hot: improve ventilation or shade, reduce the load, let it cool. If it happens in a cool place, a technician must check."
+    ],
+    "03": [
+     "Battery voltage too high / overcharged",
+     "stop",
+     "Switch off and have a technician check the battery settings, the number of batteries and the charger."
+    ],
+    "04": [
+     "Battery voltage too low",
+     "check",
+     "The battery is flat. Reduce loads and let it recharge; if the battery is old or will not hold charge, a technician must test it."
+    ],
+    "05": [
+     "Output short circuit or over temperature",
+     "stop",
+     "Switch off the AC output and unplug all appliances; a short circuit in a socket or appliance is likely. Restart once, then add appliances one by one."
+    ],
+    "06": [
+     "Output voltage abnormal (below 190 V or above 260 V)",
+     "check",
+     "Reduce the load and restart once. If it repeats with no load, a technician must check it."
+    ],
+    "07": [
+     "Overload timeout",
+     "check",
+     "Too much load for too long. Switch off the heavy appliances (geyser, stove, pump, heater) and restart."
+    ],
+    "08": [
+     "Bus voltage too high",
+     "stop",
+     "An internal fault, often seen with some models when charging from the grid. Switch off and call a technician: do not keep restarting."
+    ],
+    "09": [
+     "Bus soft start failed",
+     "stop",
+     "Internal fault. Switch off and call a technician."
+    ],
+    "51": [
+     "Over current / surge",
+     "check",
+     "Switch off heavy loads and restart once; if it returns, a technician must check."
+    ],
+    "52": [
+     "Bus voltage too low",
+     "stop",
+     "Internal fault. Switch off and call a technician."
+    ],
+    "53": [
+     "Inverter soft start failed",
+     "stop",
+     "Internal fault. Switch off and call a technician."
+    ],
+    "55": [
+     "Over DC voltage in AC output",
+     "stop",
+     "Internal fault. Switch off and call a technician."
+    ],
+    "56": [
+     "Battery connection open",
+     "check",
+     "Switch everything off and check that the battery breaker/fuse is ON and the battery cables are tight (look only; do not open the unit). If fine, a technician must check."
+    ],
+    "57": [
+     "Current sensor failed",
+     "stop",
+     "Internal fault. Switch off and call a technician."
+    ],
+    "58": [
+     "Output voltage too low",
+     "check",
+     "Reduce the load and restart once. If it repeats with no load, a technician must check it."
+    ],
+    "80": [
+     "CAN communication loss (parallel setup)",
+     "check",
+     "Check the parallel/communication cables between units are seated firmly."
+    ],
+    "81": [
+     "Host data loss (parallel setup)",
+     "check",
+     "Check the parallel/communication cables between units are seated firmly."
+    ]
+   }
+  },
+  "growatt": {
+   "name": "Growatt SPF off-grid inverter (numbered faults)",
+   "aliases": [
+    "growatt",
+    "spf",
+    "spf5000",
+    "spf 5000"
+   ],
+   "source": "https://manualshive.com/ru/manual/growatt/spf-2000tl/2270523?page=40",
+   "codes": {
+    "01": [
+     "Fan fault",
+     "check",
+     "Check that nothing blocks the fan or vents; a technician must replace a stuck fan."
+    ],
+    "02": [
+     "Over temperature",
+     "check",
+     "Improve ventilation or shade, reduce the load and let it cool. If it shows in a cool place, a technician must check."
+    ],
+    "03": [
+     "Battery voltage too high",
+     "stop",
+     "Switch off and have a technician check the battery type and charging settings."
+    ],
+    "04": [
+     "Battery voltage too low",
+     "check",
+     "The battery is flat or the connection is poor. Reduce loads and let it recharge."
+    ],
+    "05": [
+     "Output short circuit or over temperature",
+     "stop",
+     "Switch off and unplug appliances; restart once, then add appliances one by one."
+    ],
+    "07": [
+     "Overload timeout",
+     "check",
+     "Switch off the heavy appliances and restart."
+    ],
+    "08": [
+     "Bus voltage too high",
+     "stop",
+     "Internal fault. Switch off and call a technician."
+    ],
+    "56": [
+     "Battery connection open",
+     "check",
+     "Check that the battery breaker is ON and cables are tight (look only). If fine, a technician must check."
+    ]
+   }
+  },
+  "victron": {
+   "name": "Victron MultiPlus / Quattro (VE.Bus errors and LEDs)",
+   "aliases": [
+    "victron",
+    "multiplus",
+    "quattro",
+    "easysolar",
+    "ve.bus",
+    "venus"
+   ],
+   "source": "https://www.victronenergy.com/live/ve.bus:ve.bus_error_codes",
+   "codes": {
+    "1": [
+     "A device in the system has switched off (usually low battery, overload or high temperature)",
+     "check",
+     "Look at the LEDs on the unit that is off: they tell you which alarm it was. Reduce the load, charge the battery, or cool it down."
+    ],
+    "3": [
+     "Not all expected devices found",
+     "check",
+     "Often follows error 1: fix the cause of error 1 first, then check the network cables between units."
+    ],
+    "7": [
+     "External device connected but no Assistant set up for it",
+     "stop",
+     "A technician must configure the unit."
+    ],
+    "8": [
+     "Ground relay test failed (MultiPlus-II / EasySolar-II)",
+     "stop",
+     "A technician must check the earthing and the unit."
+    ]
+   }
+  }
+ }
+}

@@ -66,8 +66,8 @@ training sheet say what to tell the customer. With `LLM_API_KEY` set, the bot al
 that answer the way a person would in this conversation (`llm.natural_reply`), and to answer questions the trained
 model does not recognise from the company's facts only: FAQ answers, packages and quotation prices
 (`llm.answer_from_facts`). Every number in a reworded reply must appear in the approved text, otherwise the approved
-text is sent unchanged; the same happens when the key is missing or the model is slow. Turn rewording off with
-`LLM_REPLIES=off`. Questions answered this way still go to the Review queue so staff can teach the trained model.
+text is sent unchanged; the same happens when the key is missing or the model is slow. Two separate switches: `LLM_REWORD` (default `off`) lets the model reword staff answers;
+`LLM_ANSWERS` (default `on`) lets it answer unrecognised questions from the company facts. Questions answered this way still go to the Review queue so staff can teach the trained model.
 
 ## Buttons and typed answers
 
@@ -129,3 +129,37 @@ Messages it classifies are queued on the Train page for staff to confirm, so the
 pip install -r requirements-dev.txt
 pytest
 ```
+
+
+## PDF quotations and live prices
+
+When a customer finishes a quotation request, the bot builds the itemised quotation (`quote.py`) and saves it
+(`app.save_quote`). On WhatsApp it uploads the PDF and sends it as a document, followed by a short message with the
+total; if WhatsApp refuses the document, the full itemised text is sent instead. On the website chat the same quotation
+appears as a "Download quotation (PDF)" link (`/quote/<secret token>.pdf`). The PDF has the company header, reference,
+date, 14-day validity, the itemised table, total and terms.
+
+Prices follow the live Zimbabwe market: the Market page's adverts (`market.py`, refreshed daily from the listed seller
+pages) give the typical installed price for the size, and every line of the quotation is scaled by the same factor so
+the total follows the market. A market price outside 0.6-1.6x of GieBee's own price, or for a different size, is
+treated as bad data and GieBee's quotation prices are used. The quotation says which basis it used.
+
+## Technician knowledge
+
+* `data/faults.json`: fault codes for Deye/Sunsynk, Axpert-family (Axpert, Mecer, Kodak, Conversol, Must...), Growatt
+  SPF and Victron, each with the manufacturer's meaning and a customer-safe first check. `knowledge.py` matches the
+  code exactly, asks for the brand when a bare number is ambiguous, sends serious faults (insulation, leakage,
+  internal failures) straight to a technician, and never guesses a code that is not in the table.
+* `sizing.py`: solar, battery and inverter sizing with the arithmetic done in code and Zimbabwe peak sun hours by town.
+* ZERA / net-metering facts (SI 86 of 2018, SI 38 of 2022, SI 125/126 of 2026) are in `knowledge.REGULATION_FACTS`;
+  verify them against ZERA before relying on them for a customer's compliance.
+
+## Part prices, test quote and site visits
+
+* `components.py` reads inverter, battery and panel prices from supplier shop pages once a day (Solar District to
+  start; edit `SOURCES`). A part's live price is used in a quotation only when it is within 0.6-1.6x of GieBee's own
+  price; the comparison is kept on the quotation (`q["compare"]`) so staff can see where the market differs.
+* Staff numbers (`ALERT_NUMBERS`) can send **test quote** on WhatsApp to receive a sample quotation PDF with buttons,
+  to check delivery on a real phone.
+* After a quotation the customer can tap **Book site visit**, say when suits them, and the team gets an alert to
+  confirm the day and time.
