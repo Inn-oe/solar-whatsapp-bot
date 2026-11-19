@@ -143,3 +143,14 @@ def live_parts(size_kva):
         except ValueError:
             pass
     return out
+
+
+def tier_inverter_prices(size_kva, brands_by_tier):
+    """Median live supplier price of inverters of this size (within 1.5 kW) for each tier's brands: {tier: USD}."""
+    out = {}
+    items = [i for i in _load().get("items", []) if i["kind"] == "inverter" and abs(i["spec"] - size_kva) <= 1.5]
+    for tier, brands in brands_by_tier.items():
+        prices = [i["price"] / i["spec"] * size_kva for i in items if any(b in i["name"].lower() for b in brands)]
+        if len(prices) >= 2:
+            out[tier] = round(statistics.median(prices))
+    return out

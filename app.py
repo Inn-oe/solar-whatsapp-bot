@@ -215,6 +215,16 @@ def live_parts(size):
         return None
 
 
+def tier_inverters(size):
+    """Live supplier prices of standard- and premium-class inverters of this size ({} when the feed has none)."""
+    try:
+        tb = quote_mod.tier_book()["tiers"]
+        return components.tier_inverter_prices(size, {k: tb[k]["brands"] for k in ("standard", "premium")})
+    except Exception:
+        log.exception("tier prices failed")
+        return {}
+
+
 def components_loop():
     time.sleep(40)
     while True:
@@ -244,10 +254,11 @@ def test_quote_reply():
                        "short_text": text})
 
 
-def save_quote(q, client="", where="", ref=""):
+def save_quote(q, client="", where="", ref="", options=None):
     """Store a quotation so its PDF can be fetched (web link) or regenerated (WhatsApp). Returns the secret token."""
     token = secrets.token_urlsafe(12)
     db.set_setting("quote:" + token, json.dumps({"q": q, "client": client, "where": where, "ref": ref,
+                                                  "options": options or [],
                                                   "made": dt.date.today().isoformat()}))
     return token
 
@@ -259,7 +270,7 @@ def quote_pdf(token):
     d = json.loads(raw)
     c = CATALOG
     pdf = quote_mod.pdf_bytes(d["q"], c["company"], {k: c.get(k, "") for k in ("phone", "email", "address")},
-                              d.get("client", ""), d.get("where", ""), d.get("ref", ""))
+                              d.get("client", ""), d.get("where", ""), d.get("ref", ""), d.get("options") or [])
     return pdf, f"GieBee-Quotation-{d.get('ref') or 'quote'}.pdf"
 
 

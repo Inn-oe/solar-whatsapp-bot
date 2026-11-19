@@ -444,6 +444,15 @@ def _respond(phone, name, text, s):
     # "yes please" / "send the quote" right after we offered a quotation accepts the offer
     accepts_offer = (s.get("pending") == "quote_offer" and intent in (None, "affirm", "buy_system", "site_visit")
                      and not is_question(text) and bool(AGREES.match(text)))
+    if not s.get("flow") and not tap and TIER_ASK.search(text) and not nlu.SAFETY.search(nlu.clean(text)) \
+            and not FAULT_WORDS.search(nlu.clean(text)) and (intent in (None, "qa_ambiguous") or (intent or "").startswith(("faq_", "qa_"))
+                                                or intent in ("price", "buy_system")):
+        last = s.get("_last_quote")
+        picked = next((k for k in ("premium", "standard", "economy") if re.search(TIER_WORDS[k], text, re.I)), None)
+        if last and picked and re.search(r"(?i)\b(send|quote|want|take|go with|i'?ll have|prefer)\b", text):
+            s["_tier_size"] = _known_size(ctx)
+            return _send_tier_quote(ctx, picked)
+        return _h_tiers(ctx)
     if intent is None and not accepts_offer and not s.get("flow") and REGULATION_ASK.search(text):
         return "\n\n".join(knowledge.REGULATION_FACTS[:2]) + ("\n\nOur team can advise on registering your system with "
                                                              "ZETDC/ZERA; shall I arrange a call?")
@@ -1515,7 +1524,7 @@ def _finish_purchase(ctx):
     sheet = ("\n\n" + quote.as_text(q, ctx.catalog["company"], first_name(name), where, ref) if q else "")
     if q:
         try:
-            token = c.save_quote(q, first_name(name), where, ref)
+            token = c.save_quote(q, first_name(name), where, ref, _options_for(ctx, q["asked_kva"]))
             s["_doc"] = {"token": token, "title": "Download quotation (PDF)", "caption": f"Quotation {ref}",
                          "short_text": (f"✅ Done{', ' + first_name(name) if first_name(name) else ''}! Your quotation "
                                         f"({q['size_kva']:g}kVA, *{quote.money(q['total'])}* installed) is in the PDF above. "
@@ -1523,12 +1532,17 @@ def _finish_purchase(ctx):
                                         "to book the free site visit.")}
         except Exception:
             log.exception("could not prepare quotation PDF")
-    s["_last_quote"] = {"at": time.time(), "summary": summary,
+    s["_last_quote"] = {"at": time.time(), "summary": summary, "size": q["asked_kva"] if q else None,
                         "slots": {k: slots[k] for k in ("need", "location", "kwh", "size_kva", "name", "contact")
                                   if slots.get(k)}}
     reset_flow(s)
     s["_safety_told"] = False
-    after = [opt("visit", "Book site visit"), opt("question", "Ask a question"), opt("fault", "Report a problem")]
+    after = [opt("visit", "Book site visit"), opt("tiers", "Compare options"), opt("fault", "Report a problem")]
+    if q:
+        o = _options_for(ctx, q["asked_kva"])
+        sheet += (f"\n\n💡 This is our *Budget* option. Better inverter and battery brands: Standard "
+                  f"{quote.money(o[1]['total'])}, Premium {quote.money(o[2]['total'])}. Tap *Compare options* to see what "
+                  "you get for the difference.")
     if ctx.is_web:
         _offer(s, after[:2])
         return (f"✅ Thank you{', ' + first if first else ''}! I've saved your request ({summary}).{sheet}"
@@ -1714,6 +1728,52 @@ def _faq_options():
     return rows[:10]
 
 
+TIER_ASK = re.compile(r"(?i)\b(compare options?|options?|cheaper|cheapest|budget option|economy|standard option|premium|"
+                      r"best quality|top quality|high quality|good quality|better (?:inverter|battery|brand|quality)|"
+                      r"lead[- ]?acid|gel batter\w*|(?:types?|kinds?|brands?) of (?:inverters?|batter\w*)|"
+                      r"which (?:inverter|battery|brand)|difference between)\b")
+TIER_WORDS = {"economy": r"budget|cheap\w*|economy|basic", "standard": r"standard|mid|middle|growatt|luxpower",
+              "premium": r"premium|best|top|high quality|sunsynk|deye|victron"}
+
+
+def _known_size(ctx):
+    last = ctx.s.get("_last_quote") or {}
+    return last.get("size") or _quote_size(ctx) or 5
+
+
+def _h_tiers(ctx):
+    """Explain the cheaper-to-better options for the customer's system size and offer the quote for each."""
+    s = ctx.s
+    size = _known_size(ctx)
+    opts = _options_for(ctx, size)
+    cur = (s.get("_last_quote") or {}).get("tier", "economy")
+    s["_tier_size"] = size
+    _offer(s, [opt("tier_economy", "Budget quote"), opt("tier_standard", "Standard quote"),
+               opt("tier_premium", "Premium quote")])
+    return quote.tiers_text(opts, cur) + "\n\nWhich one shall I send as a full PDF quotation?"
+
+
+def _send_tier_quote(ctx, tier):
+    c, s = core(), ctx.s
+    size = s.get("_tier_size") or _known_size(ctx)
+    q = _quote_for(ctx, tier, size)
+    last = s.get("_last_quote") or {}
+    ls = last.get("slots") or {}
+    name, where = ls.get("name") or ctx.name, ls.get("location", "")
+    ref = quote.reference(ctx.phone) + "-" + tier[0].upper()
+    token = c.save_quote(q, first_name(name), where, ref, _options_for(ctx, size))
+    short = (f"✅ Here's your *{q['tier_label']}* quotation: {q['size_kva']:g}kVA, *{quote.money(q['total'])}* installed. "
+             f"{quote.book()['transport_note']}")
+    s["_doc"] = {"token": token, "title": f"Download {q['tier_label']} quotation (PDF)", "caption": f"Quotation {ref}",
+                 "short_text": short}
+    s["_last_quote"] = dict(last, size=size, tier=tier)
+    c.sig(ctx.phone, "quote_tier", tier)
+    c.alert_team(ctx.phone, name, "callback", f"Client asked for the {q['tier_label'].upper()} option: {q['size_kva']:g}kVA "
+                 f"{quote.money(q['total'])}\nWhere: {where or 'not given'}", s)
+    _offer(s, [opt("visit", "Book site visit"), opt("tiers", "Compare options"), opt("question", "Ask a question")])
+    return (short if ctx.is_web is False else short + f"\n\n{quote.as_text(q, ctx.catalog['company'], first_name(name), where, ref)}")
+
+
 def _finish_visit(ctx):
     c, s = core(), ctx.s
     last = s.get("_last_quote") or {}
@@ -1737,6 +1797,12 @@ def _finish_visit(ctx):
 def _direct_tap(ctx):
     """Buttons that start or steer a conversation directly. None: let the normal flow read the tap's words."""
     s, tap, slots = ctx.s, ctx.tap, _slots(ctx.s)
+    if tap == "tiers":
+        reset_flow(s)
+        return _h_tiers(ctx)
+    if tap.startswith("tier_") and tap[5:] in quote.TIER_ORDER:
+        reset_flow(s)
+        return _send_tier_quote(ctx, tap[5:])
     if tap == "visit":
         reset_flow(s)
         s["flow"] = "visit"
@@ -1859,13 +1925,19 @@ def _quote_size(ctx):
     return core().package_size(p) if p else None
 
 
-def _quote_for(ctx):
-    size = _quote_size(ctx)
+def _quote_for(ctx, tier="economy", size=None):
+    size = size or _quote_size(ctx)
     if not size:
         return None
     town = _slots(ctx.s).get("location", "")
     std = quote.template(float(size))["size_kva"]
-    return quote.build(size, core().live_price(std, town), core().live_parts(std))
+    return quote.build(size, core().live_price(std, town), core().live_parts(std), tier, core().tier_inverters(std))
+
+
+def _options_for(ctx, size):
+    std = quote.template(float(size))["size_kva"]
+    town = _slots(ctx.s).get("location", "")
+    return quote.tiers(size, core().live_price(std, town), core().live_parts(std), core().tier_inverters(std))
 
 
 def _estimate_line(ctx):

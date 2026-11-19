@@ -1,0 +1,39 @@
+{
+ "_note": "Tier prices: economy = GieBee's own quotation prices (300 quotes: budget hybrid inverters of the Must type, e.g. 5kVA median USD 320, and generic LiFePO4 lithium batteries, e.g. 48V 100Ah median USD 700). Standard and premium inverter prices follow supplier list prices (Solar District, 19 Nov 2026, excl. VAT) per kW, replaced by the live supplier price when components.py has one. Battery brand premium: GieBee's own Deye 5.12kWh battery median USD 800 vs generic USD 700.",
+ "tiers": {
+  "economy": {
+   "label": "Budget",
+   "inverter": "Budget hybrid inverter (Must-type)",
+   "battery": "Generic lithium (LiFePO4) battery",
+   "panels": "Standard mono panels",
+   "who": "Lowest price. Fine for homes that want power at the lowest upfront cost and accept a shorter warranty.",
+   "warranty": "Typically 1 year on the inverter; battery warranty depends on the supplier.",
+   "inverter_per_kw": null,
+   "battery_factor": 1.0
+  },
+  "standard": {
+   "label": "Standard",
+   "inverter": "Growatt / LuxPower-class hybrid inverter",
+   "battery": "Branded lithium (LiFePO4) battery",
+   "panels": "Standard mono panels",
+   "who": "Better-known inverter brands with local support and app monitoring, for a moderate step up in price.",
+   "warranty": "Typically 2 to 5 years on the inverter, depending on the brand.",
+   "inverter_per_kw": 195,
+   "battery_factor": 1.14,
+   "brands": ["growatt", "luxpower", "lux power", "inhenergy", "solis", "goodwe"]
+  },
+  "premium": {
+   "label": "Premium",
+   "inverter": "Sunsynk / Deye / Victron hybrid inverter",
+   "battery": "Branded lithium (LiFePO4) battery",
+   "panels": "Standard mono panels",
+   "who": "The best-supported brands: highest build quality, strongest monitoring and service network, built for heavy daily use and businesses.",
+   "warranty": "Typically 5 years on the inverter for the leading brands; confirmed on the quotation.",
+   "inverter_per_kw": 350,
+   "battery_factor": 1.14,
+   "brands": ["sunsynk", "deye", "victron"]
+  }
+ },
+ "battery_note": "Lithium (LiFePO4) batteries cost more up front than lead-acid or gel but typically last several times longer and can be used deeper each day, so they are cheaper per year of use.",
+ "inverter_note": "Cheaper inverters work, but differ on surge strength, efficiency, monitoring, support and how long the maker backs them."
+}
