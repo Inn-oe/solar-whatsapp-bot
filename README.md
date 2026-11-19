@@ -121,6 +121,12 @@ bot's intents (it never writes the reply itself). It works with any OpenAI-compa
 optionally `LLM_API_URL` (default Mistral, `https://api.mistral.ai/v1`; Groq `https://api.groq.com/openai/v1`;
 OpenRouter `https://openrouter.ai/api/v1`), `LLM_MODEL` (default `mistral-small-latest`) and `LLM_TIMEOUT` (default 8 s).
 Messages it classifies are queued on the Train page for staff to confirm, so the quick model learns them too.
+
+**Using Claude.** Set `LLM_API_KEY` to an Anthropic key (it starts `sk-ant-`) and the bot uses Anthropic's own
+Messages API with `claude-haiku-5-5` (change with `LLM_MODEL`, force with `LLM_PROVIDER=anthropic`). The long list
+of intents goes in a cached system prompt, so repeat calls are cheaper and quicker. A wrong key, an unknown model or
+no credit shows on the Train page ("AI fallback ... failed calls (last: HTTP 401 ...)") and the bot carries on with
+the trained model. `LLM_REWORD=on` also lets the model reword the approved answers more naturally.
 `INTERNAL_KEY` also protects `/internal/nlu/train|test|status`, which the platform calls.
 
 ## Tests

@@ -8,7 +8,9 @@ conversation (natural_reply) and answers unmatched questions from the company fa
 number must come from the approved text, otherwise the approved text is sent unchanged.
 
 Environment variables (all optional; without LLM_API_KEY the fallback is off):
-  LLM_API_KEY    API key of the provider
+  LLM_API_KEY    API key of the provider. A key starting "sk-ant-" is a Claude key: the bot then uses Anthropic's
+                 own Messages API with the model claude-haiku-5-5 (set LLM_MODEL to change it, e.g. a Sonnet).
+  LLM_PROVIDER   "anthropic" or "openai" (any OpenAI-compatible API); normally detected from the key
   LLM_API_URL    OpenAI-compatible base URL (default https://api.mistral.ai/v1)
                    Groq:        https://api.groq.com/openai/v1
                    OpenRouter:  https://openrouter.ai/api/v1
@@ -35,13 +37,46 @@ def enabled():
     return bool(os.getenv("LLM_API_KEY"))
 
 
+def provider():
+    """'anthropic' for Claude (a key starting sk-ant-, an Anthropic URL, or LLM_PROVIDER=anthropic), else 'openai'
+    (any OpenAI-compatible API such as Mistral, Groq or OpenRouter)."""
+    forced = os.getenv("LLM_PROVIDER", "").strip().lower()
+    if forced in ("anthropic", "claude"):
+        return "anthropic"
+    if forced in ("openai", "compatible"):
+        return "openai"
+    if os.getenv("LLM_API_KEY", "").startswith("sk-ant-") or "anthropic.com" in os.getenv("LLM_API_URL", ""):
+        return "anthropic"
+    return "openai"
+
+
 def model_name():
-    return os.getenv("LLM_MODEL", "mistral-small-latest")
+    return os.getenv("LLM_MODEL", "claude-haiku-5-5" if provider() == "anthropic" else "mistral-small-latest")
 
 
 def status():
     return dict(_status, enabled=enabled(), model=model_name() if enabled() else None,
-                replies=dict(_compose_status))
+                provider=provider() if enabled() else None, replies=dict(_compose_status))
+
+
+ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+
+
+def _anthropic(system, user, max_tokens, temperature, cache_system=False):
+    """One call to Claude's Messages API; returns the reply text. cache_system lets Anthropic keep the (long,
+    unchanging) system prompt warm between calls, which makes repeat calls cheaper and faster."""
+    import requests
+    block = {"type": "text", "text": system}
+    if cache_system:
+        block["cache_control"] = {"type": "ephemeral"}
+    body = {"model": model_name(), "max_tokens": max_tokens, "temperature": temperature, "system": [block],
+            "messages": [{"role": "user", "content": user}]}
+    r = requests.post(ANTHROPIC_URL, json=body, timeout=float(os.getenv("LLM_TIMEOUT", "8")),
+                      headers={"x-api-key": os.getenv("LLM_API_KEY", ""), "anthropic-version": "2023-06-01",
+                               "content-type": "application/json"})
+    if r.status_code >= 400:      # say what Anthropic said (wrong key, unknown model, no credit...)
+        raise RuntimeError(f"HTTP {r.status_code}: {r.text[:140]}")
+    return "".join(b.get("text", "") for b in r.json().get("content", []) if b.get("type") == "text").strip()
 
 
 def set_menu(intents, examples, per_intent=4):
@@ -68,13 +103,21 @@ SYSTEM = (
 )
 
 
-def _prompt(text, context):
+def _menu_text():
     lines = [f"- {name} ({cat}): e.g. " + " | ".join(f'"{e}"' for e in ex) for name, cat, ex in _menu]
-    parts = ["Intents:", *lines, ""]
+    return "\n".join(["Intents:", *lines, ""])
+
+
+def _message_part(text, context):
+    parts = []
     if context:
         parts.append(f"Assistant's previous message: \"{context[:400]}\"")
     parts.append(f"Customer's message: \"{text[:500]}\"")
     return "\n".join(parts)
+
+
+def _prompt(text, context):
+    return _menu_text() + "\n" + _message_part(text, context)
 
 
 def classify(text, context=""):
@@ -92,10 +135,15 @@ def classify(text, context=""):
             "messages": [{"role": "system", "content": SYSTEM}, {"role": "user", "content": _prompt(text, context)}]}
     _status["calls"] += 1
     try:
-        r = requests.post(url, json=body, timeout=float(os.getenv("LLM_TIMEOUT", "8")),
-                          headers={"Authorization": f"Bearer {os.getenv('LLM_API_KEY')}"})
-        r.raise_for_status()
-        content = r.json()["choices"][0]["message"]["content"] or ""
+        if provider() == "anthropic":
+            # the long list of intents is the same every time, so it goes in the cached system prompt
+            content = _anthropic(SYSTEM + "\n\n" + _menu_text(), _message_part(text, context), 60, 0.0,
+                                 cache_system=True)
+        else:
+            r = requests.post(url, json=body, timeout=float(os.getenv("LLM_TIMEOUT", "8")),
+                              headers={"Authorization": f"Bearer {os.getenv('LLM_API_KEY')}"})
+            r.raise_for_status()
+            content = r.json()["choices"][0]["message"]["content"] or ""
         result = _parse(content)
     except Exception as exc:
         _status["errors"] += 1
@@ -148,6 +196,8 @@ _compose_status = {"calls": 0, "used": 0, "rejected": 0}
 
 
 def _chat(system, user, max_tokens=350, temperature=0.6):
+    if provider() == "anthropic":
+        return _anthropic(system, user, max_tokens, temperature)
     import requests
     url = os.getenv("LLM_API_URL", "https://api.mistral.ai/v1").rstrip("/") + "/chat/completions"
     body = {"model": model_name(), "temperature": temperature, "max_tokens": max_tokens,
