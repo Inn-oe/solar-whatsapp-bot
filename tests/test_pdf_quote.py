@@ -86,3 +86,31 @@ def test_pdf_has_the_items_and_total():
     q = quote.build(5)
     pdf = quote.pdf_bytes(q, "GieBee Engineering", {"phone": "+263"}, "Tendai", "Harare", "WA-1")
     assert pdf.startswith(b"%PDF") and len(pdf) > 2000
+
+
+def test_part_prices_are_read_and_used_only_when_close_to_ours():
+    import components
+    page = ("Growatt SPF 5000 ES 5KW 48V Inverter\n$897 Excl. VAT\nSunsynk Sun 5kW Hybrid Inverter\n$1,778 Excl. VAT\n"
+            "Deye 12kW Three Phase Inverter\nAdd to quote\n")
+    items = components.parse(page, "inverter")
+    assert [i["price"] for i in items] == [897.0, 1778.0] and all(i["spec"] == 5.0 for i in items)
+    book = quote.build(5)
+    far = quote.build(5, parts={"inverter": 897})                 # 2.8x our price: not used, but compared
+    assert far["total"] == book["total"] and far["compare"][0]["market"] == 897
+    near = quote.build(5, parts={"inverter": 380, "when": "19 Nov"})
+    assert near["total"] != book["total"] and "live supplier prices" in near["basis"]
+
+
+def test_site_visit_can_be_booked_after_a_quote(chat):
+    r = _flow_to_quote(chat)
+    assert "btn:visit" in [o["id"] for o in r["options"]]
+    assert "what day" in chat.tap("visit").lower()
+    done = chat.say("Tuesday morning")
+    assert "Tuesday morning" in done and "technician visit" in done
+
+
+def test_staff_test_quote_has_pdf_and_buttons():
+    r = bot.test_quote_reply()
+    assert r["document"]["token"] and len(r["options"]) == 3
+    pdf, name = bot.quote_pdf(r["document"]["token"])
+    assert pdf.startswith(b"%PDF")

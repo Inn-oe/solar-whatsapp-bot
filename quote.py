@@ -39,7 +39,41 @@ def _step(x):
     return round(x / 5) * 5 if x >= 50 else round(x * 2) / 2
 
 
-def build(size_kva, live=None):
+def _live_unit(item, parts):
+    """The live price for one quotation line from the parts feed, or None when the feed has nothing for it."""
+    low = item.lower()
+    if "inverter" in low and parts.get("inverter"):
+        return parts["inverter"]
+    m = re.search(r"(\d{2})\s?v\s*(\d{2,4})\s?ah", low)
+    if "batter" in low and m and parts.get("battery_kwh"):
+        return parts["battery_kwh"] * int(m.group(1)) * int(m.group(2)) / 1000
+    m = re.search(r"(\d{3})\s?w", low)
+    if "panel" in low and m and parts.get("panel_w"):
+        return parts["panel_w"] * int(m.group(1))
+    return None
+
+
+def _apply_parts(lines, parts, basis):
+    """Use a part's live price when it is within the sanity band of our own; always record the comparison."""
+    out, used, compare = [], [], []
+    for l in lines:
+        live = _live_unit(l["item"], parts)
+        if live is None:
+            out.append(l)
+            continue
+        compare.append({"item": l["item"], "ours": l["unit"], "market": round(live, 2)})
+        if LIVE_BAND[0] <= live / l["unit"] <= LIVE_BAND[1]:
+            u = _step(live)
+            out.append(dict(l, unit=u, amount=round(l["qty"] * u, 2)))
+            used.append(l["item"])
+        else:
+            out.append(l)
+    if used:
+        basis += f"; live supplier prices (checked {parts.get('when', 'recently')}) for " + ", ".join(used)
+    return out, basis, compare
+
+
+def build(size_kva, live=None, parts=None):
     """-> {"size_kva", "lines": [{item, qty, unit, amount}], "total", "quotes", "transport", "basis"} or None.
 
     `live` is the current advertised market price for this size, {"median", "count", "sources", "when"}. Every
@@ -60,9 +94,12 @@ def build(size_kva, live=None):
                 lines.append(dict(l, unit=u, amount=round(l["qty"] * u, 2)))
             basis = (f"current Zimbabwe market prices ({live.get('count', '')} adverts at {live.get('sources', '')} "
                      f"sellers, checked {live.get('when', 'recently')})")
+    compare = []
+    if parts:
+        lines, basis, compare = _apply_parts(lines, parts, basis)
     return {"size_kva": t["size_kva"], "asked_kva": float(size_kva), "lines": lines,
             "total": round(sum(l["amount"] for l in lines), 2), "quotes": t["quotes"], "transport": t["transport"],
-            "basis": basis}
+            "basis": basis, "compare": compare}
 
 
 def money(x):

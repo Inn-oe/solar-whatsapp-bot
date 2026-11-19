@@ -412,6 +412,14 @@ def _respond(phone, name, text, s):
             and s.get("awaiting") not in ("contact", "name")):
         return _price_in_quote(ctx)
 
+    # booking a site visit after a quotation: the answer is when suits them
+    if s.get("flow") == "visit" and s.get("awaiting") == "visit_when" and not tap:
+        if re.match(r"\s*(cancel|never ?mind|no|not now|later)\b", text, re.I):
+            reset_flow(s)
+            return say(["No problem{first_comma}. Message me any time to book it."], s, **ctx.kw())
+        if not is_question(text) and 2 <= len(text.strip()) <= 120:
+            return _finish_visit(ctx)
+
     # 1. is the customer answering the question we just asked?
     filled = _fill_awaiting(ctx)
     if filled == "more":
@@ -1520,10 +1528,12 @@ def _finish_purchase(ctx):
                                   if slots.get(k)}}
     reset_flow(s)
     s["_safety_told"] = False
+    after = [opt("visit", "Book site visit"), opt("question", "Ask a question"), opt("fault", "Report a problem")]
     if ctx.is_web:
+        _offer(s, after[:2])
         return (f"✅ Thank you{', ' + first if first else ''}! I've saved your request ({summary}).{sheet}"
                 f"{suggestion}\n\nOur team will contact you {ctx.promise} to book the site visit.")
-    _offer(s, [opt("question", "Ask a question"), opt("fault", "Report a problem")])
+    _offer(s, after)
     return (f"✅ Done{', ' + first if first else ''}! I've sent your {'updated ' if updated else ''}request to our sales team ({summary}). "
             f"Here's your quotation:{sheet}{suggestion}\n\nSomeone will message you here {ctx.promise} to book the "
             "free site visit.")
@@ -1704,9 +1714,36 @@ def _faq_options():
     return rows[:10]
 
 
+def _finish_visit(ctx):
+    c, s = core(), ctx.s
+    last = s.get("_last_quote") or {}
+    ls = last.get("slots") or {}
+    when = c.clip(ctx.text, 120)
+    name = ls.get("name") or ctx.name
+    where = ls.get("location", "")
+    c.sig(ctx.phone, "site_visit_requested", when)
+    c.save_lead(ctx.phone, name, kind="quote", location=where,
+                need=c.clip(f"SITE VISIT requested for: {when} | {last.get('summary', '')}", 1000))
+    c.alert_team(ctx.phone, name, "callback", f"SITE VISIT requested for: {when}\nWhere: {where or 'not given'}\n"
+                 f"Quote: {last.get('summary', 'see lead')}\nPlease confirm the day and time with the client.", s)
+    c.set_follow_up(ctx.phone, 0)
+    reset_flow(s)
+    _offer(s, [opt("question", "Ask a question"), opt("fault", "Report a problem")])
+    return (f"✅ Booked as a request{', ' + first_name(name) if first_name(name) else ''}: a technician visit for "
+            f"*{when}*{' at ' + where if where else ''}. Our team will message you {ctx.promise} to confirm the exact "
+            "day and time. The visit is free, and the final price is confirmed on site.")
+
+
 def _direct_tap(ctx):
     """Buttons that start or steer a conversation directly. None: let the normal flow read the tap's words."""
     s, tap, slots = ctx.s, ctx.tap, _slots(ctx.s)
+    if tap == "visit":
+        reset_flow(s)
+        s["flow"] = "visit"
+        s["awaiting"] = "visit_when"
+        s.pop("_ui", None)
+        return say(["Happy to{first_comma}. What day and time suit you for the technician to visit? "
+                    "(For example \"Tuesday morning\" or \"Friday after 2pm\".)"], s, **ctx.kw())
     if tap == "quote":
         reset_flow(s)
         return _h_purchase(_force(ctx, "buy_system"))
@@ -1827,7 +1864,8 @@ def _quote_for(ctx):
     if not size:
         return None
     town = _slots(ctx.s).get("location", "")
-    return quote.build(size, core().live_price(quote.template(float(size))["size_kva"], town))
+    std = quote.template(float(size))["size_kva"]
+    return quote.build(size, core().live_price(std, town), core().live_parts(std))
 
 
 def _estimate_line(ctx):

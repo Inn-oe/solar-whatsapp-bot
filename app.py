@@ -33,6 +33,7 @@ import requests
 from flask import Flask, Response, jsonify, request, send_from_directory, session
 
 import brain
+import components
 import db
 import leads
 import llm
@@ -202,6 +203,45 @@ def live_price(size, town=""):
     except Exception:
         log.exception("live price failed")
         return None
+
+
+def live_parts(size):
+    if not CATALOG.get("market_prices", True):
+        return None
+    try:
+        return components.live_parts(size) or None
+    except Exception:
+        log.exception("live parts failed")
+        return None
+
+
+def components_loop():
+    time.sleep(40)
+    while True:
+        try:
+            last = db.get_setting("component_prices")
+            stale = True
+            if last:
+                when = json.loads(last).get("refreshed")
+                stale = not when or dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(when) > timedelta(hours=24)
+            if stale:
+                components.refresh()
+        except Exception:
+            log.exception("component refresh failed")
+        time.sleep(1800)
+
+
+def test_quote_reply():
+    """A sample 5kVA quotation with its PDF and buttons, exactly as a customer would receive it."""
+    q = quote_mod.build(5, live_price(5), live_parts(5))
+    ref = "TEST-" + dt.date.today().strftime("%y%m%d")
+    token = save_quote(q, "Test Client", "Harare", ref)
+    text = (f"🧪 TEST quotation ({q['size_kva']:g}kVA, {quote_mod.money(q['total'])}). If you can open the PDF above "
+            "and these buttons work, WhatsApp delivery is fine.")
+    return R(text, [{"id": "btn:visit", "title": "Book site visit"}, {"id": "btn:question", "title": "Ask a question"},
+                    {"id": "btn:fault", "title": "Report a problem"}],
+             document={"token": token, "title": "Download quotation (PDF)", "caption": f"Quotation {ref}",
+                       "short_text": text})
 
 
 def save_quote(q, client="", where="", ref=""):
@@ -632,6 +672,9 @@ def incoming():
                     if phone in ALERT_NUMBERS and text.strip().lower() in {"market", "market prices"}:
                         send_text(phone, market_summary_text())
                         continue
+                    if phone in ALERT_NUMBERS and text.strip().lower() in {"test quote", "testquote", "/testquote"}:
+                        send_reply(phone, test_quote_reply())   # lets staff check the PDF and buttons on a real phone
+                        continue
                     if phone in ALERT_NUMBERS and text.strip().lower() in {"leads", "report", "today"}:
                         # staff asking for today's list; this also keeps their 24-hour alert window open
                         send_text(phone, staff_summary())
@@ -1037,6 +1080,7 @@ brain.start(CATALOG)
 
 if os.getenv("MARKET_AUTO", "1") != "0":
     threading.Thread(target=market.loop, daemon=True, name="market-refresh").start()
+    threading.Thread(target=components_loop, daemon=True, name="parts-refresh").start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5001)), debug=False)

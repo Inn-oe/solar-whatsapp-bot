@@ -153,3 +153,13 @@ treated as bad data and GieBee's quotation prices are used. The quotation says w
 * `sizing.py`: solar, battery and inverter sizing with the arithmetic done in code and Zimbabwe peak sun hours by town.
 * ZERA / net-metering facts (SI 86 of 2018, SI 38 of 2022, SI 125/126 of 2026) are in `knowledge.REGULATION_FACTS`;
   verify them against ZERA before relying on them for a customer's compliance.
+
+## Part prices, test quote and site visits
+
+* `components.py` reads inverter, battery and panel prices from supplier shop pages once a day (Solar District to
+  start; edit `SOURCES`). A part's live price is used in a quotation only when it is within 0.6-1.6x of GieBee's own
+  price; the comparison is kept on the quotation (`q["compare"]`) so staff can see where the market differs.
+* Staff numbers (`ALERT_NUMBERS`) can send **test quote** on WhatsApp to receive a sample quotation PDF with buttons,
+  to check delivery on a real phone.
+* After a quotation the customer can tap **Book site visit**, say when suits them, and the team gets an alert to
+  confirm the day and time.

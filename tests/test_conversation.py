@@ -338,8 +338,10 @@ def test_sizing_shows_the_working_with_zimbabwe_sun_hours(chat):
 
 
 def test_shona_names_are_taken_as_names_not_as_thanks(chat):
+    chat.name = ""                      # WhatsApp gave us no profile name, so the bot has to ask
     chat.say("I want a 5kVA solar system")
     chat.say("Harare")
-    chat.say("0771234567")
-    reply = chat.say("Tendai Moyo")
-    assert "what name" not in reply.lower() and "welcome" not in reply.lower()
+    low = chat.say("0771234567").lower()
+    assert "name" in low
+    reply = chat.say("Tendai Moyo").lower()
+    assert "what name" not in reply and "welcome" not in reply
