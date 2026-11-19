@@ -293,6 +293,18 @@ QUESTION_WORDS = re.compile(r"\b(marii|imarii|zvii|chii|sei|ndeipi|ripi|kupi|rin
                             r"did you|do you|can you|could you|have you|what did|what does|what is|whats)\b"
                             r"|^\s*ko\b|\bhere\s*[.!]*\s*$", re.I)   # Shona "ko ..." and "... here" mark a question
 PRICE_ASK = re.compile(r"\b(marii|imarii|mari(?:yei)?|how much|price[sd]?|pricing|cost[s]?|kangani|charge[s]?)\b", re.I)
+# asking for the quotation as a PDF / document ("I need a pdf quote", "send the quotation as a pdf")
+PDF_ASK = re.compile(r"\bpdf\b|\b(?:send|email|attach)\b.{0,20}\b(?:quote|quotation)\b.{0,20}\b(?:document|attachment|file)\b"
+                     r"|\b(?:quote|quotation)\b.{0,20}\b(?:document|attachment)\b", re.I)
+# a day or time: "Tuesday morning", "Friday after 2pm", "tomorrow", "10am", "the 25th", "anytime", "next week"
+WHEN_WORDS = re.compile(
+    r"\b(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*\b|"
+    r"\b(?:today|tomorrow|tonight|morning|afternoon|evening|noon|midday|lunch|weekend|next week|this week|"
+    r"any ?time|whenever|asap|after work|before work)\b|"
+    r"\b\d{1,2}(?::\d{2})?\s*(?:am|pm|h|hrs|o'?clock)\b|\b\d{1,2}(?:st|nd|rd|th)\b|\b\d{1,2}[/.]\d{1,2}\b|"
+    r"\b(?:at|on|by|around|about)\s+\d{1,2}\b|"
+    r"\b\d{1,2}\s*(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b|"
+    r"\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s*\d{1,2}\b", re.I)
 META = re.compile(r"(did you (?:understand|get (?:that|it|me|what)|hear|read)|do you understand|understand me|"
                   r"what did i (?:say|tell you|ask|just say)|you (?:didn'?t|did not|don'?t|do not) (?:understand|answer|get|"
                   r"listen|read)|are you (?:there|listening|following)|anyone there|you there|hello\s*\?|"
@@ -412,13 +424,24 @@ def _respond(phone, name, text, s):
             and s.get("awaiting") not in ("contact", "name")):
         return _price_in_quote(ctx)
 
+    # asking for the quotation as a PDF (again): send it, whatever else we were in the middle of
+    if not tap and PDF_ASK.search(text) and (s.get("_last_quote") or {}).get("size"):
+        reset_flow(s)
+        return _send_tier_quote(ctx, (s.get("_last_quote") or {}).get("tier", "economy"))
+
     # booking a site visit after a quotation: the answer is when suits them
     if s.get("flow") == "visit" and s.get("awaiting") == "visit_when" and not tap:
         if re.match(r"\s*(cancel|never ?mind|no|not now|later)\b", text, re.I):
             reset_flow(s)
             return say(["No problem{first_comma}. Message me any time to book it."], s, **ctx.kw())
         if not is_question(text) and 2 <= len(text.strip()) <= 120:
-            return _finish_visit(ctx)
+            if WHEN_WORDS.search(text):
+                return _finish_visit(ctx)
+            if not a["understood"] or a["intent"] in ("affirm", "deny"):
+                # not a day or time and nothing else we recognise: ask again, do not book "I am not sure"
+                return say(["Roughly when suits you{first_comma}? For example \"Tuesday morning\" or \"Friday after "
+                            "2pm\". Or say *later* and I'll leave it for now."], s, **ctx.kw())
+            reset_flow(s)    # a different request in the middle: answer it like any other message
 
     # 1. is the customer answering the question we just asked?
     filled = _fill_awaiting(ctx)
