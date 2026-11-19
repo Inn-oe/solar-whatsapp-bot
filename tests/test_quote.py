@@ -52,6 +52,7 @@ def test_language_model_may_reword_but_never_change_numbers():
 
 def test_natural_reply_is_used_when_safe_and_falls_back_otherwise(monkeypatch, chat):
     monkeypatch.setenv("LLM_API_KEY", "test")
+    monkeypatch.setenv("LLM_REWORD", "on")
     monkeypatch.setattr(llm, "_chat", lambda *a, **k: "Sawubona! Yes, we're here to help with solar. 😊")
     assert "Sawubona" in chat.say("hello")                                  # reworded greeting
     monkeypatch.setattr(llm, "_chat", lambda *a, **k: "We charge USD 99 for everything.")
@@ -82,3 +83,14 @@ def test_without_a_key_nothing_changes(monkeypatch):
     monkeypatch.delenv("LLM_API_KEY", raising=False)
     assert llm.natural_reply("Hello", "hi", "GieBee Engineering") is None
     assert llm.answer_from_facts("hi?", "facts", "GieBee Engineering") is None
+
+
+def test_rewording_is_off_by_default_but_fact_answers_are_on(monkeypatch, chat):
+    monkeypatch.setenv("LLM_API_KEY", "test")
+    monkeypatch.delenv("LLM_REWORD", raising=False)
+    monkeypatch.delenv("LLM_ANSWERS", raising=False)
+    monkeypatch.setattr(llm, "_chat", lambda *a, **k: "Sawubona! Yes, we're here to help with solar. 😊")
+    assert llm.natural_reply("Hello", "hi", "GieBee") is None              # rewording off
+    assert llm.answer_from_facts("how much?", "5kVA USD 1,985", "GieBee")  # fact answers on
+    monkeypatch.setenv("LLM_ANSWERS", "off")
+    assert llm.answer_from_facts("how much?", "5kVA USD 1,985", "GieBee") is None

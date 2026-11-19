@@ -165,7 +165,8 @@ def test_vague_fault_gets_a_human_follow_up_not_a_bare_location_question(chat):
     assert "town" not in r1.lower() and not r1.startswith("Thanks")  # no pointless thanks, no town yet
     r2 = chat.say("it keeps beeping since this morning")
     assert r2.startswith(("Thanks", "Got it", "Okay", "Noted")) and "error code" in r2.lower()
-    r3 = chat.say("it shows E12 on the display")
+    assert "which brand" in chat.say("it shows E12 on the display").lower()
+    r3 = chat.say("not sure")
     assert "restart" not in r3.lower() and "did that fix it" in r3.lower()     # first fix, for a code/beeping fault
     assert "restart" in chat.say("still beeping").lower()            # second fix
     assert "town" in chat.say("same").lower()                        # both failed: now collect where
@@ -223,7 +224,8 @@ def test_fault_reported_while_asked_what_to_run_is_a_maintenance_report(chat):
     first = chat.say("I also need another quotation").lower()
     assert "run" in first or "power" in first                  # asks what the system should run
     assert "error code" in chat.say("My inverter is having an error").lower()
-    assert "did that fix it" in chat.say("E05 on the display").lower()
+    assert "which brand" in chat.say("E05 on the display").lower()
+    assert "did that fix it" in chat.say("not sure").lower()
     chat.say("still the same")
     assert "town" in chat.say("no change").lower()
     done = chat.say("Harare")
@@ -275,7 +277,8 @@ def test_plain_fault_statements_are_understood_without_a_menu(chat):
     chat.say("no")
     chat.say("it works now")                                 # close that conversation
     second = chat.say("inverter showing E05")
-    assert "did that fix it" in second.lower() and "error code" not in second.lower()   # code known: straight to the fix
+    assert "which brand" in second.lower() and "does the inverter show" not in second.lower()      # code known: only the brand is missing
+    assert "did that fix it" in chat.say("not sure").lower()
 
 
 def test_screenshot_price_question_and_did_you_understand(chat):
@@ -314,3 +317,29 @@ def test_shona_question_without_a_question_mark_is_a_question():
         assert brain.is_question(t), t
     assert not brain.is_question("Borrowdale, Harare")
     assert not brain.is_question("the inverter is here in the garage and it is still beeping")
+
+
+def test_known_fault_code_is_explained_from_the_table_and_a_serious_one_goes_to_a_person(chat):
+    assert "error code" in chat.say("My Deye inverter is having an error").lower()
+    reply = chat.say("F24")                                    # DC insulation low: a real fault, not a do-it-yourself one
+    assert "insulation" in reply.lower() and "did that fix it" not in reply.lower()
+    assert "technician" in reply.lower()
+
+
+def test_unknown_code_is_never_guessed(chat):
+    assert "error code" in chat.say("My Growatt inverter is having an error").lower()
+    reply = chat.say("error 77")
+    assert "won't guess" in reply.lower() and "technician" in reply.lower()
+
+
+def test_sizing_shows_the_working_with_zimbabwe_sun_hours(chat):
+    reply = chat.say("I use about 10kWh a day in Harare, what size system do I need?")
+    assert "sun-hours" in reply and "÷" in reply
+
+
+def test_shona_names_are_taken_as_names_not_as_thanks(chat):
+    chat.say("I want a 5kVA solar system")
+    chat.say("Harare")
+    chat.say("0771234567")
+    reply = chat.say("Tendai Moyo")
+    assert "what name" not in reply.lower() and "welcome" not in reply.lower()

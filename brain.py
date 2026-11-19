@@ -22,7 +22,9 @@ import time
 from pathlib import Path
 
 import db
+import knowledge
 import llm
+import sizing
 import nlu
 import quote
 import troubleshoot
@@ -369,10 +371,11 @@ def respond(phone, name, text, s):
     reply = _respond(phone, name, text, s)
     reply = reply.get("text", "") if isinstance(reply, dict) else str(reply or "")
     ui = s.pop("_ui", None) or {}
+    doc = s.pop("_doc", None)
     options = ui.get("options") or []
     s["_last_opts"] = {_norm_title(o["title"]): o["id"][4:] for o in options}
     s["_last_reply"] = reply[:400]
-    return {"text": reply, "options": options, "button": ui.get("button", "")}
+    return {"text": reply, "options": options, "button": ui.get("button", ""), "document": doc}
 
 
 def _respond(phone, name, text, s):
@@ -433,6 +436,9 @@ def _respond(phone, name, text, s):
     # "yes please" / "send the quote" right after we offered a quotation accepts the offer
     accepts_offer = (s.get("pending") == "quote_offer" and intent in (None, "affirm", "buy_system", "site_visit")
                      and not is_question(text) and bool(AGREES.match(text)))
+    if intent is None and not accepts_offer and not s.get("flow") and REGULATION_ASK.search(text):
+        return "\n\n".join(knowledge.REGULATION_FACTS[:2]) + ("\n\nOur team can advise on registering your system with "
+                                                             "ZETDC/ZERA; shall I arrange a call?")
     if intent is None and not accepts_offer:
         in_flow = s.get("flow") in ("purchase", "maintenance") and s.get("awaiting") in RESUME
         if is_question(text) or not in_flow:
@@ -642,8 +648,10 @@ def _sized(ctx, kwh):
     items = ctx.ents.get("appliances")
     basis = f"For {listing(items)} you'd use about {kwh:g} kWh a day" if items else f"For about {kwh:g} kWh a day"
     note = c.market_note(p, town)
+    working = sizing.size(kwh, town)["text"]
     _set_offer(s)
     return (f"{basis}, so I'd suggest the *{p['name']}* ({c.price_text(p, town)}).\n\n⚡ It powers: {p['powers']}."
+            + f"\n\n{working}"
             + (f"\n\n{note}" if note else "")
             + "\n\nThat's an estimate: a technician confirms the final size on a free site visit. "
               "Would you like me to arrange a quotation?")
@@ -770,6 +778,8 @@ SYMPTOM = re.compile(
     r"hold\w*|turn\w*|giving|supply\w*)|no (?:power|output|electricity|lights?|charge)|stopp?\w*|dead|flat|drain\w*|"
     r"run\w* out|finish\w*|last|noise|hot|warm|blank|display|shut\w*|cut\w*|off|leak\w*|crack\w*|broken|damag\w*|"
     r"smok\w*|burn\w*|spark\w*|low|weak|slow|dim|only|fell|dropp\w*|keeps?|since|every|[ef]-?\d{1,3})\b")
+REGULATION_ASK = re.compile(r"(?i)\b(zera|zetdc|net[- ]?meter\w*|licen[cs]\w*|statutory instrument|SI ?\d{2,3}|"
+                            r"feed[- ]?in|sell (?:back|power|electricity)|export (?:power|electricity))\b")
 CODE_RX = re.compile(r"\b(?:e|f|err|error)[ -]?\d{1,3}\b")
 
 
@@ -830,6 +840,8 @@ def _gather(ctx, issue_text=True):
         code = CODE_RX.search(nlu.clean(t))
         if code and not slots.get("inverter_code"):
             slots["inverter_code"] = code.group(0).upper().replace(" ", "")   # said up front: do not ask again
+        if not slots.get("brand") and knowledge.brand_of(t):
+            slots["brand"] = knowledge.brand_of(t)
         if ctx.a["intent"] == "warranty_claim":
             slots["no_tshoot"] = True   # a warranty claim goes straight to a person
         if nlu.SAFETY.search(nlu.clean(t)):
@@ -860,9 +872,40 @@ def _can_troubleshoot(s):
             and not sl.get("safety"))
 
 
+def _fault_lookup(slots):
+    v = slots.get("inverter_code", "")
+    if not v or v == NO_CODE:
+        return None
+    if re.fullmatch(r"\s*\d{1,3}\s*", v):
+        v = "error " + v.strip()
+    hint = " ".join(str(slots.get(k, "")) for k in ("brand", "issue", "reported"))
+    return knowledge.lookup(v + " " + hint if not knowledge.brand_of(v) else v, hint)
+
+
+def _note_fault(slots):
+    """Read the code against the brand's fault table. A code that means a real fault (insulation, leakage, internal
+    failure) skips the do-it-yourself steps and goes to a technician; an unknown code is never guessed at."""
+    res = _fault_lookup(slots)
+    if not res:
+        return None
+    if res["state"] == "found":
+        slots["fault_text"] = knowledge.explain(res)
+        slots["fault_meaning"] = f"{res['code']}: {res['meaning']}"
+        if res["severity"] == "stop":
+            slots["no_tshoot"] = True
+    elif res["state"] == "unknown_code" and not slots.get("fault_text"):
+        slots["fault_text"] = knowledge.explain(res)
+        slots["no_tshoot"] = True
+    return res
+
+
 def _missing(ctx):
     s = ctx.s
     slots = _slots(s)
+    if s["flow"] == "maintenance" and slots.get("inverter_code"):
+        res = _note_fault(slots)
+        if res and res["state"] == "need_brand" and not slots.get("brand") and not slots.get("brand_asked"):
+            return "brand"
     if s["flow"] == "maintenance" and slots.get("tshoot_result") == "fixed":
         return None   # solved: nothing more to collect
     if s["flow"] == "purchase":
@@ -900,6 +943,8 @@ ASKS = {
                  "And which town or suburb are you in?"],
     "inverter_code": ["Does the inverter show an error code, beep or flash a warning light? If there's a code on "
                       "the display, type it (for example E05). Otherwise tap the option that fits."],
+    "brand": ["Error codes mean different things on different inverters. Which brand is it (Deye, Sunsynk, "
+              "Growatt, Axpert/Mecer/Kodak, Victron, or another)? It's printed on the front. Not sure? Just say so."],
     "contact": ["What's the best phone number (WhatsApp if possible) for our team to reach you on?"],
     "name": ["And may I have your name please?", "Lastly, what name should I put on the request?"],
     "sizing_need": ["What would you like to keep running: fridge, TV, lights, geyser, pump? Or tell me your "
@@ -910,6 +955,7 @@ RESUME = {"details": "When you can, send me those details and I'll pass them to 
           "issue": "Back to your problem: what exactly is happening with the system?",
           "location": "Back to your request: which town or suburb are you in?",
           "inverter_code": "Back to the inverter: does it show an error code, beep or flash a warning light?",
+          "brand": "Back to the inverter: which brand is it?",
           "tshoot": "Back to the fix we were trying: did that help, or is it still the same?",
           "confirm": "Back to your request: shall I send it to our team?",
           "repeat": "Back to your quotation: is it for another system, or a change to the one you sent?",
@@ -920,6 +966,16 @@ RESUME = {"details": "When you can, send me those details and I'll pass them to 
 
 
 def _ask(ctx, slot, resumed=False, filled=False):
+    out = _ask_slot(ctx, slot, resumed, filled)
+    if not resumed and ctx.s.get("flow") == "maintenance":
+        slots = _slots(ctx.s)
+        if slots.get("fault_text") and not slots.get("fault_said") and slot != "brand":
+            slots["fault_said"] = True
+            out = slots["fault_text"] + "\n\n" + out
+    return out
+
+
+def _ask_slot(ctx, slot, resumed=False, filled=False):
     """The next question. `filled` means the customer just answered the previous one, so acknowledge it first
     (never say 'thanks' before they have given us anything)."""
     ctx.s["awaiting"] = slot
@@ -985,6 +1041,17 @@ def _looks_like_answer(raw):
     return "?" not in raw and len(raw.split()) <= 6 and len(re.findall(r"[A-Za-z]", raw)) >= 2
 
 
+NOT_NAME = {"thanks", "thank", "you", "ok", "okay", "yes", "no", "hi", "hello", "bye", "goodbye", "please", "nothing",
+            "none", "nope", "yeah", "sure", "what", "why", "how", "who", "stop", "cancel", "later", "skip"}
+
+
+def _plausible_name(raw):
+    raw = raw.strip()
+    if not re.fullmatch(r"[A-Za-z][A-Za-z'.-]*(?: [A-Za-z][A-Za-z'.-]*){0,3}", raw):
+        return False
+    return not any(w.lower() in NOT_NAME for w in raw.split())
+
+
 def _fill_awaiting(ctx):
     """If we asked a question, try to read this message as the answer. True when it was one."""
     s = ctx.s
@@ -1041,6 +1108,18 @@ def _fill_awaiting(ctx):
                 return True
             return False
         return "edit" if _apply_change(ctx, force=True) else False
+    if slot == "brand":
+        slots["brand_asked"] = True
+        b = knowledge.brand_of(raw)
+        if b:
+            slots["brand"] = b
+            return True
+        if is_question(raw):
+            return False
+        if re.match(r"\s*(no|none|nope|not sure|dont know|don't know|unknown|other|idk)\b", raw, re.I) or _looks_like_answer(raw):
+            slots["brand"] = "unknown"
+            return True
+        return False
     if slot == "inverter_code":
         # "no" is a real answer here (no code, no beeps), not a refusal to continue
         if re.match(r"\s*(no|none|nope|nothing|not sure|dont know|don't know)\b", raw, re.I):
@@ -1055,6 +1134,10 @@ def _fill_awaiting(ctx):
     if slot == "location" and e.get("location") and "?" not in raw and len(raw.split()) <= 8:
         slots["location"] = raw.strip(" .,!").title() if len(raw.split()) <= 4 else e["location"]
         s["_town"] = e["location"]
+        return True
+    # a name is a name even when the classifier hears "thanks" in it (Tendai means "thank you" in Shona)
+    if slot == "name" and _plausible_name(raw):
+        slots["name"] = re.sub(r"\s+", " ", raw).strip().title()
         return True
     # a clear greeting/thanks/etc. is not an answer; neither is a different, confident request
     # (a weak FAQ match that is not a question is still the details we asked for: "1HP Lorentz pump, 4 hours a day"
@@ -1153,10 +1236,11 @@ def _company_facts(ctx):
     for p in c["packages"]:
         lines.append(f"Package {p['name']}: {core().price_text(p)} installed. Powers: {p['powers']}. "
                      f"Includes: {p['includes']}.")
-    for q in (quote.build(sz) for sz in quote.sizes()):
+    for q in (quote.build(sz, core().live_price(sz)) for sz in quote.sizes()):
         lines.append(f"{q['size_kva']:g}kVA system quotation total {quote.money(q['total'])} installed: "
                      + "; ".join(f"{l['qty']:g} x {l['item']} at {quote.money(l['unit'])}" for l in q["lines"]) + ".")
     lines.append(quote.book()["transport_note"] + " " + quote.book()["payment_note"])
+    lines.extend(knowledge.REGULATION_FACTS)
     for f in c.get("faqs", []):
         lines.append(f"{re.sub(r'^[^\w]+', '', f.get('title') or f['keys'][0])}: {_clean_answer(f['answer'])}")
     return "\n".join(lines)
@@ -1419,8 +1503,18 @@ def _finish_purchase(ctx):
     summary = f"{need}" + (f", in {where}" if where else "")
     suggestion = (f"\n\n💲 Your estimate: {est}. A technician confirms the size and final price on a free site "
                   "visit." if est and not q else "")
-    sheet = ("\n\n" + quote.as_text(q, ctx.catalog["company"], first_name(name), where, quote.reference(ctx.phone))
-             if q else "")
+    ref = quote.reference(ctx.phone)
+    sheet = ("\n\n" + quote.as_text(q, ctx.catalog["company"], first_name(name), where, ref) if q else "")
+    if q:
+        try:
+            token = c.save_quote(q, first_name(name), where, ref)
+            s["_doc"] = {"token": token, "title": "Download quotation (PDF)", "caption": f"Quotation {ref}",
+                         "short_text": (f"✅ Done{', ' + first_name(name) if first_name(name) else ''}! Your quotation "
+                                        f"({q['size_kva']:g}kVA, *{quote.money(q['total'])}* installed) is in the PDF above. "
+                                        f"{quote.book()['transport_note']}\n\nSomeone will message you here {ctx.promise} "
+                                        "to book the free site visit.")}
+        except Exception:
+            log.exception("could not prepare quotation PDF")
     s["_last_quote"] = {"at": time.time(), "summary": summary,
                         "slots": {k: slots[k] for k in ("need", "location", "kwh", "size_kva", "name", "contact")
                                   if slots.get(k)}}
@@ -1445,7 +1539,9 @@ def _finish_maintenance(ctx):
             parts.append(x)
     issue_shown = "; ".join(parts) or "Needs maintenance"   # what the customer told us, for their confirmation
     if slots.get("inverter_code"):
-        parts.append("Inverter shows: " + slots["inverter_code"])
+        parts.append("Inverter shows: " + slots["inverter_code"]
+                     + (f" (brand: {slots['brand']})" if slots.get("brand") not in (None, "", "unknown") else "")
+                     + (f" = {slots['fault_meaning']}" if slots.get("fault_meaning") else ""))
     failed = slots.get("tshoot_result") in ("failed", "human")
     if slots.get("tried"):
         parts.append("Bot fixes tried, no luck: " + " | ".join(slots["tried"]))
@@ -1501,7 +1597,9 @@ def _finish_resolved(ctx):
     name = slots.get("name") or ctx.name
     parts = [x for x in (slots.get("reported"), slots.get("issue")) if x]
     if slots.get("inverter_code") and slots["inverter_code"] != NO_CODE:
-        parts.append("Inverter shows: " + slots["inverter_code"])
+        parts.append("Inverter shows: " + slots["inverter_code"]
+                     + (f" (brand: {slots['brand']})" if slots.get("brand") not in (None, "", "unknown") else "")
+                     + (f" = {slots['fault_meaning']}" if slots.get("fault_meaning") else ""))
     issue = "; ".join(dict.fromkeys(parts)) or "Fault reported"
     note = f"{issue} (solved by bot: {slots.get('fixed_by', 'troubleshooting')})"
     c.sig(ctx.phone, "maintenance_resolved", c.clip(note, 300))
@@ -1726,7 +1824,10 @@ def _quote_size(ctx):
 
 def _quote_for(ctx):
     size = _quote_size(ctx)
-    return quote.build(size) if size else None
+    if not size:
+        return None
+    town = _slots(ctx.s).get("location", "")
+    return quote.build(size, core().live_price(quote.template(float(size))["size_kva"], town))
 
 
 def _estimate_line(ctx):

@@ -108,6 +108,11 @@ async function say(text, silent, shown) {
     const r = await fetch("/api/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({session:sid, text, shown: shown || ""})});
     const j = await r.json();
     add(r.ok ? j.reply : (j.error || "Something went wrong."), "bot");
+    if (r.ok && j.document) {
+      const a = document.createElement("a"); a.href = j.document.url; a.target = "_blank"; a.rel = "noopener";
+      a.className = "chip"; a.textContent = "📄 " + j.document.title; a.style.display = "inline-block"; a.style.margin = "4px 0";
+      $("#log").appendChild(a);
+    }
     chips(r.ok ? j.options : []);
   } catch(e) { add("Connection problem. Please try again.", "bot"); }
 }
