@@ -163,3 +163,13 @@ treated as bad data and GieBee's quotation prices are used. The quotation says w
   to check delivery on a real phone.
 * After a quotation the customer can tap **Book site visit**, say when suits them, and the team gets an alert to
   confirm the day and time.
+
+## Quote tiers (budget to premium)
+
+`data/tiers.json` defines three options per system size. **Budget** is GieBee's own quotation price (from the 300
+quotes: budget hybrid inverters of the Must type and generic LiFePO4 lithium batteries). **Standard** (Growatt /
+LuxPower class) and **Premium** (Sunsynk / Deye / Victron) use supplier list prices per kW, replaced by the live
+supplier price when `components.py` has one for that size, and a branded-battery factor taken from GieBee's own Deye
+battery price. The bot shows the options on every quotation, explains what each buys (quality, support, typical
+warranty, lithium vs lead-acid), and sends the full PDF for whichever the customer picks. The PDF lists all options.
+Update the numbers in `tiers.json` when supplier prices move.

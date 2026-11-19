@@ -114,3 +114,30 @@ def test_staff_test_quote_has_pdf_and_buttons():
     assert r["document"]["token"] and len(r["options"]) == 3
     pdf, name = bot.quote_pdf(r["document"]["token"])
     assert pdf.startswith(b"%PDF")
+
+
+def test_tiers_run_from_budget_to_premium_with_real_differences():
+    opts = quote.tiers(5)
+    totals = [o["total"] for o in opts]
+    assert [o["key"] for o in opts] == ["economy", "standard", "premium"] and totals == sorted(totals)
+    assert totals[0] == quote.build(5)["total"]                      # budget is GieBee's own quotation price
+    prem = quote.build(5, tier="premium")
+    assert "Sunsynk" in prem["lines"][0]["item"] and "branded lithium" in prem["lines"][1]["item"]
+    assert quote.build(5, tier="standard", tier_inverters={"standard": 1000})["lines"][0]["unit"] == 1000
+
+
+def test_customer_can_compare_options_and_get_a_premium_pdf(chat):
+    r = _flow_to_quote(chat)
+    assert "Compare options" in r["text"] or "btn:tiers" in [o["id"] for o in r["options"]]
+    text = chat.tap("tiers")
+    assert "Budget" in text and "Standard" in text and "Premium" in text and "cheapest to best quality" in text
+    chat.tap("tier_premium")
+    doc = chat.last["document"]
+    assert doc and "Premium" in doc["title"]
+    pdf, _ = bot.quote_pdf(doc["token"])
+    assert pdf.startswith(b"%PDF")
+
+
+def test_typed_question_about_cheaper_or_better_inverters_gets_the_options(chat):
+    reply = chat.say("what is the difference between cheap and premium inverters, and lead acid batteries?")
+    assert "Budget" in reply and "Premium" in reply and "lithium" in reply.lower()

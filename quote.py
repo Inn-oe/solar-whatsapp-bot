@@ -12,7 +12,23 @@ import re
 from pathlib import Path
 
 BOOK_FILE = Path(__file__).parent / "quote_book.json"
+TIERS_FILE = Path(__file__).parent / "data" / "tiers.json"
 _book = None
+_tiers = None
+
+
+def tier_book():
+    global _tiers
+    if _tiers is None:
+        _tiers = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
+    return _tiers
+
+
+def _lc(s):
+    return s[:1].lower() + s[1:]
+
+
+TIER_ORDER = ("economy", "standard", "premium")
 
 
 def book():
@@ -73,7 +89,46 @@ def _apply_parts(lines, parts, basis):
     return out, basis, compare
 
 
-def build(size_kva, live=None, parts=None):
+def _apply_tier(lines, size, tier, basis, live_inv):
+    """Swap the inverter and battery lines for the tier's brand class (higher quality, higher price)."""
+    spec = tier_book()["tiers"][tier]
+    out = []
+    for l in lines:
+        low = l["item"].lower()
+        if "inverter" in low:
+            unit = live_inv.get(tier) or round(spec["inverter_per_kw"] * size)
+            unit = max(unit, l["unit"])
+            out.append(dict(l, item=f"{size:g}kVA {spec['inverter']}", unit=_step(unit), amount=round(l["qty"] * _step(unit), 2)))
+        elif "batter" in low:
+            unit = _step(l["unit"] * spec["battery_factor"])
+            out.append(dict(l, item=re.sub(r"(?i)lithium battery", "branded lithium (LiFePO4) battery", l["item"]),
+                            unit=unit, amount=round(l["qty"] * unit, 2)))
+        else:
+            out.append(l)
+    return out, basis + f"; {spec['label']} option: {spec['inverter']}"
+
+
+def tiers(size_kva, live=None, parts=None, tier_inverters=None):
+    """The three options for a size, cheapest first: [{"key","label","total","inverter","battery","who","warranty"}]."""
+    out = []
+    for key in TIER_ORDER:
+        q = build(size_kva, live, parts, key, tier_inverters)
+        s = tier_book()["tiers"][key]
+        out.append({"key": key, "label": s["label"], "total": q["total"], "size_kva": q["size_kva"],
+                    "inverter": s["inverter"], "battery": s["battery"], "who": s["who"], "warranty": s["warranty"]})
+    return out
+
+
+def tiers_text(opts, current=""):
+    """The options as a WhatsApp message, with what each buys."""
+    tb = tier_book()
+    rows = [f"*{o['label']}{' (this quote)' if o['key'] == current else ''}: {money(o['total'])}*\n"
+            f"   {o['inverter']}; {_lc(o['battery'])}.\n   {o['who']} {o['warranty']}" for o in opts]
+    return (f"Here are the options for a {opts[0]['size_kva']:g}kVA system, from cheapest to best quality:\n\n"
+            + "\n\n".join(rows) + f"\n\n{tb['inverter_note']} {tb['battery_note']}")
+
+
+def build(size_kva, live=None, parts=None, tier="economy", tier_inverters=None):
     """-> {"size_kva", "lines": [{item, qty, unit, amount}], "total", "quotes", "transport", "basis"} or None.
 
     `live` is the current advertised market price for this size, {"median", "count", "sources", "when"}. Every
@@ -97,9 +152,12 @@ def build(size_kva, live=None, parts=None):
     compare = []
     if parts:
         lines, basis, compare = _apply_parts(lines, parts, basis)
+    if tier != "economy":
+        lines, basis = _apply_tier(lines, t["size_kva"], tier, basis, tier_inverters or {})
     return {"size_kva": t["size_kva"], "asked_kva": float(size_kva), "lines": lines,
             "total": round(sum(l["amount"] for l in lines), 2), "quotes": t["quotes"], "transport": t["transport"],
-            "basis": basis, "compare": compare}
+            "basis": basis, "compare": compare, "tier": tier,
+            "tier_label": tier_book()["tiers"][tier]["label"]}
 
 
 def money(x):
@@ -138,7 +196,7 @@ def as_summary(q):
             + "; ".join(f"{l['qty']:g}x {l['item']}" for l in q["lines"]))
 
 
-def pdf_bytes(q, company, contact=None, client="", where="", ref=""):
+def pdf_bytes(q, company, contact=None, client="", where="", ref="", options=None):
     """The quotation as a PDF (bytes), laid out like a company quotation: header, itemised table, total, terms."""
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import A4
@@ -169,7 +227,8 @@ def pdf_bytes(q, company, contact=None, client="", where="", ref=""):
     mt = Table([[Paragraph(esc(a), small), Paragraph(esc(c), body)] for a, c in meta], colWidths=[32 * mm, 120 * mm])
     mt.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("BOTTOMPADDING", (0, 0), (-1, -1), 1)]))
     flow += [Spacer(1, 3 * mm), mt, Spacer(1, 6 * mm),
-             Paragraph(f"<b>{q['size_kva']:g} kVA solar system, supplied and installed</b>", body), Spacer(1, 2 * mm)]
+             Paragraph(f"<b>{q['size_kva']:g} kVA solar system, supplied and installed"
+                       f"{' (' + q['tier_label'] + ' option)' if q.get('tier_label') else ''}</b>", body), Spacer(1, 2 * mm)]
     rows = [["#", "Item", "Qty", f"Unit ({b['currency']})", f"Amount ({b['currency']})"]]
     for i, l in enumerate(q["lines"], 1):
         rows.append([str(i), Paragraph(esc(l["item"]), body), f"{l['qty']:g}", f"{l['unit']:,.2f}", f"{l['amount']:,.2f}"])
@@ -186,6 +245,15 @@ def pdf_bytes(q, company, contact=None, client="", where="", ref=""):
              "A technician confirms the system size and final price on a free site visit. This quotation is valid for 14 days."]
     if abs(q["asked_kva"] - q["size_kva"]) >= 0.25:
         notes.insert(0, f"You asked for {q['asked_kva']:g} kVA; our closest standard system is {q['size_kva']:g} kVA.")
-    flow += [t, Spacer(1, 6 * mm), Paragraph("<b>Terms and notes</b>", body)] + [Paragraph("• " + esc(n), small) for n in notes]
+    if options:
+        flow += [t, Spacer(1, 5 * mm), Paragraph("<b>Other options for this system size</b>", body), Spacer(1, 1 * mm)]
+        for o in options:
+            mark = " (this quotation)" if o["key"] == q.get("tier") else ""
+            flow.append(Paragraph(f"• <b>{esc(o['label'])}{mark}: {b['currency']} {o['total']:,.0f}</b> - {esc(o['inverter'])}; "
+                                  f"{esc(_lc(o['battery']))}. {esc(o['warranty'])}", small))
+        flow += [Spacer(1, 4 * mm), Paragraph("<b>Terms and notes</b>", body)]
+    else:
+        flow += [t, Spacer(1, 6 * mm), Paragraph("<b>Terms and notes</b>", body)]
+    flow += [Paragraph("• " + esc(n), small) for n in notes]
     doc.build(flow)
     return buf.getvalue()
