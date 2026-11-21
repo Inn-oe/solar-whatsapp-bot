@@ -1,16 +1,16 @@
 {
-  "trained_at": "2026-11-21 13:40:00",
+  "trained_at": "2026-11-21 13:42:02",
   "data": "starter phrases",
   "real_phrases": 1394,
-  "generated_phrases": 3837,
+  "generated_phrases": 3879,
   "setting": "C. + variants and spelling mistakes",
   "held_out": {
     "accuracy": 0.623,
-    "macro_f1": 0.359,
-    "top3": 0.791,
-    "same_handler": 0.737,
-    "coverage": 0.854,
-    "precision": 0.686
+    "macro_f1": 0.362,
+    "top3": 0.793,
+    "same_handler": 0.734,
+    "coverage": 0.851,
+    "precision": 0.69
   },
   "today_model_held_out": {
     "accuracy": 0.625,
