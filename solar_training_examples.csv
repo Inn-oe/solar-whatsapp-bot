@@ -1,0 +1,54 @@
+intent,text,source,reviewed
+price,How much is a 3kVA solar system in USD?,synthetic_draft,yes
+price,Marii e5kVA hybrid inverter?,synthetic_draft,no
+price,Can you give me the price of a lithium battery?,synthetic_draft,yes
+price,Do you have a cash price for six solar panels?,synthetic_draft,yes
+price,What is the total cost including installation?,synthetic_draft,no
+price,Pane discount here kana ndikatenga complete kit?,synthetic_draft,no
+buy_system,I need a quotation for a 5kVA hybrid system,synthetic_draft,yes
+buy_system,Please quote for a home solar package with battery backup,synthetic_draft,yes
+buy_system,Ndoda solar yekumba ine fridge neTV,synthetic_draft,no
+buy_system,Can someone help me choose a solar system for my shop?,synthetic_draft,no
+buy_system,I want to order a complete off-grid kit,synthetic_draft,yes
+maintenance_fault,My inverter displays error 03,synthetic_draft,yes
+maintenance_fault,Battery is not charging even when there is sunshine,synthetic_draft,yes
+maintenance_fault,Inverter beeps continuously after ZESA goes off,synthetic_draft,yes
+maintenance_fault,My solar system trips when I switch on the kettle,synthetic_draft,yes
+maintenance_fault,The battery percentage drops suddenly at night,synthetic_draft,yes
+maintenance_fault,Panel output is low although it is sunny,synthetic_draft,yes
+faq_warranty,How many years warranty do your batteries have?,synthetic_draft,yes
+faq_warranty,Does installation come with a workmanship guarantee?,synthetic_draft,yes
+faq_warranty,Who handles a warranty claim if my inverter fails?,synthetic_draft,yes
+faq_payment_deposit,Can I pay half now and the balance later?,synthetic_draft,yes
+faq_payment_deposit,Do you accept a deposit for installation?,synthetic_draft,yes
+faq_payment_deposit,Can I pay in instalments?,synthetic_draft,yes
+faq_installation_time,How soon can you install in Harare?,synthetic_draft,yes
+faq_installation_time,How long does a typical installation take?,synthetic_draft,yes
+faq_installation_time,Can you install this weekend?,synthetic_draft,yes
+faq_solar_water_pumping,Can solar run my borehole pump?,synthetic_draft,yes
+faq_solar_water_pumping,What size system do I need for a water pump?,synthetic_draft,yes
+faq_solar_water_pumping,Can I pump water without ZESA?,synthetic_draft,yes
+qa_lithium_vs_gel,Is lithium better than gel for daily cycling?,synthetic_draft,yes
+qa_lithium_vs_gel,What is the difference between LiFePO4 and gel batteries?,synthetic_draft,yes
+qa_lithium_vs_gel,Which battery lasts longer lithium or lead acid?,synthetic_draft,yes
+faq_inverter_types,What is an MPPT controller?,synthetic_draft,yes
+faq_inverter_types,Should I buy a hybrid or off-grid inverter?,synthetic_draft,no
+faq_inverter_types,Does a hybrid inverter charge batteries from ZESA?,synthetic_draft,yes
+qa_overheating,My inverter smells like burning plastic,synthetic_draft,yes
+qa_overheating,There is smoke coming from the inverter,synthetic_draft,yes
+qa_overheating,Why is the inverter getting very hot?,synthetic_draft,yes
+faq_zesa_power_cuts,Will my solar work when ZESA is off?,synthetic_draft,yes
+faq_zesa_power_cuts,What happens during load shedding?,synthetic_draft,yes
+faq_zesa_power_cuts,Magetsi akadzima solar icharamba ichishanda here?,synthetic_draft,no
+contact_info,Where is your shop located?,synthetic_draft,yes
+contact_info,Can I get your WhatsApp number?,synthetic_draft,yes
+contact_info,Do you have a branch in Harare?,synthetic_draft,yes
+faq_brands,Do you stock Deye inverters?,synthetic_draft,yes
+faq_brands,Do you sell Growatt?,synthetic_draft,yes
+faq_brands,Which inverter brands do you carry?,synthetic_draft,yes
+qa_earthing,Why does my solar system need earthing?,synthetic_draft,yes
+qa_earthing,What is an earth leakage breaker?,synthetic_draft,yes
+qa_earthing,Do I need surge protection?,synthetic_draft,yes
+qa_changeover,Do I need a changeover switch?,synthetic_draft,yes
+qa_changeover,Can I switch between solar and ZESA?,synthetic_draft,yes
+qa_changeover,What does an automatic transfer switch do?,synthetic_draft,yes

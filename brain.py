@@ -148,8 +148,8 @@ def _pretrained_info(intents, ok, examples):
     _intents = intents
     llm.set_menu({n: i for n, i in intents.items() if n in ok}, examples)
     info["note"] = ("" if info["in_sync"] else
-                    "The phrases here changed after this model was trained. They go live once you re-train on your "
-                    "PC (train_local.py) and deploy. Until then the bot answers with the older model.")
+                    "Phrases were changed after the bot was last trained. The administrator retrains it on their "
+                    "computer; until then the bot answers with the earlier model.")
     nlu.engine.info["note"] = info["note"]
     return info
 

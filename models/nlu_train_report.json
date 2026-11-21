@@ -1,0 +1,21 @@
+{
+  "trained_at": "2026-11-21 13:40:00",
+  "data": "starter phrases",
+  "real_phrases": 1394,
+  "generated_phrases": 3837,
+  "setting": "C. + variants and spelling mistakes",
+  "held_out": {
+    "accuracy": 0.623,
+    "macro_f1": 0.359,
+    "top3": 0.791,
+    "same_handler": 0.737,
+    "coverage": 0.854,
+    "precision": 0.686
+  },
+  "today_model_held_out": {
+    "accuracy": 0.625,
+    "macro_f1": 0.343,
+    "top3": 0.783,
+    "same_handler": 0.729
+  }
+}

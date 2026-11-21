@@ -51,7 +51,7 @@ def test_bot_loads_the_file_instead_of_training(tmp_path, monkeypatch):
     monkeypatch.setattr(nlu.engine, "train", boom)
     info = brain.retrain()
     assert info["pretrained"] and info["trained"]
-    assert "changed after this model was trained" in info["note"]    # the test database has other phrases
+    assert "changed after the bot was last trained" in info["note"]    # the test database has other phrases
 
 
 def test_bot_trains_when_the_file_is_missing_or_switched_off(tmp_path, monkeypatch):
