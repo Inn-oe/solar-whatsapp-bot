@@ -11,7 +11,7 @@
     "sun-12k",
     "solarman"
    ],
-   "source": "https://manualshive.com/en/manual/sunsynk/g01lp1-us-eu/1400613?page=43",
+   "source": "https://manualshive.com/en/manual/sunsynk/g01lp1-us-eu/1400613?page=43  |  Deye SUN-3.6/5/6K-SG03LP1-EU instruction manual, chart 7-1 fault information",
    "codes": {
     "F01": [
      "DC input polarity reversed",
@@ -72,6 +72,51 @@
      "Heatsink / IGBT over-temperature",
      "check",
      "The inverter is too hot. Make sure the vents are clear and it is in shade with airflow, reduce the load, and let it cool for 30 minutes."
+    ],
+    "F08": [
+     "GFDI relay failure",
+     "stop",
+     "In a split-phase or three-phase system the backup load N line must be connected to earth. A technician must check the earthing."
+    ],
+    "F22": [
+     "Emergency stop fault (Tz_EmergStop)",
+     "stop",
+     "Please contact your installer for help."
+    ],
+    "F29": [
+     "Parallel CAN bus fault",
+     "check",
+     "In a parallel system check the parallel communication cable and the inverter addresses. It can show during start-up and clear by itself once all inverters are on. If it stays, a technician must check."
+    ],
+    "F34": [
+     "AC overcurrent fault",
+     "check",
+     "Check the load on the backup output is within the inverter's range. If the fault still exists, a technician must check it."
+    ],
+    "F42": [
+     "AC line low voltage (grid voltage fault)",
+     "check",
+     "Check the AC voltage is in the standard range and the grid AC cables are firm and correctly connected. If it cannot go back to normal, a technician must check."
+    ],
+    "F47": [
+     "AC over frequency (grid frequency out of range)",
+     "check",
+     "Check the grid frequency is within the specification and the AC cables are firm. If it cannot go back to normal, a technician must check."
+    ],
+    "F48": [
+     "AC lower frequency (grid frequency out of range)",
+     "check",
+     "Check the grid frequency is within the specification and the AC cables are firm. If it cannot go back to normal, a technician must check."
+    ],
+    "F56": [
+     "DC busbar voltage too low (battery voltage low)",
+     "check",
+     "Check whether the battery voltage is too low. If it is, charge it from solar or the grid. If it cannot go back to normal, a technician must check."
+    ],
+    "F63": [
+     "ARC fault",
+     "stop",
+     "Arc-fault detection (US market). Check the solar panel cable connections; a technician must clear the fault."
     ]
    }
   },
@@ -191,9 +236,12 @@
     "growatt",
     "spf",
     "spf5000",
-    "spf 5000"
+    "spf 5000",
+    "spf 3000t",
+    "spf3000t",
+    "3000t hvm"
    ],
-   "source": "https://manualshive.com/ru/manual/growatt/spf-2000tl/2270523?page=40",
+   "source": "https://manualshive.com/ru/manual/growatt/spf-2000tl/2270523?page=40  |  Growatt SPF 3000T HVM-G2 user manual (Fault Code, Warning Code, Trouble Shooting)",
    "codes": {
     "01": [
      "Fan fault",
@@ -234,6 +282,41 @@
      "Battery connection open",
      "check",
      "Check that the battery breaker is ON and cables are tight (look only). If fine, a technician must check."
+    ],
+    "06": [
+     "Output voltage abnormal (inverter output below 180 Vac or above 290 Vac)",
+     "check",
+     "Reduce the connected load and restart once. If it returns, the unit must go to a repair centre."
+    ],
+    "58": [
+     "Output voltage abnormal (AC output low voltage)",
+     "check",
+     "Reduce the connected load and restart once. If it returns, the unit must go to a repair centre."
+    ],
+    "20": [
+     "BMS communication error",
+     "check",
+     "Check the BMS communication cable is firmly connected. If it stays, a technician must check."
+    ],
+    "51": [
+     "Over current or surge",
+     "restart",
+     "Restart the unit (disconnect all power, wait for the screen to go off). If it happens again, it must go to a repair centre."
+    ],
+    "13": [
+     "Warning: solar charger stopped because the solar (PV) voltage is too high",
+     "stop",
+     "A technician must check the panel set-up against the inverter's maximum PV voltage."
+    ],
+    "19": [
+     "Warning: battery disconnected",
+     "check",
+     "Check the battery breaker or fuse is on and the battery cables are firm. If it stays, a technician must check."
+    ],
+    "63": [
+     "Warning: battery voltage sampling error (over 0.5 V)",
+     "restart",
+     "Restart the unit. If it returns, a technician must check it."
     ]
    }
   },
@@ -268,6 +351,975 @@
      "Ground relay test failed (MultiPlus-II / EasySolar-II)",
      "stop",
      "A technician must check the earthing and the unit."
+    ],
+    "2": [
+     "New and old type MK2 protocol mixed in the system",
+     "stop",
+     "This should never happen. A technician must check it. Please don't keep resetting it."
+    ],
+    "4": [
+     "No other device found (parallel, split or three-phase set-up)",
+     "check",
+     "It can show briefly while the system restarts. If it stays, the network cables between the units are the likely cause: a technician should check them."
+    ],
+    "5": [
+     "Overvoltage on the AC output",
+     "stop",
+     "Usually the AC wiring of one unit is not connected properly. Switch off and have a technician check the AC wiring."
+    ],
+    "6": [
+     "Error in an Assistant (DDC program)",
+     "stop",
+     "The firmware and configuration need updating. A technician must check it. Please don't keep resetting it."
+    ],
+    "10": [
+     "System time synchronisation problem",
+     "check",
+     "Often only shows while restarting and is not a real fault; the real cause is usually error 1 or a blown DC fuse. If it stays, a technician should check."
+    ],
+    "11": [
+     "Relay test fault (installation error or relay failure)",
+     "stop",
+     "The wiring, earthing or a relay may be at fault. A technician must check it. Please don't keep resetting it."
+    ],
+    "12": [
+     "Configuration mismatch between the unit's two processors (MultiPlus-II models)",
+     "stop",
+     "The settings must be re-sent by a technician."
+    ],
+    "14": [
+     "Device cannot transmit data",
+     "stop",
+     "Most likely a short in the communication cables, rarely a failed board. A technician must check it. Please don't keep resetting it."
+    ],
+    "15": [
+     "VE.Bus combination error (products, firmware or commands do not match)",
+     "stop",
+     "Usually fixed by a firmware update. A technician must check it. Please don't keep resetting it."
+    ],
+    "16": [
+     "VE.Bus dongle is missing",
+     "stop",
+     "A firmware update is needed. The system stays off until restarted. A technician must check it. Please don't keep resetting it."
+    ],
+    "17": [
+     "Phase master missing",
+     "check",
+     "Can show briefly while settings are being written. If it stays, a communication cable or a blown DC fuse is the usual cause: a technician should check."
+    ],
+    "18": [
+     "AC overvoltage on the output of a slave unit while it is switched off",
+     "stop",
+     "AC wires may be swapped. Switch off and have a technician check."
+    ],
+    "19": [
+     "A slave unit has no AC input",
+     "stop",
+     "AC input must be connected to every unit in the set, or the 'Switch as Group' setting changed by a technician."
+    ],
+    "20": [
+     "Configuration mismatch (extended options are not allowed with a grid code)",
+     "stop",
+     "The configuration must be corrected by a technician."
+    ],
+    "22": [
+     "This device cannot work as a slave (obsolete model)",
+     "stop",
+     "The unit has to be replaced: ask a technician."
+    ],
+    "24": [
+     "Switch-over system protection started",
+     "stop",
+     "Current was detected through the back-feed relay when it should be open. A technician must check the settings and relay."
+    ],
+    "25": [
+     "Incompatible VE.Bus configuration (mixed firmware or compatibility IDs)",
+     "stop",
+     "All units need matching firmware. A technician must check it. Please don't keep resetting it."
+    ],
+    "26": [
+     "Internal error",
+     "check",
+     "This should not occur. Switch everything off and on once; if it returns, call a technician."
+    ],
+    "30": [
+     "Interference on the VE.Bus network cabling ('ghost' error)",
+     "check",
+     "Usually caused by the communication cables. A technician should check the cabling."
+    ],
+    "31": [
+     "Interference on the VE.Bus network cabling ('ghost' error)",
+     "check",
+     "Usually caused by the communication cables. A technician should check the cabling."
+    ],
+    "128": [
+     "Relay test failed, so the unit cannot connect to the grid (Quattro-II with a grid code)",
+     "stop",
+     "A technician must check it. Please don't keep resetting it."
+    ]
+   }
+  },
+  "luxpower": {
+   "name": "Luxpower SNA / LXP hybrid and off-grid inverters (E = error, W = warning)",
+   "aliases": [
+    "luxpower",
+    "lux power",
+    "luxpowertek",
+    "sna",
+    "lxp",
+    "sna5000",
+    "sna 5000",
+    "sna6000"
+   ],
+   "letter_codes": true,
+   "source": "https://luxpowertek.com/wp-content/uploads/2025/10/SNA-3-6K-User-Manual-25.10.22.pdf (section 7.4)",
+   "codes": {
+    "E000": [
+     "Internal communication fault 1",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E002": [
+     "Battery on-MOS fault (Bat On Mos Fail)",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E003": [
+     "Current sensor (CT) fault",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E008": [
+     "CAN communication error in a parallel system",
+     "check",
+     "Check that the CAN cable is firmly in the right COM port. If it stays, a technician must check."
+    ],
+    "E009": [
+     "No master in the parallel system",
+     "check",
+     "There must be one master unit. A technician should check the master/slave settings."
+    ],
+    "E012": [
+     "UPS output short circuit",
+     "check",
+     "Switch off the appliances on the output (a faulty appliance may be shorted), then restart the inverter once. If it returns, a technician must check."
+    ],
+    "E013": [
+     "UPS reverse current",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E015": [
+     "Phase error in a three-phase parallel system",
+     "check",
+     "Each phase needs at least one inverter on it. A technician should check the AC connections."
+    ],
+    "E016": [
+     "Relay fault",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E017": [
+     "Internal communication fault 2",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E018": [
+     "Internal communication fault 3",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E019": [
+     "Bus voltage high",
+     "stop",
+     "The solar input voltage may be too high (over 480 V). A technician must check the panel set-up."
+    ],
+    "E020": [
+     "EPS (backup) connection fault",
+     "stop",
+     "The EPS and AC wires may be on the wrong terminals. A technician must check the wiring."
+    ],
+    "E021": [
+     "Solar (PV) voltage high",
+     "stop",
+     "The solar input voltage may be over 480 V or wired wrongly. A technician must check the panel set-up."
+    ],
+    "E022": [
+     "Internal over-current",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E024": [
+     "Solar (PV) short circuit",
+     "stop",
+     "A technician must check the solar wiring."
+    ],
+    "E025": [
+     "Temperature out of range",
+     "check",
+     "The inverter is too hot. Switch it off for 10 minutes, improve ventilation and restart. If it returns, a technician must check."
+    ],
+    "E026": [
+     "Internal fault",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "E028": [
+     "Sync signal lost in the parallel system",
+     "check",
+     "Check that the CAN cable is firmly in the right COM port. If it stays, a technician must check."
+    ],
+    "E029": [
+     "Sync trigger signal lost in the parallel system",
+     "check",
+     "Check that the CAN cable is firmly in the right COM port. If it stays, a technician must check."
+    ],
+    "E031": [
+     "Internal communication fault 4",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "W000": [
+     "Communication failure with the battery",
+     "check",
+     "Check the right battery brand is selected and the communication cable is firm. If it stays, a technician must check."
+    ],
+    "W003": [
+     "Communication failure with the meter",
+     "check",
+     "Check the meter communication cable is firm. If it stays, a technician must check."
+    ],
+    "W004": [
+     "Battery failure (reported by the battery's own BMS)",
+     "check",
+     "Restart the battery. If the warning stays, contact us or the battery maker."
+    ],
+    "W008": [
+     "Platform mismatch",
+     "check",
+     "A firmware update from Luxpower is needed: we will arrange it."
+    ],
+    "W009": [
+     "Fan stuck",
+     "check",
+     "Check nothing blocks the fan or vents. A stuck fan must be replaced by a technician."
+    ],
+    "W012": [
+     "Battery on-MOS warning",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "W013": [
+     "Over temperature",
+     "check",
+     "The inside of the inverter is a little hot. Improve ventilation or shade and reduce the load."
+    ],
+    "W015": [
+     "Battery connected in reverse",
+     "stop",
+     "Battery polarity may be reversed. Switch off and have a technician check the battery connection."
+    ],
+    "W018": [
+     "AC frequency out of range",
+     "check",
+     "Grid frequency is outside the range. It often clears when the grid steadies. If it repeats, a technician should check."
+    ],
+    "W019": [
+     "AC inconsistent in a parallel system",
+     "restart",
+     "Reconnect the AC input or restart the inverter. If it stays, a technician must check."
+    ],
+    "W025": [
+     "Battery voltage high",
+     "stop",
+     "A technician must check the battery voltage and charge settings."
+    ],
+    "W026": [
+     "Battery voltage low",
+     "check",
+     "The battery is low. Reduce loads and let it charge. If it will not charge, a technician must test it."
+    ],
+    "W027": [
+     "Battery open (no output from the battery)",
+     "check",
+     "Check the battery breaker or fuse is on and the battery connection is firm. If it stays, a technician must check."
+    ],
+    "W028": [
+     "EPS (backup) overload",
+     "check",
+     "Switch off big appliances on the backup output."
+    ],
+    "W029": [
+     "EPS voltage high",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ],
+    "W031": [
+     "EPS DC voltage high",
+     "restart",
+     "Switch the inverter off and on once. If it comes back, a technician must check it."
+    ]
+   }
+  },
+  "goodwe": {
+   "name": "GoodWe ES / EM hybrid inverter (error messages shown in the PV Master / SolarGo app)",
+   "aliases": [
+    "goodwe",
+    "good we",
+    "gw5048",
+    "gw3648",
+    "gw5000",
+    "pv master",
+    "pvmaster",
+    "solargo"
+   ],
+   "source": "https://portal.segensolar.co.za/reseller/docs/ES USER MANUAL.pdf (section 4.1, Error message and troubleshootings)",
+   "codes": {},
+   "names": {
+    "Utility Loss": [
+     "No grid power detected",
+     "check",
+     "Check that grid power is on and the AC breaker is on, and that the AC cables are tight. If all looks fine, switch the AC breaker off and on again after 5 minutes."
+    ],
+    "VAC Failure": [
+     "Grid voltage outside the permitted range",
+     "check",
+     "Often caused by an unstable grid. If it keeps happening, a technician should check the AC voltage and the inverter's safety-country setting."
+    ],
+    "FAC Failure": [
+     "Grid frequency outside the permitted range",
+     "check",
+     "If it only appears a few times and clears, it is the grid. If it keeps happening, a technician should check the safety-country setting."
+    ],
+    "PV Over Voltage": [
+     "Solar string voltage too high",
+     "stop",
+     "A technician must check the number of panels in each string against the inverter's limit."
+    ],
+    "Over Temperature": [
+     "Inverter too hot",
+     "check",
+     "Improve ventilation or shade and reduce the load. Switch it off for 15 minutes, then start it again. If it returns, a technician must check."
+    ],
+    "Isolation Failure": [
+     "Solar string insulation to earth too low",
+     "stop",
+     "Often water in connectors, damaged DC cable or ageing panels. A technician must test it."
+    ],
+    "Ground I Failure": [
+     "Ground leakage current too high",
+     "stop",
+     "Neutral and earth on the AC side may not be connected well. A technician must check it. If it only happens early morning or on rainy days and clears, it can be humidity."
+    ],
+    "Relay Check Failure": [
+     "Self-check of the relay failed",
+     "stop",
+     "Neutral and earth may be poorly connected, or it was a one-off. Restart once; if it returns a technician must check."
+    ],
+    "DC Injection High": [
+     "Too much DC in the AC output",
+     "restart",
+     "Restart the inverter once. If it comes back, contact a technician."
+    ],
+    "EEPROM R/W Failure": [
+     "Memory read/write failure",
+     "restart",
+     "Restart the inverter once. If it comes back, contact a technician."
+    ],
+    "SPI Failure": [
+     "Internal communication failure",
+     "restart",
+     "Restart the inverter once. If it comes back, contact a technician."
+    ],
+    "DC Bus High": [
+     "Internal bus voltage too high",
+     "restart",
+     "Restart the inverter once. If it comes back, contact a technician."
+    ],
+    "Back-Up Over Load": [
+     "Back-up output overloaded",
+     "check",
+     "Switch off some appliances on the back-up output so the total load is below the back-up rating."
+    ]
+   }
+  },
+  "solis": {
+   "name": "Solis hybrid / energy-storage inverter (alarm messages and codes)",
+   "aliases": [
+    "solis",
+    "ginlong",
+    "rhi-",
+    "s6-eh1p",
+    "solis hybrid"
+   ],
+   "source": "https://usservice.solisinverters.com/support/solutions/articles/73000560423-solis-inverter-alarm-codes-complete-list-",
+   "codes": {},
+   "names": {
+    "OV-G-V 01": [
+     "Grid voltage too high",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "UN-G-V01": [
+     "Grid voltage too low",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "OV-G-F01": [
+     "Grid frequency too high",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "UN-G-F01": [
+     "Grid frequency too low",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "NO-Grid": [
+     "No grid",
+     "check",
+     "Check the grid supply and breaker are on and the AC cables are firm. If the grid is fine, a technician must check the grid standard setting."
+    ],
+    "G-PHASE": [
+     "Unbalanced three-phase grid",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "G-F-FLU": [
+     "Grid frequency unstable",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "OV-DC01": [
+     "Solar input 1 overvoltage",
+     "stop",
+     "The solar voltage may be too high (too many panels in series?). A technician must check."
+    ],
+    "OV-DC02": [
+     "Solar input 2 overvoltage",
+     "stop",
+     "The solar voltage may be too high (too many panels in series?). A technician must check."
+    ],
+    "OV-DCA-I": [
+     "Solar input 1 overcurrent",
+     "stop",
+     "A technician must check the strings and polarity."
+    ],
+    "OV-DCB-I": [
+     "Solar input 2 overcurrent",
+     "stop",
+     "A technician must check the strings and polarity."
+    ],
+    "DC-INTF.": [
+     "Abnormal DC input current",
+     "stop",
+     "The DC wiring may be wrong or damaged. A technician must check it."
+    ],
+    "OV-BUS": [
+     "DC bus overvoltage",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "UNB-BUS": [
+     "DC bus voltage not balanced",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "UN-BUS01": [
+     "DC bus undervoltage",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "INI-FAULT": [
+     "Internal sampling fault",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "GRID-INTF.": [
+     "Grid interference",
+     "check",
+     "The grid may be distorted, for example by several inverters on one line. A technician can adjust the grid filter."
+    ],
+    "OV-TEM": [
+     "Inverter too hot",
+     "check",
+     "Check the inverter is in shade with room to breathe. Let it cool, switch off for 15 minutes and restart. If it returns, a technician must check."
+    ],
+    "UN-TEM": [
+     "Temperature too low",
+     "check",
+     "It may be too cold where it is installed. Restart once; if it stays, a technician must check."
+    ],
+    "PV ISO-PRO 01": [
+     "Solar negative to earth insulation fault",
+     "stop",
+     "Often moisture in the early morning, late afternoon or rain and then clears. If it keeps happening a technician must test the insulation."
+    ],
+    "PV ISO-PRO 02": [
+     "Solar positive to earth insulation fault",
+     "stop",
+     "Often moisture and clears when dry. If it keeps happening a technician must test the insulation."
+    ],
+    "ILeak-PRO 01": [
+     "Leakage current protection",
+     "stop",
+     "Can be caused by damp or damaged cable insulation. A technician must test it."
+    ],
+    "RelayChk-FAIL": [
+     "Relay fault",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "DSP-B-FAULT": [
+     "Internal communication fault",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "DCInj-FAULT": [
+     "DC component in the AC current too high",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "12Power-FAULT": [
+     "12 V power supply fault",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "ILeak_Check": [
+     "Leakage current sensor failure",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "AFCI-Check": [
+     "Arc-fault self-check",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "ARC- FAULT": [
+     "DC arc detected in the solar wiring",
+     "stop",
+     "This is a fire risk. Switch the solar isolator off if it is safe to reach and keep away. A technician must check the connectors and wiring."
+    ],
+    "IG-AD": [
+     "Grid current sampling error",
+     "check",
+     "Check the grid is on and normal and the AC cables are firm. Restart the inverter once; if it stays, a technician must check."
+    ],
+    "IGBT-OV-I": [
+     "IGBT overcurrent",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "OV-IgTr": [
+     "Grid current temporarily over-current",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "OV-Vbatt-H": [
+     "Battery hardware overvoltage",
+     "stop",
+     "Check whether the battery breaker has tripped. A technician must check the battery."
+    ],
+    "OV-ILLC": [
+     "LLC hardware overcurrent",
+     "check",
+     "The backup load may be too high. Switch off big appliances and restart once."
+    ],
+    "OV-Vbatt": [
+     "Battery overvoltage",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "UN-Vbatt": [
+     "Battery undervoltage",
+     "check",
+     "The battery is low. Reduce loads and let it charge; if it will not charge, a technician must test it."
+    ],
+    "NO-Battery": [
+     "Battery not connected",
+     "check",
+     "Check the battery breaker or fuse has not tripped and the battery cables are firm. If it stays, a technician must check."
+    ],
+    "OV-Vbackup": [
+     "Backup output voltage too high",
+     "check",
+     "A technician should check the backup wiring."
+    ],
+    "Over-Load": [
+     "Backup load overloaded",
+     "check",
+     "Switch off big appliances (kettle, geyser, motors) on the backup output and restart once."
+    ],
+    "DspSelfChk": [
+     "Internal self-check failure",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "Failsafe": [
+     "Export power manager communication cable not connected",
+     "check",
+     "Check the cable between the inverter and the meter is firm. If it stays, a technician must check."
+    ],
+    "MET_Comm_FAIL": [
+     "Meter communication failure",
+     "check",
+     "Check the meter cable is firm and the meter brand is set correctly. If it stays, a technician must check."
+    ],
+    "CAN_Comm_FAIL": [
+     "Battery communication failure",
+     "check",
+     "Check the battery communication cable is firm. If it stays, a technician must check."
+    ],
+    "DSP_Comm_FAIL": [
+     "Internal DSP communication failure",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check it."
+    ],
+    "Alarm1-BMS": [
+     "Battery BMS alarm",
+     "check",
+     "Restart the battery. If the alarm stays, contact a technician."
+    ],
+    "Alarm2-BMS": [
+     "Battery BMS alarm 2",
+     "check",
+     "Restart the battery. If the alarm stays, contact a technician."
+    ],
+    "BatName-FAIL": [
+     "Wrong battery brand selected",
+     "check",
+     "The selected battery brand must match the real battery: a technician should correct the setting."
+    ],
+    "DRM_LINK_FAIL": [
+     "DRM connection failure",
+     "check",
+     "Check the DRM cable is firm. If it stays, a technician must check."
+    ],
+    "LG-BMS-Fault": [
+     "LG battery BMS fault",
+     "check",
+     "Restart the battery. If it stays, contact the battery maker or a technician."
+    ],
+    "LG-Comm-FAIL": [
+     "LG battery communication failure",
+     "check",
+     "Restart the battery. If it stays, contact the battery maker or a technician."
+    ],
+    "Fan Alarm": [
+     "Internal fan fault",
+     "check",
+     "Check nothing blocks the fan or vents. A stuck fan must be replaced by a technician."
+    ],
+    "Surge Alarm": [
+     "Grid surge",
+     "restart",
+     "Restart the inverter once. If it comes back, a technician must check."
+    ]
+   },
+   "name_codes": {
+    "1010": "OV-G-V 01",
+    "1011": "UN-G-V01",
+    "1012": "OV-G-F01",
+    "1013": "UN-G-F01",
+    "1015": "NO-Grid",
+    "1016": "G-PHASE",
+    "1017": "G-F-FLU",
+    "1020": "OV-DC01",
+    "1021": "OV-BUS",
+    "1022": "UNB-BUS",
+    "1025": "OV-DCA-I",
+    "1026": "OV-DCB-I",
+    "1027": "DC-INTF.",
+    "1030": "GRID-INTF.",
+    "1031": "INI-FAULT",
+    "1032": "OV-TEM",
+    "103a": "UN-TEM",
+    "1033": "PV ISO-PRO 01",
+    "1034": "ILeak-PRO 01",
+    "1035": "RelayChk-FAIL",
+    "1036": "DSP-B-FAULT",
+    "1037": "DCInj-FAULT",
+    "1038": "12Power-FAULT",
+    "1039": "ILeak_Check",
+    "1040": "AFCI-Check",
+    "1041": "ARC- FAULT",
+    "1047": "IG-AD",
+    "1048": "IGBT-OV-I",
+    "1050": "OV-IgTr",
+    "1051": "OV-Vbatt-H",
+    "1052": "OV-ILLC",
+    "1053": "OV-Vbatt",
+    "1054": "UN-Vbatt",
+    "1055": "NO-Battery",
+    "1056": "OV-Vbackup",
+    "1057": "Over-Load",
+    "1058": "DspSelfChk",
+    "2010": "Failsafe",
+    "2011": "MET_Comm_FAIL",
+    "2012": "CAN_Comm_FAIL",
+    "2014": "DSP_Comm_FAIL",
+    "2015": "Alarm1-BMS",
+    "2016": "BatName-FAIL",
+    "2017": "Alarm2-BMS",
+    "2018": "DRM_LINK_FAIL",
+    "2019": "LG-BMS-Fault",
+    "2021": "LG-Comm-FAIL"
+   }
+  },
+  "felicity": {
+   "name": "Felicity Solar hybrid inverter (IVGM / IVEM / IVCM, numbered faults)",
+   "aliases": [
+    "felicity",
+    "felicitysolar",
+    "felicity solar",
+    "ivgm",
+    "ivem",
+    "ivcm",
+    "ivgm12k",
+    "ivgm14k",
+    "ivgm16k"
+   ],
+   "source": "https://www.felicitysolar.com  |  Felicity IVGM12K/14K/16KLP1G1 user guide, section 11 Fault Code",
+   "codes": {
+    "05": [
+     "PV over current fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "18": [
+     "PV short circuit fault",
+     "stop",
+     "A technician must check the solar wiring."
+    ],
+    "25": [
+     "Battery over voltage fault",
+     "stop",
+     "The battery voltage must be checked against the specification and the battery cables inspected: a technician must do this."
+    ],
+    "27": [
+     "Battery over current fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "28": [
+     "Battery hardware over current",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "31": [
+     "LLC over current fault (hardware)",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "32": [
+     "BMS communication fault",
+     "check",
+     "Check the BMS communication cable is firmly and correctly connected. If it cannot go back to normal, a technician must check."
+    ],
+    "35": [
+     "Buck-boost current sensor fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "37": [
+     "LLC soft start failure",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "40": [
+     "Battery short circuit",
+     "stop",
+     "Check whether the battery port is shorted: a technician must do this. Switch the battery breaker off if it is safe to reach."
+    ],
+    "41": [
+     "Bus over voltage fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "43": [
+     "Bus under voltage fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "44": [
+     "Bus voltage unbalance fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "49": [
+     "Inverter over current (software)",
+     "check",
+     "Check the load on the backup/output is within the inverter's rating: switch off big appliances and restart once. If it returns, a technician must check it."
+    ],
+    "50": [
+     "Inverter over current (hardware)",
+     "check",
+     "Check the load on the backup/output is within the inverter's rating: switch off big appliances and restart once. If it returns, a technician must check it."
+    ],
+    "51": [
+     "Inverter soft start failure",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "52": [
+     "AC voltage DC component fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "53": [
+     "AC current DC component fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "54": [
+     "Inverter over voltage fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "55": [
+     "Inverter under voltage fault",
+     "check",
+     "Check the load on the backup/output is within the inverter's rating: switch off big appliances and restart once. If it returns, a technician must check it."
+    ],
+    "56": [
+     "Inverter short circuit fault",
+     "check",
+     "Check the backup output wiring is firm and correct, and switch off all appliances on it. Restart once; if it returns a technician must check."
+    ],
+    "57": [
+     "Grid overload fault",
+     "check",
+     "Check the load on the backup/output is within the inverter's rating: switch off big appliances and restart once. If it returns, a technician must check it."
+    ],
+    "58": [
+     "Backup overload fault",
+     "check",
+     "Check the load on the backup/output is within the inverter's rating: switch off big appliances and restart once. If it returns, a technician must check it."
+    ],
+    "65": [
+     "Heatsink high temperature fault",
+     "check",
+     "The work environment may be too hot. Improve ventilation or shade, turn the inverter off for 15 minutes and restart. If it cannot go back to normal, a technician must check."
+    ],
+    "67": [
+     "Main and auxiliary DSP communication fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "68": [
+     "MCU communication fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "69": [
+     "EEPROM fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "70": [
+     "AC leakage current sensor fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "71": [
+     "AC leakage current fault",
+     "stop",
+     "Check the solar-side cable earth connection. A technician must test it. Please don't keep resetting it."
+    ],
+    "72": [
+     "Grid relay open circuit fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "74": [
+     "Inverter relay self-check fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "76": [
+     "Generator relay self-check fault",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "77": [
+     "PV insulation impedance fault",
+     "stop",
+     "Check the solar panel and inverter connections are firm and the inverter's earth cable is connected. A technician must test the insulation."
+    ],
+    "78": [
+     "Grid wrongly connected to the backup port",
+     "stop",
+     "Backup and grid cables may be swapped. A technician must check the wiring."
+    ],
+    "79": [
+     "Generator port connected to the generator or grid while in smart-load mode",
+     "check",
+     "Check the generator cables are firmly and correctly connected. If it cannot go back to normal, a technician must check."
+    ],
+    "82": [
+     "NTC (temperature sensor) open circuit",
+     "restart",
+     "Switch the inverter off and on once (restart the system 2 to 3 times at most). If the fault comes back, a technician must check it."
+    ],
+    "85": [
+     "External CT sensor fault",
+     "check",
+     "Check the CT sensor connection is firm and correct. If it stays, a technician must check."
+    ],
+    "86": [
+     "System parameters changed",
+     "info",
+     "A grid or battery setting changed and the system restarts after a moment. No action needed unless it repeats."
+    ],
+    "87": [
+     "RSD (rapid shutdown) fault",
+     "check",
+     "Check whether an external RSD signal triggered the shutdown. If not, restart the inverter; if it stays, a technician must check."
+    ],
+    "88": [
+     "Parallel system error",
+     "check",
+     "Check whether another inverter in the system is showing a fault, then restart the system. If it stays, a technician must check."
+    ],
+    "89": [
+     "Parallel CAN communication failure",
+     "check",
+     "Check the parallel cables are firm and correct, then restart 2 to 3 times. If it cannot go back to normal, a technician must check."
+    ],
+    "90": [
+     "Parallel host lost",
+     "check",
+     "Check the parallel cables are firm and correct. If it cannot go back to normal, a technician must check."
+    ],
+    "91": [
+     "Parallel sync signal lost",
+     "check",
+     "Check the parallel cables are firm and correct. If it cannot go back to normal, a technician must check."
+    ],
+    "92": [
+     "Parallel software versions are inconsistent",
+     "check",
+     "All inverters in the set need the same software version: a technician must check."
+    ],
+    "93": [
+     "Parallel settings are inconsistent",
+     "check",
+     "Settings and software versions must match on every inverter: a technician must check."
+    ],
+    "94": [
+     "CAN ID conflict",
+     "check",
+     "Two inverters share the same CAN ID or there are two masters in one phase: a technician must correct the settings."
+    ],
+    "95": [
+     "Parallel PWM signal lost",
+     "check",
+     "Check the parallel cables are firm, then restart. If it stays, a technician must check."
+    ],
+    "96": [
+     "Phase sequence abnormal",
+     "check",
+     "Check the grid wires are well connected and the phase sequence is correct. A technician must check if it stays."
     ]
    }
   }

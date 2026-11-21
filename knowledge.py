@@ -52,13 +52,62 @@ def _norm(table_key, code):
     return None
 
 
+def _squash(s):
+    return re.sub(r"[^a-z0-9]+", "", (s or "").lower())
+
+
+def _named(tab, text):
+    """The alarm name (or 4-character alarm code) of a brand whose inverters report named alarms ('NO-Battery',
+    'Utility Loss'), found in the text; the longest name wins. '' when there is none."""
+    names = tab.get("names")
+    if not names:
+        return ""
+    sq, best = _squash(text), ""
+    for name in names:
+        n = _squash(name)
+        if len(n) >= 5 and n in sq and len(n) > len(_squash(best)):
+            best = name
+    if best:
+        return best
+    low = (text or "").lower()
+    for alt, name in (tab.get("name_codes") or {}).items():
+        if re.search(r"(?<![0-9a-z])" + re.escape(alt.lower()) + r"(?![0-9a-z])", low):
+            return name
+    return ""
+
+
+def _letter_key(text):
+    """'E012' / 'W026' (Luxpower style: the letter says error or warning) -> 'E012', or ''."""
+    m = re.search(r"(?i)(?<![a-z0-9])([ew])\s?-?(\d{3})(?!\d)", text or "")
+    return (m.group(1).upper() + m.group(2)) if m else ""
+
+
+def _found(brand, tab, key, row):
+    meaning, severity, check = row
+    return {"state": "found", "brand": brand, "code": key, "table": tab["name"], "meaning": meaning,
+            "severity": severity, "check": check, "source": tab["source"]}
+
+
 def lookup(text, brand_hint=""):
-    """-> {"state": "found"|"unknown_code"|"need_brand", "brand", "code", ...}; None if the text has no code."""
+    """-> {"state": "found"|"unknown_code"|"need_brand", "brand", "code", ...}; None if the text has no code
+    (or, for brands that report named alarms, no alarm name)."""
+    brand = brand_of(text) or brand_of(brand_hint)
+    if brand:
+        tab = data()["tables"][brand]
+        name = _named(tab, text)
+        if name:
+            return _found(brand, tab, name, tab["names"][name])
+        if tab.get("letter_codes"):
+            key = _letter_key(text)
+            c = code_of(text)
+            if key and key in tab["codes"]:
+                return _found(brand, tab, key, tab["codes"][key])
+            if key or c:
+                return {"state": "unknown_code", "brand": brand, "code": key or c[0], "table": tab["name"]}
     c = code_of(text)
     if not c:
         return None
     code, f_prefixed = c
-    brand = brand_of(text) or brand_of(brand_hint)
     if not brand:
         if f_prefixed:
             brand = "deye"       # F-prefixed two-digit codes are the Deye / Sunsynk style
@@ -79,13 +128,14 @@ def explain(res):
         return ""
     if res["state"] == "need_brand":
         return ("Error codes mean different things on different inverters. Which brand is it "
-                "(Deye, Sunsynk, Growatt, Axpert/Mecer/Kodak, Victron or another)? It's printed on the front.")
+                "(Deye, Sunsynk, Growatt, Axpert/Mecer/Kodak, Victron, Felicity, Luxpower, GoodWe, Solis or another)? It's printed on the front.")
     if res["state"] == "unknown_code":
         return (f"I don't have code {res['code']} for that inverter in my list, and I won't guess what it means with "
                 "a fault. I'll pass it to a technician with the code.")
     sev = {"stop": "⚠️ This one needs a technician. Please don't keep resetting it.", "restart": "",
            "info": "", "check": ""}[res["severity"]]
-    return (f"*{res['brand'].title() if res['brand'] != 'voltronic' else 'Axpert-type'} fault {res['code']}: "
+    brand = {"voltronic": "Axpert-type", "goodwe": "GoodWe"}.get(res["brand"], res["brand"].title())
+    return (f"*{brand} fault {res['code']}: "
             f"{res['meaning']}.*\n{res['check']}" + (f"\n\n{sev}" if sev else ""))
 
 

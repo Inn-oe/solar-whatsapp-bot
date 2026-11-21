@@ -1011,7 +1011,7 @@ ASKS = {
     "inverter_code": ["Does the inverter show an error code, beep or flash a warning light? If there's a code on "
                       "the display, type it (for example E05). Otherwise tap the option that fits."],
     "brand": ["Error codes mean different things on different inverters. Which brand is it (Deye, Sunsynk, "
-              "Growatt, Axpert/Mecer/Kodak, Victron, or another)? It's printed on the front. Not sure? Just say so."],
+              "Growatt, Axpert/Mecer/Kodak, Victron, Felicity, Luxpower, GoodWe, Solis, or another)? It's printed on the front. Not sure? Just say so."],
     "contact": ["What's the best phone number (WhatsApp if possible) for our team to reach you on?"],
     "name": ["And may I have your name please?", "Lastly, what name should I put on the request?"],
     "sizing_need": ["What would you like to keep running: fridge, TV, lights, geyser, pump? Or tell me your "
