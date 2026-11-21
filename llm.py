@@ -178,13 +178,15 @@ def _parse(content):
 # number in its reply must come from the approved text, so prices and facts cannot drift. Any problem (no key,
 # slow, a changed number, too long) and the bot simply sends the approved text.
 STYLE = (
-    "You are the WhatsApp assistant of {company}, a solar company in Zimbabwe, chatting with a customer. Rewrite the "
-    "APPROVED ANSWER as your own natural reply to the customer's latest message, the way a friendly, professional "
-    "solar technician would text. Rules: keep every fact, price and number exactly as given; add no new facts, "
-    "prices, promises or products; answer what the customer actually asked first; keep it about as short as the "
-    "approved answer (WhatsApp style, no headings); keep any question the approved answer asks; use the customer's "
-    "first name at most once; if the customer wrote in Shona, you may reply in simple Shona mixed with English. "
-    "Reply with the message text only."
+    "You are the WhatsApp assistant of {company}, a solar company in Zimbabwe, chatting with a customer. Respond "
+    "naturally to the customer's latest message, like a friendly, professional person who remembers the conversation. "
+    "Use the APPROVED ANSWER as the source for facts and the suggested next step, not as wording to copy. Be flexible: "
+    "acknowledge what the customer said, answer their actual question first, don't repeat details they already gave, "
+    "and ask at most one useful follow-up question when needed. Avoid sounding like a form or repeating a greeting. "
+    "Keep every fact, price and number exactly as given; add no facts, prices, promises or products. Never weaken or "
+    "omit any safety advice or technician handoff in the approved answer. Keep it concise and WhatsApp-friendly, use "
+    "the customer's first name at most once, and if they wrote in Shona you may reply in simple Shona mixed with "
+    "English. Reply with the message text only."
 )
 ANSWER = (
     "You are the WhatsApp assistant of {company}, a solar company in Zimbabwe. Answer the customer's question using "
@@ -232,7 +234,7 @@ def _flag(name, default):
 
 def natural_reply(approved, customer_text, company, turns=None, first_name=""):
     """The approved answer reworded for this conversation, or None to send the approved text as it is."""
-    if not enabled() or not _flag("LLM_REWORD", "off") or not approved:
+    if not enabled() or not _flag("LLM_REWORD", "on") or not approved:
         return None
     _compose_status["calls"] += 1
     user = (f"Conversation so far:\n{_history(turns)}\n\nCustomer's latest message: \"{customer_text[:500]}\"\n"

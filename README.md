@@ -62,11 +62,14 @@ ERP_DATABASE_URL=postgresql://... python training/build_quote_book.py     # or: 
 ## Natural replies (language model)
 
 The trained model (TF-IDF or the transformer) recognises what a message is about; the answers staff wrote in the
-training sheet say what to tell the customer. With `LLM_API_KEY` set, the bot also asks the language model to say
-that answer the way a person would in this conversation (`llm.natural_reply`), and to answer questions the trained
+training sheet say what to tell the customer. With `LLM_API_KEY` set, the bot asks the language model to write each reply naturally in the context of the
+conversation (`llm.natural_reply`), and to answer questions the trained
 model does not recognise from the company's facts only: FAQ answers, packages and quotation prices
 (`llm.answer_from_facts`). Every number in a reworded reply must appear in the approved text, otherwise the approved
-text is sent unchanged; the same happens when the key is missing or the model is slow. Two separate switches: `LLM_REWORD` (default `off`) lets the model reword staff answers;
+text is sent unchanged; safety advice, technician handoffs and formal quotations are not reworded. The existing
+conversation state still tracks quote details and troubleshooting outcomes; the language model makes the wording
+flexible without taking unsafe actions or inventing company facts. The same approved reply is used when the key is
+missing, rewording is disabled or the model is slow. Two separate switches: `LLM_REWORD` (default `on`) lets the model write conversational replies;
 `LLM_ANSWERS` (default `on`) lets it answer unrecognised questions from the company facts. Questions answered this way still go to the Review queue so staff can teach the trained model.
 
 ## Buttons and typed answers

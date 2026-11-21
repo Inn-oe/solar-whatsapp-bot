@@ -411,10 +411,30 @@ def respond(phone, name, text, s):
     reply = reply.get("text", "") if isinstance(reply, dict) else str(reply or "")
     ui = s.pop("_ui", None) or {}
     doc = s.pop("_doc", None)
+    skip_reword = s.pop("_skip_reword", False)
+    if not doc and not skip_reword and _can_rephrase(text, reply):
+        reply = _conversation_reply(phone, name, text, s, reply)
     options = ui.get("options") or []
     s["_last_opts"] = {_norm_title(o["title"]): o["id"][4:] for o in options}
     s["_last_reply"] = reply[:400]
     return {"text": reply, "options": options, "button": ui.get("button", ""), "document": doc}
+
+
+def _can_rephrase(customer_text, reply):
+    """Keep urgent, safety, and formal handoff/quotation wording verbatim."""
+    protected = re.compile(r"\b(do not touch|don't touch|do not open|don't open|technician|technical team|urgent)\b|"
+                           r"\*quotation\*|\bref\s+wa-", re.I)
+    return not nlu.SAFETY.search(nlu.clean(customer_text)) and not protected.search(reply)
+
+
+def _conversation_reply(phone, name, customer_text, state, approved):
+    try:
+        turns = [(m["direction"], m["text"]) for m in db.thread(phone, limit=8)]
+    except Exception:
+        log.exception("could not load chat history for natural reply")
+        turns = []
+    first = first_name(state.get("slots", {}).get("name") or name)
+    return llm.natural_reply(approved, customer_text, core().CATALOG["company"], turns, first) or approved
 
 
 def _respond(phone, name, text, s):
@@ -597,7 +617,7 @@ def _h_reply(ctx):
     s = ctx.s
     if not replies:
         return _not_understood(ctx)
-    text = _naturally(ctx, say(replies, s, **ctx.kw(greet=greet_word(ctx.text))))
+    text = say(replies, s, **ctx.kw(greet=greet_word(ctx.text)))
     name = ctx.a["intent"]
     if name.startswith("faq_"):
         topic = "payment" if any(w in name for w in ("pay", "deposit")) else name[4:]
@@ -614,7 +634,7 @@ def _h_greeting(ctx):
     s = ctx.s
     reset_flow(s)
     _offer(s, MENU)
-    return _naturally(ctx, say(_intent_replies(ctx), s, **ctx.kw(greet=greet_word(ctx.text))))
+    return say(_intent_replies(ctx), s, **ctx.kw(greet=greet_word(ctx.text)))
 
 
 def _h_thanks(ctx):
@@ -730,7 +750,7 @@ def _h_answer_team(ctx):
     replies = _intent_replies(ctx)
     if not replies:
         return _not_understood(ctx)
-    text = _naturally(ctx, say(replies, s, **ctx.kw()))
+    text = say(replies, s, **ctx.kw())
     offer = s.get("pending")
     reset_flow(s)
     if offer:
@@ -1288,13 +1308,6 @@ def _turns(ctx):
         return []
 
 
-def _naturally(ctx, approved):
-    """Say the approved (trained) answer the way a person would in this conversation; the approved text if the
-    language model is off, slow, or changes any number."""
-    out = llm.natural_reply(approved, ctx.text, ctx.catalog["company"], _turns(ctx), ctx.first)
-    return out or approved
-
-
 def _company_facts(ctx):
     """Everything the bot may say about the company, for answering questions the model did not recognise."""
     c = ctx.catalog
@@ -1316,6 +1329,7 @@ def _company_facts(ctx):
 def _answer_from_facts(ctx):
     out = llm.answer_from_facts(ctx.text, _company_facts(ctx), ctx.catalog["company"], _turns(ctx))
     if out:
+        ctx.s["_skip_reword"] = True
         try:
             db.add_unmatched(ctx.phone, ctx.text, ctx.a["guess"] or "", ctx.a["confidence"])  # staff can teach it
         except Exception:

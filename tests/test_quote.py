@@ -85,12 +85,31 @@ def test_without_a_key_nothing_changes(monkeypatch):
     assert llm.answer_from_facts("hi?", "facts", "GieBee Engineering") is None
 
 
-def test_rewording_is_off_by_default_but_fact_answers_are_on(monkeypatch, chat):
+def test_ai_led_replies_are_on_by_default_but_can_be_disabled(monkeypatch, chat):
     monkeypatch.setenv("LLM_API_KEY", "test")
     monkeypatch.delenv("LLM_REWORD", raising=False)
     monkeypatch.delenv("LLM_ANSWERS", raising=False)
-    monkeypatch.setattr(llm, "_chat", lambda *a, **k: "Sawubona! Yes, we're here to help with solar. 😊")
-    assert llm.natural_reply("Hello", "hi", "GieBee") is None              # rewording off
+    seen = []
+
+    def reply(system, user, **kwargs):
+        seen.append((system, user))
+        return "Happy to help. What would you like your solar system to run?"
+
+    monkeypatch.setattr(llm, "_chat", reply)
+    out = chat.say("I want to buy solar")
+    assert "Happy to help" in out and seen
+    assert "not as wording to copy" in seen[0][0]
+    monkeypatch.setenv("LLM_REWORD", "off")
+    assert llm.natural_reply("Hello", "hi", "GieBee") is None
     assert llm.answer_from_facts("how much?", "5kVA USD 1,985", "GieBee")  # fact answers on
     monkeypatch.setenv("LLM_ANSWERS", "off")
     assert llm.answer_from_facts("how much?", "5kVA USD 1,985", "GieBee") is None
+
+
+def test_safety_messages_are_not_rewritten(monkeypatch, chat):
+    monkeypatch.setenv("LLM_API_KEY", "test")
+    called = []
+    monkeypatch.setattr(llm, "_chat", lambda *a, **k: called.append(True) or "Try restarting it.")
+    reply = chat.say("water is leaking onto my inverter")
+    assert "do not touch" in reply.lower()
+    assert not called
