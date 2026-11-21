@@ -130,12 +130,39 @@ def _migrate():
     db.set_setting("nlu_migration", "2")
 
 
+MODEL_FILE = Path(os.getenv("NLU_MODEL_FILE") or Path(__file__).resolve().parent / "models" / "nlu_model.pkl")
+
+
+def _pretrained_info(intents, ok, examples):
+    """Use the model file trained on the owner's PC (train_local.py) when there is one: a small server cannot
+    train, but loading is cheap. Returns the summary, or None to train here as usual.
+    NLU_PRETRAINED=off ignores the file (after upgrading to a server with enough memory)."""
+    global _intents
+    if os.getenv("NLU_PRETRAINED", "auto").strip().lower() in ("off", "0", "false", "no") or not MODEL_FILE.exists():
+        return None
+    try:
+        info = nlu.engine.load(MODEL_FILE, digest=nlu.examples_digest(examples))
+    except Exception as exc:
+        log.warning("model file not used (%s: %s); training here instead", type(exc).__name__, exc)
+        return None
+    _intents = intents
+    llm.set_menu({n: i for n, i in intents.items() if n in ok}, examples)
+    info["note"] = ("" if info["in_sync"] else
+                    "The phrases here changed after this model was trained. They go live once you re-train on your "
+                    "PC (train_local.py) and deploy. Until then the bot answers with the older model.")
+    nlu.engine.info["note"] = info["note"]
+    return info
+
+
 def retrain():
     """Rebuild the model from every enabled intent's example phrases. Returns the training summary."""
     global _intents
     intents = db.list_intents()
     ok = {n for n, i in intents.items() if i["enabled"]}
     examples = [(e["intent"], e["text"]) for e in db.list_examples() if e["intent"] in ok]
+    pre = _pretrained_info(intents, ok, examples)
+    if pre is not None:
+        return pre
     # The quick model is trained first and answers immediately. The transformer (if NLU_BACKEND=transformer)
     # loads and embeds every phrase in the background, then replaces it, so start-up and the platform's
     # "Train now" never wait on a model download.

@@ -9,6 +9,7 @@ import pytest
 _tmp = tempfile.mkdtemp()
 os.environ["DATABASE_URL"] = "sqlite:///" + os.path.join(_tmp, "test.db").replace(os.sep, "/")
 os.environ["MARKET_AUTO"] = "0"
+os.environ["NLU_PRETRAINED"] = "off"       # the tests train on their own phrases, not the shipped model file
 os.environ["INTERNAL_KEY"] = "test-key"
 os.environ.pop("WHATSAPP_TOKEN", None)
 os.environ.pop("PHONE_NUMBER_ID", None)

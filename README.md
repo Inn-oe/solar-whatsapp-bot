@@ -179,3 +179,21 @@ supplier price when `components.py` has one for that size, and a branded-battery
 battery price. The bot shows the options on every quotation, explains what each buys (quality, support, typical
 warranty, lithium vs lead-acid), and sends the full PDF for whichever the customer picks. The PDF lists all options.
 Update the numbers in `tiers.json` when supplier prices move.
+
+## Training on your own PC (when the server is too small to train)
+
+Render's free 512 MB server runs out of memory while *training* (the bot is killed and the ERP shows "bot not
+reachable"), but *loading* a trained model needs very little. So train on your PC and ship the model as a file:
+
+1. Close heavy programs (training needs ~250 MB). In the Render dashboard open `giebee-db` ▸ Connections and copy the
+   **External Database URL**.
+2. `$env:DATABASE_URL = "postgresql://..."` then `.venv\Scripts\python train_local.py`
+   (without `DATABASE_URL` it trains on the starter phrases only). It prints the held-out accuracy and writes
+   `models/nlu_model.pkl` (about 3.5 MB).
+3. `git add models/nlu_model.pkl; git commit -m "Retrained model"; git push` — Render deploys and the bot loads the file
+   at start-up instead of training. The ERP Train page tells you if staff changed phrases after the model was trained.
+
+While the file is present, **Train now** only reloads it (it cannot train on the server). After upgrading to a
+server with enough memory, set `NLU_PRETRAINED=off` on the bot (or delete the file) and Train now works again.
+`requirements.txt` pins scikit-learn/numpy/scipy so the file and the server agree; a model from another
+scikit-learn version is refused and the bot trains normally instead.

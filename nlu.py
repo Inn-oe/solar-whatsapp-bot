@@ -35,6 +35,18 @@ from scipy.sparse import hstack
 
 log = logging.getLogger("solar-bot.nlu")
 
+MODEL_FORMAT = 1   # bump when the saved model's layout changes
+
+
+def examples_digest(examples):
+    """A short fingerprint of the training phrases [(intent, text)], to tell whether a saved model is up to date."""
+    import hashlib
+    h = hashlib.sha256()
+    for intent, text in sorted({(i, clean(t)) for i, t in examples if i and clean(t)}):
+        h.update(f"{intent}\x1f{text}\x1e".encode())
+    return h.hexdigest()[:16]
+
+
 PRIORITIES = ("low", "medium", "high", "urgent")
 CATEGORIES = ("purchase", "enquiry", "maintenance", "other")
 
@@ -431,6 +443,51 @@ class Engine:
             self._accuracy_thread = None
             log.info("accuracy check skipped: this server has too little memory (set NLU_ACCURACY_CHECK=on to force it)")
         log.info("NLU trained: %s", {k: v for k, v in info.items() if k != "accuracy"})
+        return dict(info)
+
+    # ---- a model trained elsewhere (train_local.py) and shipped as a file
+    def save(self, path, digest=""):
+        """Write the trained quick (TF-IDF) model to one file, so a server with too little memory to train can
+        simply load it."""
+        import pickle
+        import sklearn
+        with self._lock:
+            m, info = self._quick, dict(self.info)
+        if m is None:
+            raise ValueError("Nothing trained yet.")
+        payload = {"format": MODEL_FORMAT, "sklearn": sklearn.__version__, "numpy": np.__version__, "model": m,
+                   "examples": len(m["texts"]), "intents": int(len(set(m["y"]))), "digest": digest,
+                   "trained_at": int(time.time())}
+        tmp = str(path) + ".tmp"
+        with open(tmp, "wb") as f:
+            pickle.dump(payload, f, protocol=4)
+        os.replace(tmp, path)
+        return {k: v for k, v in payload.items() if k != "model"}
+
+    def load(self, path, digest=None):
+        """Use a model file made by save(). Raises ValueError with the reason when it cannot be used (the caller
+        then trains normally). `digest` is the fingerprint of the phrases now in the database; the model reports
+        whether it was trained on exactly those."""
+        import pickle
+        import sklearn
+        with open(path, "rb") as f:
+            payload = pickle.load(f)
+        if not isinstance(payload, dict) or payload.get("format") != MODEL_FORMAT:
+            raise ValueError("model file has an unknown format")
+        if payload.get("sklearn") != sklearn.__version__:
+            raise ValueError(f"model file was made with scikit-learn {payload.get('sklearn')}, "
+                             f"this server has {sklearn.__version__}")
+        model = payload["model"]
+        in_sync = digest is None or not payload.get("digest") or payload["digest"] == digest
+        with self._lock:
+            self._model = self._quick = model
+            self.info = {"trained": True, "backend": "tfidf", "examples": payload["examples"],
+                         "intents": payload["intents"], "accuracy": None, "pretrained": True, "in_sync": in_sync,
+                         "trained_at_file": payload.get("trained_at"), "note": "",
+                         "model": "scikit-learn TF-IDF + logistic regression (trained on the owner's PC)"}
+            info = self.info
+        log.info("NLU model loaded from %s: %d phrases, %d intents, in sync with the database: %s",
+                 path, payload["examples"], payload["intents"], in_sync)
         return dict(info)
 
     @staticmethod
