@@ -1,14 +1,14 @@
 intent,text,source,reviewed
 price,How much is a 3kVA solar system in USD?,synthetic_draft,yes
-price,Marii e5kVA hybrid inverter?,synthetic_draft,no
+price,Marii e5kVA hybrid inverter?,synthetic_draft,yes
 price,Can you give me the price of a lithium battery?,synthetic_draft,yes
 price,Do you have a cash price for six solar panels?,synthetic_draft,yes
-price,What is the total cost including installation?,synthetic_draft,no
-price,Pane discount here kana ndikatenga complete kit?,synthetic_draft,no
+price,What is the total cost including installation?,synthetic_draft,yes
+price,Pane discount here kana ndikatenga complete kit?,synthetic_draft,yes
 buy_system,I need a quotation for a 5kVA hybrid system,synthetic_draft,yes
 buy_system,Please quote for a home solar package with battery backup,synthetic_draft,yes
-buy_system,Ndoda solar yekumba ine fridge neTV,synthetic_draft,no
-buy_system,Can someone help me choose a solar system for my shop?,synthetic_draft,no
+buy_system,Ndoda solar yekumba ine fridge neTV,synthetic_draft,yes
+buy_system,Can someone help me choose a solar system for my shop?,synthetic_draft,yes
 buy_system,I want to order a complete off-grid kit,synthetic_draft,yes
 maintenance_fault,My inverter displays error 03,synthetic_draft,yes
 maintenance_fault,Battery is not charging even when there is sunshine,synthetic_draft,yes
@@ -32,14 +32,14 @@ qa_lithium_vs_gel,Is lithium better than gel for daily cycling?,synthetic_draft,
 qa_lithium_vs_gel,What is the difference between LiFePO4 and gel batteries?,synthetic_draft,yes
 qa_lithium_vs_gel,Which battery lasts longer lithium or lead acid?,synthetic_draft,yes
 faq_inverter_types,What is an MPPT controller?,synthetic_draft,yes
-faq_inverter_types,Should I buy a hybrid or off-grid inverter?,synthetic_draft,no
+faq_inverter_types,Should I buy a hybrid or off-grid inverter?,synthetic_draft,yes
 faq_inverter_types,Does a hybrid inverter charge batteries from ZESA?,synthetic_draft,yes
 qa_overheating,My inverter smells like burning plastic,synthetic_draft,yes
 qa_overheating,There is smoke coming from the inverter,synthetic_draft,yes
 qa_overheating,Why is the inverter getting very hot?,synthetic_draft,yes
 faq_zesa_power_cuts,Will my solar work when ZESA is off?,synthetic_draft,yes
 faq_zesa_power_cuts,What happens during load shedding?,synthetic_draft,yes
-faq_zesa_power_cuts,Magetsi akadzima solar icharamba ichishanda here?,synthetic_draft,no
+faq_zesa_power_cuts,Magetsi akadzima solar icharamba ichishanda here?,synthetic_draft,yes
 contact_info,Where is your shop located?,synthetic_draft,yes
 contact_info,Can I get your WhatsApp number?,synthetic_draft,yes
 contact_info,Do you have a branch in Harare?,synthetic_draft,yes
@@ -52,3 +52,2162 @@ qa_earthing,Do I need surge protection?,synthetic_draft,yes
 qa_changeover,Do I need a changeover switch?,synthetic_draft,yes
 qa_changeover,Can I switch between solar and ZESA?,synthetic_draft,yes
 qa_changeover,What does an automatic transfer switch do?,synthetic_draft,yes
+price,Hw much for 5kva inverter + lithium batt,synthetic_zw,yes
+price,Marii ye 3kVA system ino 2 batteries?,synthetic_zw,yes
+price,Cost yekutanga yeku install solar yekumba ndeyi?,synthetic_zw,yes
+price,How much is your 5kw hybrid inverter only no battery,synthetic_zw,yes
+price,Last price ye Deye 8kw,synthetic_zw,yes
+price,Ndirikuda kuziva price ye 550w panel rimwe,synthetic_zw,yes
+price,Muri kutengesa magetsi here? Price yekutenga 5kva,synthetic_zw,yes
+price,Pls send price list yema inverter eko,synthetic_zw,yes
+price,Imarii iyi 5kva Must inverter,synthetic_zw,yes
+price,How much for solar geyser 200L,synthetic_zw,yes
+price,Ndingawana marii ye system inogona kuita fridge neTV chete,synthetic_zw,yes
+price,Price ye 3kw off grid system including panels,synthetic_zw,yes
+price,Hw much is 200ah gel battery,synthetic_zw,yes
+price,Muri kuita discount here pa cash payment,synthetic_zw,yes
+price,Ndeipi price ye 6.2kva Beesman,synthetic_zw,yes
+price,How much for borehole solar pump 1hp,synthetic_zw,yes
+price,Imarii ye 10kw hybrid inverter,synthetic_zw,yes
+price,Pls advise price for full home backup 5kva lithium,synthetic_zw,yes
+price,Ndinoda kuziva mutengo we solar panels 4 x 550w,synthetic_zw,yes
+price,Hw much for installation only if I already have panels,synthetic_zw,yes
+price,Marii ye Freedom Won 5kwh,synthetic_zw,yes
+sizing,Ndoda quote ye 3kVA system ine 2 batteries,synthetic_zw,yes
+sizing,"I need a quote for my shop. I have fridge, freezer, lights, tv",synthetic_zw,yes
+sizing,"Ndipe quotation yekumba kune 4 rooms, tv, fridge, borehole",synthetic_zw,yes
+sizing,How many panels do I need to run 1.5hp borehole pump,synthetic_zw,yes
+sizing,"Ndoda system yeku runa salon: clippers, dryer, lights, fridge",synthetic_zw,yes
+sizing,Can you size a system for my church? Lights and sound only,synthetic_zw,yes
+sizing,"Ndirikuda quote ye solar yeku farm: borehole, lights, fridge",synthetic_zw,yes
+sizing,What size inverter for a butchery with 3 freezers,synthetic_zw,yes
+sizing,Ndoda system inogona kuita zvinhu zvese kunze kwe geyser,synthetic_zw,yes
+sizing,"Pls quote for clinic: fridge for vaccines, lights, computer",synthetic_zw,yes
+sizing,How many batteries for 5kva to last 8 hours,synthetic_zw,yes
+sizing,Ndoda quotation ye off grid system yekumaruwa,synthetic_zw,yes
+sizing,"I want to run my whole house. Fridge, freezer, stove, geyser",synthetic_zw,yes
+sizing,Ndipe quote ye 5kw system ne 6 panels,synthetic_zw,yes
+sizing,"What system for a tuckshop with tv, fridge, lights",synthetic_zw,yes
+sizing,Ndoda sizing yekuti ndingade inverter ipi ye borehole ne fridge,synthetic_zw,yes
+sizing,"Quote for school: 10 lights, 5 computers, printer",synthetic_zw,yes
+sizing,Can you quote me for solar that can run welding machine,synthetic_zw,yes
+sizing,Ndoda system yekuita ironing ne cooking,synthetic_zw,yes
+sizing,How many kva for a 3 bedroom house with borehole,synthetic_zw,yes
+qa_stock,Mune 5kva Deye in stock here,synthetic_zw,yes
+qa_stock,Do you have lithium batteries available now,synthetic_zw,yes
+qa_stock,Ma panels aripo here? 550w,synthetic_zw,yes
+qa_stock,Ndirikuda kuziva kana ma inverter aripo,synthetic_zw,yes
+qa_stock,Is the 3kva Growatt in stock,synthetic_zw,yes
+qa_stock,Mune Sunsynk 8kw here nhasi,synthetic_zw,yes
+qa_stock,Pls confirm if you have 200ah battery,synthetic_zw,yes
+qa_stock,Ma lithium aripo here kana kuti ndakuda kumira,synthetic_zw,yes
+qa_stock,Do you have solar geyser in stock,synthetic_zw,yes
+qa_stock,Ndirikuda 2 panels chete. Aripo?,synthetic_zw,yes
+qa_stock,Is the 5kw hybrid available or I order,synthetic_zw,yes
+qa_stock,Mune Pylontech here,synthetic_zw,yes
+qa_stock,Stock yema inverter yakapera here,synthetic_zw,yes
+qa_stock,Do you have 1kva inverter for small load,synthetic_zw,yes
+qa_stock,Ndirikuda battery ye 5kwh. Mune yacho?,synthetic_zw,yes
+qa_stock,Are the panels in Harare or need to order,synthetic_zw,yes
+qa_stock,Mune Kodak inverter here,synthetic_zw,yes
+qa_stock,Pls check if 10kw inverter is available,synthetic_zw,yes
+qa_stock,Ma gel batteries aripo here,synthetic_zw,yes
+qa_stock,I need 4 panels today. Mune dziripo?,synthetic_zw,yes
+qa_delivery,Do you deliver to Chitungwiza,synthetic_zw,yes
+qa_delivery,Munoendesa ku Bulawayo here,synthetic_zw,yes
+qa_delivery,Delivery yema panel ku Mutare imarii,synthetic_zw,yes
+qa_delivery,Can you deliver to my farm in Mazowe,synthetic_zw,yes
+qa_delivery,Muri kutumira ma inverter kunze kwe Harare here,synthetic_zw,yes
+qa_delivery,How long does delivery take to Gweru,synthetic_zw,yes
+qa_delivery,Ndingatumira munhu kuzotora here kana delivery,synthetic_zw,yes
+qa_delivery,Do you deliver same day in Harare,synthetic_zw,yes
+qa_delivery,Delivery fee yeku Chinhoyi ndeyi,synthetic_zw,yes
+qa_delivery,Munoendesa kumaruwa here,synthetic_zw,yes
+qa_delivery,Can I collect from your shop today,synthetic_zw,yes
+qa_delivery,Ndirikuda delivery yangu nhasi. Munogona here,synthetic_zw,yes
+qa_delivery,Do you deliver to Masvingo,synthetic_zw,yes
+qa_delivery,Mune vanhu veku deliver ku Kwekwe here,synthetic_zw,yes
+qa_delivery,Delivery to Victoria Falls possible?,synthetic_zw,yes
+qa_delivery,Ndingawana delivery mamangwana here,synthetic_zw,yes
+qa_delivery,Do you ship to Mutare or I come,synthetic_zw,yes
+qa_delivery,Munoendesa ma battery ku Bindura here,synthetic_zw,yes
+qa_delivery,How much delivery to Zvishavane,synthetic_zw,yes
+qa_delivery,Ndirikuda kuziva kana delivery iripo ku Norton,synthetic_zw,yes
+qa_installation_included,Do you do installation in Chitungwiza,synthetic_zw,yes
+qa_installation_included,Munouya kuzo install here ku Kuwadzana,synthetic_zw,yes
+qa_installation_included,I need installation only. I bought system already,synthetic_zw,yes
+qa_installation_included,Munoita installation yema panels chete here,synthetic_zw,yes
+qa_installation_included,Can you install at my shop in Bulawayo,synthetic_zw,yes
+qa_installation_included,Ndirikuda munhu weku install solar yangu,synthetic_zw,yes
+qa_installation_included,Do you have installers in Gweru,synthetic_zw,yes
+qa_installation_included,Installation fee yeku Epworth ndeyi,synthetic_zw,yes
+qa_installation_included,Munoita installation yeborehole solar pump here,synthetic_zw,yes
+qa_installation_included,I need someone to install inverter and battery,synthetic_zw,yes
+qa_installation_included,Munouya ku farm kunoita installation here,synthetic_zw,yes
+qa_installation_included,Do you install solar geyser,synthetic_zw,yes
+qa_installation_included,Ndirikuda installation ye system yandakatenga kune imwe company,synthetic_zw,yes
+qa_installation_included,Can you mount panels on asbestos roof,synthetic_zw,yes
+qa_installation_included,Munoita wiring yese here kana kungoisa inverter chete,synthetic_zw,yes
+qa_installation_included,I need installation in Marondera this week,synthetic_zw,yes
+qa_installation_included,Munogona ku install system yeku church here,synthetic_zw,yes
+qa_installation_included,Do you do COC certificate after installation,synthetic_zw,yes
+qa_installation_included,Ndirikuda ku install solar kumba kwangu mu Mbare,synthetic_zw,yes
+qa_installation_included,Installation team inoenda ku Nyanga here,synthetic_zw,yes
+faq_installation_time,How long does installation take for 5kva,synthetic_zw,yes
+faq_installation_time,Munoita nguva yakadii ku install system,synthetic_zw,yes
+faq_installation_time,Can you install same day if I pay today,synthetic_zw,yes
+faq_installation_time,Installation yema panel maviri inotora masikati here,synthetic_zw,yes
+faq_installation_time,How many days for full installation,synthetic_zw,yes
+faq_installation_time,Ndingawana system yangu yakaiswa riini,synthetic_zw,yes
+faq_installation_time,Do you finish in one day,synthetic_zw,yes
+faq_installation_time,Installation yeku farm inotora nguva yakadii,synthetic_zw,yes
+faq_installation_time,If I order today when can you install,synthetic_zw,yes
+faq_installation_time,Nguva yeku install inverter ne battery chete,synthetic_zw,yes
+faq_installation_time,Is it a half day job or full day,synthetic_zw,yes
+faq_installation_time,Munotanga riini ku install,synthetic_zw,yes
+faq_installation_time,How long for borehole solar pump installation,synthetic_zw,yes
+faq_installation_time,Ndingamira masikati here kuti muise,synthetic_zw,yes
+faq_installation_time,Installation yema 8 panels inotora mangwanani ese here,synthetic_zw,yes
+faq_installation_time,Can you install over weekend,synthetic_zw,yes
+faq_installation_time,Nguva yeku install system yeku shop,synthetic_zw,yes
+faq_installation_time,Do you need 2 days for full house installation,synthetic_zw,yes
+faq_installation_time,Kana ma panels ari 10 inotora nguva yakadii,synthetic_zw,yes
+faq_installation_time,When can your team come for site visit and install,synthetic_zw,yes
+faq_warranty,What warranty do you give on lithium battery,synthetic_zw,yes
+faq_warranty,Warranty ye inverter imarii,synthetic_zw,yes
+faq_warranty,Do panels have warranty,synthetic_zw,yes
+faq_warranty,Munoita warranty ye makore mangani pa battery,synthetic_zw,yes
+faq_warranty,Is the warranty on site or I bring to shop,synthetic_zw,yes
+faq_warranty,Warranty inobata installation here,synthetic_zw,yes
+faq_warranty,What is covered under warranty,synthetic_zw,yes
+faq_warranty,Mune warranty yekuti inverter ikafa munotsiva here,synthetic_zw,yes
+faq_warranty,How many years warranty on Deye 5kw,synthetic_zw,yes
+faq_warranty,Warranty ye solar geyser ndeyi,synthetic_zw,yes
+faq_warranty,Do you replace faulty inverter under warranty,synthetic_zw,yes
+faq_warranty,Warranty inotanga riini after installation,synthetic_zw,yes
+faq_warranty,Is there warranty on panels if they crack,synthetic_zw,yes
+faq_warranty,Munoita warranty yegore here kana makore mashanu,synthetic_zw,yes
+faq_warranty,What does the warranty cover on battery,synthetic_zw,yes
+faq_warranty,Kana battery ikaita fault munguva yewarranty munotsiva here,synthetic_zw,yes
+faq_warranty,Warranty ye installation ndeyi,synthetic_zw,yes
+faq_warranty,Do you give warranty certificate,synthetic_zw,yes
+faq_warranty,Munoita warranty ye 2 years here,synthetic_zw,yes
+faq_warranty,If inverter fails after 6 months what happens,synthetic_zw,yes
+faq_payment_deposit,Can I pay deposit and pay balance later,synthetic_zw,yes
+faq_payment_deposit,Munodira deposit here,synthetic_zw,yes
+faq_payment_deposit,Do you accept Ecocash,synthetic_zw,yes
+faq_payment_deposit,Ndingabhadhara ne ZiG here,synthetic_zw,yes
+faq_payment_deposit,Can I layby for 3 months,synthetic_zw,yes
+faq_payment_deposit,Munodira half payment here,synthetic_zw,yes
+faq_payment_deposit,Do you take cash USD only,synthetic_zw,yes
+faq_payment_deposit,Ndingabhadhara ne swipe here,synthetic_zw,yes
+faq_payment_deposit,Can I pay deposit today and collect next week,synthetic_zw,yes
+faq_payment_deposit,Munodira bond here,synthetic_zw,yes
+faq_payment_deposit,What deposit do you require for installation,synthetic_zw,yes
+faq_payment_deposit,Ndingabhadhara ne bank transfer here,synthetic_zw,yes
+faq_payment_deposit,Can I pay in installments,synthetic_zw,yes
+faq_payment_deposit,Munodira deposit ye 50% here,synthetic_zw,yes
+faq_payment_deposit,Do you accept USD cash and ZiG balance,synthetic_zw,yes
+faq_payment_deposit,Ndingatenga ne layby here,synthetic_zw,yes
+faq_payment_deposit,How much deposit for 5kva system,synthetic_zw,yes
+faq_payment_deposit,Munodira deposit before installation here,synthetic_zw,yes
+faq_payment_deposit,Can I pay after installation,synthetic_zw,yes
+faq_payment_deposit,Ndinoda kuziva payment terms yenyu,synthetic_zw,yes
+qa_financing,Do you offer financing or credit,synthetic_zw,yes
+qa_financing,Mune loan here yekutenga solar,synthetic_zw,yes
+qa_financing,Can I get hire purchase for solar system,synthetic_zw,yes
+qa_financing,Munodira kubatsira ne financing here,synthetic_zw,yes
+qa_financing,Do you work with banks for solar loans,synthetic_zw,yes
+qa_financing,Ndingawana credit here kana ndikabhadhara deposit,synthetic_zw,yes
+qa_financing,Is there installment plan available,synthetic_zw,yes
+qa_financing,Mune scheme yekubhadhara zvishoma nezvishoma here,synthetic_zw,yes
+qa_financing,Can a company get credit terms,synthetic_zw,yes
+qa_financing,Ndirikuda kupinda muchirongwa chekubhadhara mwedzi nemwedzi,synthetic_zw,yes
+qa_financing,Do you have rent to own solar,synthetic_zw,yes
+qa_financing,Mune financing partners here,synthetic_zw,yes
+qa_financing,Can I pay monthly for 6 months,synthetic_zw,yes
+qa_financing,Ndingakwanisa here kutenga nechikwereti,synthetic_zw,yes
+qa_financing,Is there any microfinance you work with,synthetic_zw,yes
+qa_financing,Munodirawo vanhu vasina cash vose here,synthetic_zw,yes
+qa_financing,Do you offer layby for batteries,synthetic_zw,yes
+qa_financing,Ndirikuda financing ye system ye shop,synthetic_zw,yes
+qa_financing,Can schools get credit,synthetic_zw,yes
+qa_financing,Mune payment plan yegore here,synthetic_zw,yes
+maintenance_service,Do you service solar systems,synthetic_zw,yes
+maintenance_service,Munouya kuzo service system here,synthetic_zw,yes
+maintenance_service,How often should I service my inverter,synthetic_zw,yes
+maintenance_service,Munoita maintenance yema panel here,synthetic_zw,yes
+maintenance_service,I need someone to check my system,synthetic_zw,yes
+maintenance_service,Munochenesa ma panel here,synthetic_zw,yes
+maintenance_service,Do you do annual service,synthetic_zw,yes
+maintenance_service,Ndirikuda maintenance ye battery,synthetic_zw,yes
+maintenance_service,Can you check why my system is not performing,synthetic_zw,yes
+maintenance_service,Munoita service ye solar geyser here,synthetic_zw,yes
+maintenance_service,My panels are dirty. Do you clean,synthetic_zw,yes
+maintenance_service,Ndirikuda munhu weku service inverter,synthetic_zw,yes
+maintenance_service,Do you offer maintenance contract,synthetic_zw,yes
+maintenance_service,Munouya kuzo tarisa system kana paine dambudziko,synthetic_zw,yes
+maintenance_service,How much for service call,synthetic_zw,yes
+maintenance_service,Ndirikuda kuti mucherechedze system yangu,synthetic_zw,yes
+maintenance_service,Can you service a system you didn't install,synthetic_zw,yes
+maintenance_service,Munoita maintenance yemaborehole solar here,synthetic_zw,yes
+maintenance_service,Do you check batteries during service,synthetic_zw,yes
+maintenance_service,Ndirikuda routine check ye system,synthetic_zw,yes
+maintenance_fault,Inverter yangu iri beeping,synthetic_zw,yes
+maintenance_fault,My system is not working today,synthetic_zw,yes
+maintenance_fault,Inverter yangu yakafa,synthetic_zw,yes
+maintenance_fault,No power coming from panels,synthetic_zw,yes
+maintenance_fault,Magetsi akadzima system yangu haina kubatidza,synthetic_zw,yes
+maintenance_fault,My inverter is on but no output,synthetic_zw,yes
+maintenance_fault,Inverter yangu inoratidza red light,synthetic_zw,yes
+maintenance_fault,Battery is not charging,synthetic_zw,yes
+maintenance_fault,System yangu inongodzima nedzima,synthetic_zw,yes
+maintenance_fault,My solar is not charging the battery,synthetic_zw,yes
+maintenance_fault,Inverter inopisa,synthetic_zw,yes
+maintenance_fault,Panels are not producing enough power,synthetic_zw,yes
+maintenance_fault,System yangu inorira asi haisi kushanda,synthetic_zw,yes
+maintenance_fault,My inverter keeps tripping,synthetic_zw,yes
+maintenance_fault,Inverter yangu inoratidza fault,synthetic_zw,yes
+maintenance_fault,No display on inverter,synthetic_zw,yes
+maintenance_fault,System yangu yakaoma kuvhura,synthetic_zw,yes
+maintenance_fault,Battery inopera nekukurumidza,synthetic_zw,yes
+maintenance_fault,Inverter fan is making noise,synthetic_zw,yes
+maintenance_fault,System yangu haisi kubata magetsi eZESA,synthetic_zw,yes
+maintenance_fault,Inverter yangu inoratidza F56,synthetic_zw,yes
+maintenance_fault,My inverter shows E012,synthetic_zw,yes
+maintenance_fault,Error code F56 chii,synthetic_zw,yes
+maintenance_fault,Inverter displays E012 what does it mean,synthetic_zw,yes
+maintenance_fault,Ndirikuda kubatsirwa ne error F56,synthetic_zw,yes
+maintenance_fault,My Deye inverter showing error 12,synthetic_zw,yes
+maintenance_fault,Inverter yangu inoratidza F56 ndoita sei,synthetic_zw,yes
+maintenance_fault,What is error E012 on Growatt,synthetic_zw,yes
+maintenance_fault,Inverter shows F56 after load shedding,synthetic_zw,yes
+maintenance_fault,Ndirikuda kuziva meaning ye error code F56,synthetic_zw,yes
+maintenance_fault,My inverter is showing E012 and beeping,synthetic_zw,yes
+maintenance_fault,Error F56 on inverter what to do,synthetic_zw,yes
+maintenance_fault,Inverter yangu inoratidza code 12,synthetic_zw,yes
+maintenance_fault,What does F56 mean on inverter,synthetic_zw,yes
+maintenance_fault,Ndirikuda kubatsirwa ne E012,synthetic_zw,yes
+maintenance_fault,Inverter error code F56 no output,synthetic_zw,yes
+maintenance_fault,My inverter shows error and red light,synthetic_zw,yes
+maintenance_fault,Ndirikuda kuti mundiudze nezve error F56,synthetic_zw,yes
+maintenance_fault,Inverter yangu yakaratidza E012,synthetic_zw,yes
+maintenance_fault,Error code F56 on 5kva inverter,synthetic_zw,yes
+faq_batteries,Lithium vs gel which is better,synthetic_zw,yes
+faq_batteries,Battery ye lithium inogara kwenguva yakadii,synthetic_zw,yes
+faq_batteries,Can I add another battery later,synthetic_zw,yes
+faq_batteries,Munodira kuwedzera battery here,synthetic_zw,yes
+faq_batteries,How many years does lithium last,synthetic_zw,yes
+faq_batteries,Battery yangu inopera nekukurumidza,synthetic_zw,yes
+faq_batteries,Can I mix lithium and gel,synthetic_zw,yes
+faq_batteries,Munodira kushandisa battery ye gel ne lithium here,synthetic_zw,yes
+faq_batteries,What size battery for 5kva,synthetic_zw,yes
+faq_batteries,Battery ye 5kwh inogona kuita ma hours mangani,synthetic_zw,yes
+faq_batteries,Do I need to water gel battery,synthetic_zw,yes
+faq_batteries,Munodira kubhadharisa battery here kana kuti inongozvibhadharira,synthetic_zw,yes
+faq_batteries,How deep can I discharge lithium,synthetic_zw,yes
+faq_batteries,Battery inopisa here,synthetic_zw,yes
+faq_batteries,Can I use car battery for solar,synthetic_zw,yes
+faq_batteries,Munodira kushandisa battery ye mota here,synthetic_zw,yes
+faq_batteries,What is the lifespan of your lithium,synthetic_zw,yes
+faq_batteries,Battery yangu inoratidza 100% asi inopera nekukurumidza,synthetic_zw,yes
+faq_batteries,Do you sell battery only,synthetic_zw,yes
+faq_batteries,Mune battery dzinogona ku parallel here,synthetic_zw,yes
+qa_panel_count,550w panel inogona kupa how many kwh per day,synthetic_zw,yes
+qa_panel_count,Panel ye 550w inobudisa ma watts mangani,synthetic_zw,yes
+qa_panel_count,Do I need to clean panels,synthetic_zw,yes
+qa_panel_count,Munodira kuchenesa ma panel here,synthetic_zw,yes
+qa_panel_count,What brand of panels do you sell,synthetic_zw,yes
+qa_panel_count,Ma panel e Jinko aripo here,synthetic_zw,yes
+qa_panel_count,How many panels for 5kva inverter,synthetic_zw,yes
+qa_panel_count,Ma panel mangani ekuti ndiite 5kw,synthetic_zw,yes
+qa_panel_count,Can I use different size panels together,synthetic_zw,yes
+qa_panel_count,Munodira kusanganisa ma panel akasiyana size here,synthetic_zw,yes
+qa_panel_count,Panel inogona kuvhara ne dust here,synthetic_zw,yes
+qa_panel_count,What is the warranty on panels,synthetic_zw,yes
+qa_panel_count,Ma panel anouya ne mounting here,synthetic_zw,yes
+qa_panel_count,Do panels work on cloudy days,synthetic_zw,yes
+qa_panel_count,Ma panel anoshanda here kana kune mvuri,synthetic_zw,yes
+qa_panel_count,How much for 4 x 550w panels,synthetic_zw,yes
+qa_panel_count,Ndirikuda ma panel e Canadian Solar here,synthetic_zw,yes
+qa_panel_count,Can panels be mounted on grass roof,synthetic_zw,yes
+qa_panel_count,Ma panel anoda kucheneswa nguva yakadii,synthetic_zw,yes
+qa_panel_count,What size cable for panels,synthetic_zw,yes
+faq_inverter_types,Deye vs Sunsynk which is better,synthetic_zw,yes
+faq_inverter_types,Deye ne Sunsynk ndepi iri nani,synthetic_zw,yes
+faq_inverter_types,Does the 5kva have MPPT,synthetic_zw,yes
+faq_inverter_types,Inverter iyi inogona ku parallel here,synthetic_zw,yes
+faq_inverter_types,Can Growatt work without battery,synthetic_zw,yes
+faq_inverter_types,Growatt inogona kushanda isina battery here,synthetic_zw,yes
+faq_inverter_types,What is the difference between hybrid and off grid,synthetic_zw,yes
+faq_inverter_types,Hybrid ne off grid ndepi musiyano,synthetic_zw,yes
+faq_inverter_types,Does the inverter have WiFi monitoring,synthetic_zw,yes
+faq_inverter_types,Inverter yenyu ine WiFi here,synthetic_zw,yes
+faq_inverter_types,Can I run a borehole on 5kva,synthetic_zw,yes
+faq_inverter_types,5kva inogona kubata borehole here,synthetic_zw,yes
+faq_inverter_types,Is the inverter pure sine wave,synthetic_zw,yes
+faq_inverter_types,Inverter yenyu i pure sine wave here,synthetic_zw,yes
+faq_inverter_types,What is the surge power of 5kva,synthetic_zw,yes
+faq_inverter_types,Inverter inogona kubata fridge here,synthetic_zw,yes
+faq_inverter_types,Does it have generator input,synthetic_zw,yes
+faq_inverter_types,Inverter iyi ine generator port here,synthetic_zw,yes
+faq_inverter_types,Can I connect to ZESA and solar same time,synthetic_zw,yes
+faq_inverter_types,Inverter inogona kushanda neZESA here,synthetic_zw,yes
+faq_inverter_types,What is the efficiency of this inverter,synthetic_zw,yes
+qa_grid_feed,Do you do net metering,synthetic_zw,yes
+qa_grid_feed,Munoita net metering here,synthetic_zw,yes
+qa_grid_feed,Can I sell back to ZESA,synthetic_zw,yes
+qa_grid_feed,Ndingatengesa magetsi kuZESA here,synthetic_zw,yes
+qa_grid_feed,What is required for net metering,synthetic_zw,yes
+qa_grid_feed,Munodira kubatsira ne ZERA licensing here,synthetic_zw,yes
+qa_grid_feed,Do I need ZERA approval for solar,synthetic_zw,yes
+qa_grid_feed,Ndinoda ZERA license here kuti ndiise solar,synthetic_zw,yes
+qa_grid_feed,How does net metering work in Zimbabwe,synthetic_zw,yes
+qa_grid_feed,Net metering inoshanda sei muZimbabwe,synthetic_zw,yes
+qa_grid_feed,Can my solar feed into ZESA grid,synthetic_zw,yes
+qa_grid_feed,Solar yangu inogona kupinda muZESA here,synthetic_zw,yes
+qa_grid_feed,Do you handle ZETDC paperwork,synthetic_zw,yes
+qa_grid_feed,Munodira kubatsira ne ZETDC application here,synthetic_zw,yes
+qa_grid_feed,Is net metering allowed for homes,synthetic_zw,yes
+qa_grid_feed,Net metering inobvumidzwa here kumba,synthetic_zw,yes
+qa_grid_feed,What meter do I need for net metering,synthetic_zw,yes
+qa_grid_feed,Meter ye net metering inoda kutengwa here,synthetic_zw,yes
+qa_grid_feed,Does ZESA buy solar power from customers,synthetic_zw,yes
+qa_grid_feed,ZESA inotenga magetsi ezuva here,synthetic_zw,yes
+faq_borehole_pumps,Solar pump yeborehole imarii,synthetic_zw,yes
+faq_borehole_pumps,I need solar for borehole 1hp,synthetic_zw,yes
+faq_borehole_pumps,Ndirikuda solar yeku pump mvura,synthetic_zw,yes
+faq_borehole_pumps,Can you install solar borehole pump,synthetic_zw,yes
+faq_borehole_pumps,Munoita solar pump installation here,synthetic_zw,yes
+faq_borehole_pumps,What size panels for 1.5hp pump,synthetic_zw,yes
+faq_borehole_pumps,Ma panel mangani eku pump 1hp,synthetic_zw,yes
+faq_borehole_pumps,Do you sell submersible solar pumps,synthetic_zw,yes
+faq_borehole_pumps,Mune pump ye solar inopinda mumvura here,synthetic_zw,yes
+faq_borehole_pumps,Solar pump inogona kushanda usiku here,synthetic_zw,yes
+faq_borehole_pumps,Can I run borehole without battery,synthetic_zw,yes
+faq_borehole_pumps,Borehole inogona kushanda isina battery here,synthetic_zw,yes
+faq_borehole_pumps,How much for solar borehole system,synthetic_zw,yes
+faq_borehole_pumps,Ndirikuda quote ye solar borehole,synthetic_zw,yes
+faq_borehole_pumps,Do you have pumps for deep wells,synthetic_zw,yes
+faq_borehole_pumps,Mune pump yeku deep well here,synthetic_zw,yes
+faq_borehole_pumps,Solar pump vs generator which is better,synthetic_zw,yes
+faq_borehole_pumps,Solar pump ne generator ndepi iri nani,synthetic_zw,yes
+faq_borehole_pumps,Can the pump run during load shedding,synthetic_zw,yes
+faq_borehole_pumps,Pump inogona kushanda kana ZESA yadzima here,synthetic_zw,yes
+faq_borehole_pumps,I want solar for irrigation pump,synthetic_zw,yes
+faq_solar_geysers,Solar geyser price,synthetic_zw,yes
+faq_solar_geysers,Marii ye solar geyser,synthetic_zw,yes
+faq_solar_geysers,Do you install solar geysers,synthetic_zw,yes
+faq_solar_geysers,Munoita solar geyser installation here,synthetic_zw,yes
+faq_solar_geysers,What size geyser for 4 people,synthetic_zw,yes
+faq_solar_geysers,Geyser ye vanhu vana inoda size yakadii,synthetic_zw,yes
+faq_solar_geysers,Can solar geyser work on cloudy days,synthetic_zw,yes
+faq_solar_geysers,Solar geyser inoshanda here kana kune mvuri,synthetic_zw,yes
+faq_solar_geysers,Do you repair solar geysers,synthetic_zw,yes
+faq_solar_geysers,Munodzora solar geyser here,synthetic_zw,yes
+faq_solar_geysers,How much for 200L solar geyser installed,synthetic_zw,yes
+faq_solar_geysers,Solar geyser 200L yakaiswa imarii,synthetic_zw,yes
+faq_solar_geysers,Is solar geyser better than electric,synthetic_zw,yes
+faq_solar_geysers,Solar geyser iri nani kudarika yemagetsi here,synthetic_zw,yes
+faq_solar_geysers,Do you have evacuated tube geysers,synthetic_zw,yes
+faq_solar_geysers,Mune geyser ye ma tubes here,synthetic_zw,yes
+faq_solar_geysers,Can I connect solar geyser to my existing geyser,synthetic_zw,yes
+faq_solar_geysers,Solar geyser inogona kushandiswa neyakaipa here,synthetic_zw,yes
+faq_solar_geysers,How long does solar geyser take to heat,synthetic_zw,yes
+faq_solar_geysers,Solar geyser inotora nguva yakadii kupisa,synthetic_zw,yes
+faq_solar_geysers,Do you offer geyser installation only,synthetic_zw,yes
+site_visit,Can I book a site visit,synthetic_zw,yes
+site_visit,Ndirikuda kuti muuye kuzoona nzvimbo,synthetic_zw,yes
+site_visit,When can you come for site visit,synthetic_zw,yes
+site_visit,Munouya riini kuzoona,synthetic_zw,yes
+site_visit,I want to book appointment for quote,synthetic_zw,yes
+site_visit,Ndirikuda appointment yekuona system,synthetic_zw,yes
+site_visit,Can I visit your shop tomorrow,synthetic_zw,yes
+site_visit,Ndingauya kuzoona ma products here,synthetic_zw,yes
+site_visit,Do you do free site visits,synthetic_zw,yes
+site_visit,Site visit inobhadharwa here,synthetic_zw,yes
+site_visit,I need someone to come to my house for assessment,synthetic_zw,yes
+site_visit,Ndirikuda munhu wekuuya kumba kuzoona,synthetic_zw,yes
+site_visit,Can you come today for site visit,synthetic_zw,yes
+site_visit,Munouya nhasi here kuzoona,synthetic_zw,yes
+site_visit,Is site visit required before installation,synthetic_zw,yes
+site_visit,Site visit inodiwa here risati raiswa,synthetic_zw,yes
+site_visit,I want to schedule a visit for my farm,synthetic_zw,yes
+site_visit,Ndirikuda ku appointment ku farm,synthetic_zw,yes
+site_visit,Can your technician come check my system,synthetic_zw,yes
+site_visit,Munogona kutumira technician here,synthetic_zw,yes
+contact_info,What time do you open,synthetic_zw,yes
+contact_info,Munovhura nguva dzii,synthetic_zw,yes
+contact_info,Where are you located,synthetic_zw,yes
+contact_info,Muri kupi,synthetic_zw,yes
+contact_info,Do you open on Saturday,synthetic_zw,yes
+contact_info,Muno vhura Saturday here,synthetic_zw,yes
+contact_info,What is your address,synthetic_zw,yes
+contact_info,Address yenyu ndeipi,synthetic_zw,yes
+contact_info,Are you open on Sunday,synthetic_zw,yes
+contact_info,Muno vhura Sunday here,synthetic_zw,yes
+contact_info,What time do you close,synthetic_zw,yes
+contact_info,Munovhara nguva dzii,synthetic_zw,yes
+contact_info,Where is your shop in Harare,synthetic_zw,yes
+contact_info,Shop yenyu iri kupi muHarare,synthetic_zw,yes
+contact_info,Do you have a branch in Bulawayo,synthetic_zw,yes
+contact_info,Mune branch muBulawayo here,synthetic_zw,yes
+contact_info,Can I call you,synthetic_zw,yes
+contact_info,Ndingakufonera here,synthetic_zw,yes
+contact_info,What is your WhatsApp number,synthetic_zw,yes
+contact_info,Number yenyu ye WhatsApp ndeipi,synthetic_zw,yes
+complaint,I am not happy with the service,synthetic_zw,yes
+complaint,System yandakaiswa haiite basa,synthetic_zw,yes
+complaint,You promised to come but didn't show up,synthetic_zw,yes
+complaint,Makati muchauya asi hamuna kuuya,synthetic_zw,yes
+complaint,The inverter you sold me is faulty,synthetic_zw,yes
+complaint,Inverter yamakanditengesera ine fault,synthetic_zw,yes
+complaint,I have been waiting for my quote for 2 days,synthetic_zw,yes
+complaint,Ndirikunetswa ne system yenyu,synthetic_zw,yes
+complaint,My installation was done badly,synthetic_zw,yes
+complaint,Installation yenyu yakaitwa zvisina kunaka,synthetic_zw,yes
+complaint,You are not responding to my messages,synthetic_zw,yes
+complaint,Hamusi kupindura ma messages angu,synthetic_zw,yes
+complaint,I paid but haven't received my order,synthetic_zw,yes
+complaint,Ndakabhadhara asi handisati ndawana zvinhu zvangu,synthetic_zw,yes
+complaint,The battery is not holding charge after 2 weeks,synthetic_zw,yes
+complaint,Battery yangu haina kupera vhiki mbiri,synthetic_zw,yes
+complaint,Your prices changed after I paid deposit,synthetic_zw,yes
+complaint,Makachinja price mushure mekunge ndabhadhara deposit,synthetic_zw,yes
+complaint,I want a refund,synthetic_zw,yes
+complaint,Ndirikuda kudzoserwa mari yangu,synthetic_zw,yes
+greeting,Hello,synthetic_zw,yes
+greeting,Hie,synthetic_zw,yes
+greeting,Mhoro,synthetic_zw,yes
+greeting,Good morning,synthetic_zw,yes
+greeting,Mangwanani,synthetic_zw,yes
+greeting,Hi there,synthetic_zw,yes
+greeting,I hope you are well,synthetic_zw,yes
+greeting,Makadii,synthetic_zw,yes
+greeting,Salibonani,synthetic_zw,yes
+greeting,Afternoon,synthetic_zw,yes
+greeting,Masikati,synthetic_zw,yes
+greeting,Hello good people,synthetic_zw,yes
+greeting,Mhoroi vanhu,synthetic_zw,yes
+greeting,How are you today,synthetic_zw,yes
+greeting,Muri sei nhasi,synthetic_zw,yes
+greeting,Hie hie,synthetic_zw,yes
+greeting,Good evening,synthetic_zw,yes
+greeting,Manheru,synthetic_zw,yes
+greeting,I see your ad on Facebook,synthetic_zw,yes
+greeting,Ndaona advert yenyu paFacebook,synthetic_zw,yes
+greeting,Ndiri kutsvaga solar,synthetic_zw,yes
+thanks,Thank you,synthetic_zw,yes
+thanks,Ndatenda,synthetic_zw,yes
+thanks,Thanks so much,synthetic_zw,yes
+thanks,Ndatenda zvikuru,synthetic_zw,yes
+thanks,Appreciate it,synthetic_zw,yes
+thanks,Ndinotenda,synthetic_zw,yes
+thanks,Thanks for the quick response,synthetic_zw,yes
+thanks,Ndatenda nekukurumidza kupindura,synthetic_zw,yes
+thanks,Thank you for your help,synthetic_zw,yes
+thanks,Ndatenda nerubatsiro,synthetic_zw,yes
+thanks,Got it thanks,synthetic_zw,yes
+thanks,Zvakanaka ndatenda,synthetic_zw,yes
+thanks,Will do thanks,synthetic_zw,yes
+thanks,Ndoitawo zvakadaro ndatenda,synthetic_zw,yes
+thanks,Thanks for the quote,synthetic_zw,yes
+thanks,Ndatenda ne quote,synthetic_zw,yes
+thanks,Okay thank you,synthetic_zw,yes
+thanks,Zvakanaka maita basa,synthetic_zw,yes
+thanks,Perfect thanks,synthetic_zw,yes
+thanks,Zvakanaka kwazvo ndatenda,synthetic_zw,yes
+talk_to_human,I want to talk to a person,synthetic_zw,yes
+talk_to_human,Ndirikuda kutaura nemunhu,synthetic_zw,yes
+talk_to_human,Can I speak to someone,synthetic_zw,yes
+talk_to_human,Ndingataura nemunhu here,synthetic_zw,yes
+talk_to_human,Connect me to your agent,synthetic_zw,yes
+talk_to_human,Ndirikuda human agent,synthetic_zw,yes
+talk_to_human,Please call me,synthetic_zw,yes
+talk_to_human,Ndifonerei,synthetic_zw,yes
+talk_to_human,I need a real person not bot,synthetic_zw,yes
+talk_to_human,Ndirikuda munhu chaiye,synthetic_zw,yes
+talk_to_human,Can someone call me,synthetic_zw,yes
+talk_to_human,Munhu ungandifonera here,synthetic_zw,yes
+talk_to_human,I want to speak to sales person,synthetic_zw,yes
+talk_to_human,Ndirikuda kutaura nemunhu weku sales,synthetic_zw,yes
+talk_to_human,Transfer me to an agent,synthetic_zw,yes
+talk_to_human,Ndipeiwo munhu wekutaura naye,synthetic_zw,yes
+talk_to_human,Is there a human available,synthetic_zw,yes
+talk_to_human,Mune munhu here wekubatsira,synthetic_zw,yes
+talk_to_human,I prefer to talk to someone directly,synthetic_zw,yes
+talk_to_human,Ndirikuda kuti nditaure nemunhu asiri bot,synthetic_zw,yes
+off_topic,Do you sell fridges,synthetic_zw,yes
+off_topic,Mune ma fridge here,synthetic_zw,yes
+off_topic,Can I get a loan for school fees,synthetic_zw,yes
+off_topic,Ndirikuda chikwereti cheschool fees,synthetic_zw,yes
+off_topic,Are you hiring,synthetic_zw,yes
+off_topic,Muri kutsvaga vanhu here,synthetic_zw,yes
+off_topic,Do you sell cars,synthetic_zw,yes
+off_topic,Mune mota dzinotengeswa here,synthetic_zw,yes
+off_topic,What is the weather today,synthetic_zw,yes
+off_topic,Mamiriro ekunze nhasi,synthetic_zw,yes
+off_topic,Do you have Starlink,synthetic_zw,yes
+off_topic,Mune Starlink here,synthetic_zw,yes
+off_topic,I need a plumber,synthetic_zw,yes
+off_topic,Ndirikuda plumber,synthetic_zw,yes
+off_topic,Are you open on Christmas,synthetic_zw,yes
+off_topic,Muno vhura Christmas here,synthetic_zw,yes
+off_topic,Can you fix my TV,synthetic_zw,yes
+off_topic,Munogadzira TV here,synthetic_zw,yes
+off_topic,Do you sell generators,synthetic_zw,yes
+off_topic,Mune ma generator here,synthetic_zw,yes
+off_topic,I want to order pizza,synthetic_zw,yes
+off_topic,Ndirikuda pizza,synthetic_zw,yes
+price,hw much for 3kva inverter,synthetic_zw,yes
+price,pls give me price ye 5kw system,synthetic_zw,yes
+price,5kva inverter marii nhasi,synthetic_zw,yes
+price,whats cost of 550w panel,synthetic_zw,yes
+price,imarii ye battery 5kwh,synthetic_zw,yes
+price,hw much for 8kw sunsynk,synthetic_zw,yes
+price,price ye solar kit yekumba,synthetic_zw,yes
+price,mari ye inverter ne panel,synthetic_zw,yes
+price,ndoda mutengo we 10kw,synthetic_zw,yes
+price,how much for installation ne materials,synthetic_zw,yes
+price,marii e deye 8kw,synthetic_zw,yes
+price,cost ye 200ah gel,synthetic_zw,yes
+price,imarii hybrid 5kw,synthetic_zw,yes
+price,hw much full solar shop,synthetic_zw,yes
+price,mutengo we geyser 200l,synthetic_zw,yes
+price,price ye pump ne panels,synthetic_zw,yes
+price,marii lithium 10kwh,synthetic_zw,yes
+price,how much 6 panels ne inverter,synthetic_zw,yes
+price,ngicela intengo ye 5kva,synthetic_zw,yes
+price,marii system yeku fridge,synthetic_zw,yes
+price,hw much for 1kva small inverter,synthetic_zw,yes
+price,price ye 4 panels ne battery,synthetic_zw,yes
+price,imarii ye inverter ye 3.2kva,synthetic_zw,yes
+price,mari yeku install system,synthetic_zw,yes
+price,hw much for 10kwh freedom won,synthetic_zw,yes
+price,mutengo we 5kw hybrid ne lithium,synthetic_zw,yes
+price,ndoda price ye 8 panels,synthetic_zw,yes
+price,imarii ye 3kva off grid,synthetic_zw,yes
+price,hw much for borehole pump 0.75,synthetic_zw,yes
+price,marii ye solar geyser 150l,synthetic_zw,yes
+sizing,ndoda quotation ye shop ne freezer,synthetic_zw,yes
+sizing,how many panels for 2hp pump,synthetic_zw,yes
+sizing,size system 3 bed ne geyser,synthetic_zw,yes
+sizing,quote ye salon ne dryer,synthetic_zw,yes
+sizing,how many kva clinic vaccine fridge,synthetic_zw,yes
+sizing,ndipe quote farm ne borehole,synthetic_zw,yes
+sizing,what inverter for welding,synthetic_zw,yes
+sizing,ndoda sizing church ne keyboard,synthetic_zw,yes
+sizing,quote tuckshop tv fridge,synthetic_zw,yes
+sizing,how many batteries 8 hours,synthetic_zw,yes
+sizing,ndoda quote 3kva ne 4 panels,synthetic_zw,yes
+sizing,system for school computers,synthetic_zw,yes
+sizing,ndoda quote butchery 2 freezers,synthetic_zw,yes
+sizing,how many panels 5kva ne battery,synthetic_zw,yes
+sizing,quote off grid kumaruwa,synthetic_zw,yes
+sizing,ndoda system yeku ironing,synthetic_zw,yes
+sizing,what size whole house ne stove,synthetic_zw,yes
+sizing,quote 8kw ne 10 panels,synthetic_zw,yes
+sizing,ndoda sizing borehole ne lights,synthetic_zw,yes
+sizing,how many kva salon ne fridge,synthetic_zw,yes
+sizing,ndipe quotation ye clinic ne fridge,synthetic_zw,yes
+sizing,how many panels for 3kva,synthetic_zw,yes
+sizing,ndoda quote ye 5kw ne 8 batteries,synthetic_zw,yes
+sizing,size for 2 bed ne tv,synthetic_zw,yes
+sizing,ndoda quote ye farm ne pump,synthetic_zw,yes
+sizing,how many panels for freezer,synthetic_zw,yes
+sizing,ndipe quote ye 10kw ne 12 panels,synthetic_zw,yes
+sizing,what size for church ne sound,synthetic_zw,yes
+sizing,ndoda quote ye shop ne 3 freezers,synthetic_zw,yes
+sizing,how many kva for borehole ne house,synthetic_zw,yes
+qa_stock,is 3kva inverter available,synthetic_zw,yes
+qa_stock,mune 5kw deye here,synthetic_zw,yes
+qa_stock,do u have 550w panels,synthetic_zw,yes
+qa_stock,ma lithium aripo,synthetic_zw,yes
+qa_stock,sunsynk 5kw in stock,synthetic_zw,yes
+qa_stock,mune growatt 3kva,synthetic_zw,yes
+qa_stock,do you have 200ah gel,synthetic_zw,yes
+qa_stock,ma panel jinko aripo,synthetic_zw,yes
+qa_stock,8kw hybrid available,synthetic_zw,yes
+qa_stock,mune battery 5kwh,synthetic_zw,yes
+qa_stock,do you stock kodak,synthetic_zw,yes
+qa_stock,ma inverter victron aripo,synthetic_zw,yes
+qa_stock,pump available today,synthetic_zw,yes
+qa_stock,mune 10kw inverter,synthetic_zw,yes
+qa_stock,do u have geyser 150l,synthetic_zw,yes
+qa_stock,mune 4 panels,synthetic_zw,yes
+qa_stock,1kva available,synthetic_zw,yes
+qa_stock,ama battery akhona,synthetic_zw,yes
+qa_stock,mune pylontech 5kwh,synthetic_zw,yes
+qa_stock,6.2kva in stock,synthetic_zw,yes
+qa_stock,mune 2 panels here,synthetic_zw,yes
+qa_stock,do you have 3kw hybrid,synthetic_zw,yes
+qa_stock,mune 5kva mecer here,synthetic_zw,yes
+qa_stock,is 200ah lithium available,synthetic_zw,yes
+qa_stock,mune axpert here,synthetic_zw,yes
+qa_stock,do you have 8 panels,synthetic_zw,yes
+qa_stock,mune solis 5kw here,synthetic_zw,yes
+qa_stock,is 10kwh battery available,synthetic_zw,yes
+qa_stock,mune hubble here,synthetic_zw,yes
+qa_stock,do you have 1.5hp pump,synthetic_zw,yes
+qa_delivery,can u deliver kuwadzana,synthetic_zw,yes
+qa_delivery,munoendesa gweru,synthetic_zw,yes
+qa_delivery,delivery chinhoyi imarii,synthetic_zw,yes
+qa_delivery,do u deliver mutare,synthetic_zw,yes
+qa_delivery,munotumira masvingo,synthetic_zw,yes
+qa_delivery,how much delivery kwekwe,synthetic_zw,yes
+qa_delivery,delivery today harare,synthetic_zw,yes
+qa_delivery,munoendesa kumusha,synthetic_zw,yes
+qa_delivery,delivery fee marondera,synthetic_zw,yes
+qa_delivery,do you deliver bindura,synthetic_zw,yes
+qa_delivery,ndingatumira mota,synthetic_zw,yes
+qa_delivery,munoendesa panels zvishavane,synthetic_zw,yes
+qa_delivery,delivery vic falls,synthetic_zw,yes
+qa_delivery,can u deliver epworth,synthetic_zw,yes
+qa_delivery,munoendesa chitungwiza,synthetic_zw,yes
+qa_delivery,delivery norton imarii,synthetic_zw,yes
+qa_delivery,do you ship bulawayo,synthetic_zw,yes
+qa_delivery,munoendesa chiredzi,synthetic_zw,yes
+qa_delivery,ngicela i-delivery eGweru,synthetic_zw,yes
+qa_delivery,how long delivery mutare,synthetic_zw,yes
+qa_delivery,munoendesa ku ngezi here,synthetic_zw,yes
+qa_delivery,do u deliver to kadoma,synthetic_zw,yes
+qa_delivery,delivery ku redcliff imarii,synthetic_zw,yes
+qa_delivery,munoendesa ku hwange here,synthetic_zw,yes
+qa_delivery,can u deliver to glen view,synthetic_zw,yes
+qa_delivery,do you deliver to mutoko,synthetic_zw,yes
+qa_delivery,munoendesa ku rusape here,synthetic_zw,yes
+qa_delivery,delivery ku birchenough imarii,synthetic_zw,yes
+qa_installation_included,do you install chitungwiza,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa kuwadzana,synthetic_zw,yes
+qa_installation_included,need installer for my system,synthetic_zw,yes
+qa_installation_included,munoita panel installation,synthetic_zw,yes
+qa_installation_included,can you install bulawayo,synthetic_zw,yes
+qa_installation_included,ndirikuda munhu wekuisa inverter,synthetic_zw,yes
+qa_installation_included,installers gweru here,synthetic_zw,yes
+qa_installation_included,installation fee epworth,synthetic_zw,yes
+qa_installation_included,munoita pump install,synthetic_zw,yes
+qa_installation_included,install battery ne inverter,synthetic_zw,yes
+qa_installation_included,munouya farm kuzoisa,synthetic_zw,yes
+qa_installation_included,do you install geyser,synthetic_zw,yes
+qa_installation_included,kuisa system yandakatenga,synthetic_zw,yes
+qa_installation_included,mount asbestos,synthetic_zw,yes
+qa_installation_included,munoita wiring,synthetic_zw,yes
+qa_installation_included,installation marondera,synthetic_zw,yes
+qa_installation_included,kuisa system yechurch,synthetic_zw,yes
+qa_installation_included,do you give coc,synthetic_zw,yes
+qa_installation_included,kuisa mbare,synthetic_zw,yes
+qa_installation_included,installation nyanga,synthetic_zw,yes
+qa_installation_included,munoita installation ye solar geyser here,synthetic_zw,yes
+qa_installation_included,can you install 10 panels,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa mu glen view here,synthetic_zw,yes
+qa_installation_included,need install mu chinhoyi,synthetic_zw,yes
+qa_installation_included,munoita installation ye borehole here,synthetic_zw,yes
+qa_installation_included,installer for 5kva here,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa mu kadoma here,synthetic_zw,yes
+qa_installation_included,do you install in rusape,synthetic_zw,yes
+qa_installation_included,munoita installation yema battery here,synthetic_zw,yes
+qa_installation_included,install team mu mutare here,synthetic_zw,yes
+faq_installation_time,how long 5kva install,synthetic_zw,yes
+faq_installation_time,munoita nguva yakadii,synthetic_zw,yes
+faq_installation_time,same day install,synthetic_zw,yes
+faq_installation_time,panel maviri masikati here,synthetic_zw,yes
+faq_installation_time,how many days full system,synthetic_zw,yes
+faq_installation_time,yakaiswa riini,synthetic_zw,yes
+faq_installation_time,finish one day,synthetic_zw,yes
+faq_installation_time,farm install nguva yakadii,synthetic_zw,yes
+faq_installation_time,pay today when install,synthetic_zw,yes
+faq_installation_time,nguva kuisa inverter chete,synthetic_zw,yes
+faq_installation_time,half day here,synthetic_zw,yes
+faq_installation_time,munotanga riini,synthetic_zw,yes
+faq_installation_time,pump install nguva,synthetic_zw,yes
+faq_installation_time,ndingamira masikati,synthetic_zw,yes
+faq_installation_time,8 panels mangwanani here,synthetic_zw,yes
+faq_installation_time,install weekend here,synthetic_zw,yes
+faq_installation_time,shop system nguva,synthetic_zw,yes
+faq_installation_time,2 days full house,synthetic_zw,yes
+faq_installation_time,10 panels nguva yakadii,synthetic_zw,yes
+faq_installation_time,team riini,synthetic_zw,yes
+faq_installation_time,installation inotora maawa mangani,synthetic_zw,yes
+faq_installation_time,5kva system inotora zuva here,synthetic_zw,yes
+faq_installation_time,munoita masikati here,synthetic_zw,yes
+faq_installation_time,installation ye battery inotora nguva,synthetic_zw,yes
+faq_installation_time,kana ndikabhadhara nhasi munouya riini,synthetic_zw,yes
+faq_installation_time,installation ye 3kva inotora nguva yakadii,synthetic_zw,yes
+faq_installation_time,can you install tomorrow,synthetic_zw,yes
+faq_installation_time,mangwana installation here,synthetic_zw,yes
+faq_installation_time,installation ye geyser inotora nguva,synthetic_zw,yes
+faq_installation_time,system ye shop inotora masiku mangani,synthetic_zw,yes
+faq_warranty,warranty lithium ndeyi,synthetic_zw,yes
+faq_warranty,how many years inverter,synthetic_zw,yes
+faq_warranty,panels warranty here,synthetic_zw,yes
+faq_warranty,warranty mangani battery,synthetic_zw,yes
+faq_warranty,warranty on site,synthetic_zw,yes
+faq_warranty,warranty inobata installation,synthetic_zw,yes
+faq_warranty,what is covered,synthetic_zw,yes
+faq_warranty,inverter ikafa munotsiva,synthetic_zw,yes
+faq_warranty,warranty deye 5kw,synthetic_zw,yes
+faq_warranty,geyser warranty,synthetic_zw,yes
+faq_warranty,replace faulty inverter,synthetic_zw,yes
+faq_warranty,warranty inotanga riini,synthetic_zw,yes
+faq_warranty,panels ikatsemuka warranty,synthetic_zw,yes
+faq_warranty,1 year or 5 years,synthetic_zw,yes
+faq_warranty,battery warranty covers chii,synthetic_zw,yes
+faq_warranty,battery fault munguva yewarranty,synthetic_zw,yes
+faq_warranty,installation warranty,synthetic_zw,yes
+faq_warranty,warranty certificate,synthetic_zw,yes
+faq_warranty,inverter fails 6 months,synthetic_zw,yes
+faq_warranty,i-warranty yenu injani,synthetic_zw,yes
+faq_warranty,warranty ye panel imarii,synthetic_zw,yes
+faq_warranty,munoita warranty ye 3 years here,synthetic_zw,yes
+faq_warranty,warranty ye pump ndeyi,synthetic_zw,yes
+faq_warranty,inverter warranty inoshanda sei,synthetic_zw,yes
+faq_warranty,warranty ye battery ne inverter,synthetic_zw,yes
+faq_warranty,do you cover labour under warranty,synthetic_zw,yes
+faq_warranty,warranty inobata battery here,synthetic_zw,yes
+faq_warranty,warranty ye 5kva system,synthetic_zw,yes
+faq_warranty,how long is warranty on lithium,synthetic_zw,yes
+faq_warranty,warranty ye installation ne products,synthetic_zw,yes
+faq_payment_deposit,can i pay deposit,synthetic_zw,yes
+faq_payment_deposit,munodira deposit,synthetic_zw,yes
+faq_payment_deposit,do u take ecocash,synthetic_zw,yes
+faq_payment_deposit,zig here,synthetic_zw,yes
+faq_payment_deposit,layby 2 months,synthetic_zw,yes
+faq_payment_deposit,munodira half,synthetic_zw,yes
+faq_payment_deposit,cash usd only,synthetic_zw,yes
+faq_payment_deposit,card here,synthetic_zw,yes
+faq_payment_deposit,deposit collect next week,synthetic_zw,yes
+faq_payment_deposit,bond here,synthetic_zw,yes
+faq_payment_deposit,deposit installation,synthetic_zw,yes
+faq_payment_deposit,bank transfer,synthetic_zw,yes
+faq_payment_deposit,installments,synthetic_zw,yes
+faq_payment_deposit,munodira 50%,synthetic_zw,yes
+faq_payment_deposit,usd ne zig,synthetic_zw,yes
+faq_payment_deposit,layby here,synthetic_zw,yes
+faq_payment_deposit,deposit 5kva,synthetic_zw,yes
+faq_payment_deposit,deposit before install,synthetic_zw,yes
+faq_payment_deposit,pay after install,synthetic_zw,yes
+faq_payment_deposit,payment terms yenyu,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye 30% here,synthetic_zw,yes
+faq_payment_deposit,ecocash ne usd here,synthetic_zw,yes
+faq_payment_deposit,can i pay deposit ne zig here,synthetic_zw,yes
+faq_payment_deposit,munodira mari yese here,synthetic_zw,yes
+faq_payment_deposit,layby ye 6 months here,synthetic_zw,yes
+faq_payment_deposit,munodira deposit usd here,synthetic_zw,yes
+faq_payment_deposit,swipe here,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye battery here,synthetic_zw,yes
+faq_payment_deposit,can i pay half now half later,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye 20% here,synthetic_zw,yes
+qa_financing,financing here,synthetic_zw,yes
+qa_financing,loan yekutenga solar,synthetic_zw,yes
+qa_financing,hire purchase,synthetic_zw,yes
+qa_financing,munobatsira financing,synthetic_zw,yes
+qa_financing,banks solar loans,synthetic_zw,yes
+qa_financing,credit here,synthetic_zw,yes
+qa_financing,installment plan,synthetic_zw,yes
+qa_financing,scheme kubhadhara mwedzi,synthetic_zw,yes
+qa_financing,company credit,synthetic_zw,yes
+qa_financing,chirongwa chekubhadhara,synthetic_zw,yes
+qa_financing,rent to own,synthetic_zw,yes
+qa_financing,financing partners,synthetic_zw,yes
+qa_financing,monthly 6 months,synthetic_zw,yes
+qa_financing,kutenga nechikwereti,synthetic_zw,yes
+qa_financing,microfinance,synthetic_zw,yes
+qa_financing,vasina cash here,synthetic_zw,yes
+qa_financing,layby battery,synthetic_zw,yes
+qa_financing,financing shop,synthetic_zw,yes
+qa_financing,schools credit,synthetic_zw,yes
+qa_financing,payment plan yegore,synthetic_zw,yes
+qa_financing,mune credit facility here,synthetic_zw,yes
+qa_financing,financing ye farm here,synthetic_zw,yes
+qa_financing,can i pay monthly here,synthetic_zw,yes
+qa_financing,mune loan ye solar here,synthetic_zw,yes
+qa_financing,credit terms for company here,synthetic_zw,yes
+qa_financing,financing ye school here,synthetic_zw,yes
+qa_financing,mune hire purchase ye battery here,synthetic_zw,yes
+qa_financing,munodira kubhadhara mwedzi here,synthetic_zw,yes
+qa_financing,can a church get credit,synthetic_zw,yes
+qa_financing,financing ye clinic here,synthetic_zw,yes
+maintenance_service,service solar,synthetic_zw,yes
+maintenance_service,munouya kuzo service,synthetic_zw,yes
+maintenance_service,how often service inverter,synthetic_zw,yes
+maintenance_service,maintenance panels,synthetic_zw,yes
+maintenance_service,someone check system,synthetic_zw,yes
+maintenance_service,annual service,synthetic_zw,yes
+maintenance_service,maintenance battery,synthetic_zw,yes
+maintenance_service,check system not performing,synthetic_zw,yes
+maintenance_service,geyser service,synthetic_zw,yes
+maintenance_service,panels dirty clean,synthetic_zw,yes
+maintenance_service,munhu weku service,synthetic_zw,yes
+maintenance_service,maintenance contract,synthetic_zw,yes
+maintenance_service,tarisa system,synthetic_zw,yes
+maintenance_service,service call imarii,synthetic_zw,yes
+maintenance_service,mucherechedze system,synthetic_zw,yes
+maintenance_service,service system you didn't install,synthetic_zw,yes
+maintenance_service,maintenance borehole solar,synthetic_zw,yes
+maintenance_service,check batteries service,synthetic_zw,yes
+maintenance_service,routine check,synthetic_zw,yes
+maintenance_service,munoita service ye inverter here,synthetic_zw,yes
+maintenance_service,service ye 5kva system imarii,synthetic_zw,yes
+maintenance_service,munouya kuzo service shop here,synthetic_zw,yes
+maintenance_service,maintenance ye panels nguva yakadii,synthetic_zw,yes
+maintenance_service,service ye battery here,synthetic_zw,yes
+maintenance_service,munoita service ye pump here,synthetic_zw,yes
+maintenance_service,how much for maintenance visit,synthetic_zw,yes
+maintenance_service,munouya kuzo service geyser here,synthetic_zw,yes
+maintenance_service,service ye 10kw system,synthetic_zw,yes
+maintenance_service,maintenance ye system yeku farm,synthetic_zw,yes
+maintenance_fault,inverter beeping,synthetic_zw,yes
+maintenance_fault,system not working,synthetic_zw,yes
+maintenance_fault,inverter yakafa,synthetic_zw,yes
+maintenance_fault,no power panels,synthetic_zw,yes
+maintenance_fault,magetsi adzima system haina kubatidza,synthetic_zw,yes
+maintenance_fault,inverter on no output,synthetic_zw,yes
+maintenance_fault,red light inverter,synthetic_zw,yes
+maintenance_fault,battery not charging,synthetic_zw,yes
+maintenance_fault,system inongodzima,synthetic_zw,yes
+maintenance_fault,solar not charging,synthetic_zw,yes
+maintenance_fault,panels not producing,synthetic_zw,yes
+maintenance_fault,system inorira,synthetic_zw,yes
+maintenance_fault,inverter tripping,synthetic_zw,yes
+maintenance_fault,inverter fault,synthetic_zw,yes
+maintenance_fault,no display,synthetic_zw,yes
+maintenance_fault,yakaoma kuvhura,synthetic_zw,yes
+maintenance_fault,fan noise,synthetic_zw,yes
+maintenance_fault,haibati zesa,synthetic_zw,yes
+maintenance_fault,inverter yangu inongodzima kana zesa yauya,synthetic_zw,yes
+maintenance_fault,system yangu inoratidza zero,synthetic_zw,yes
+maintenance_fault,panels haasi kupa power,synthetic_zw,yes
+maintenance_fault,inverter inorira asi haisi kushanda,synthetic_zw,yes
+maintenance_fault,battery haisi kubhadharisa,synthetic_zw,yes
+maintenance_fault,system yangu inopisa,synthetic_zw,yes
+maintenance_fault,inverter inodzima kana ndikaisa load,synthetic_zw,yes
+maintenance_fault,no output from inverter,synthetic_zw,yes
+maintenance_fault,solar system yangu haina simba,synthetic_zw,yes
+maintenance_fault,inverter inoratidza warning,synthetic_zw,yes
+maintenance_fault,inverter shows f56,synthetic_zw,yes
+maintenance_fault,e012 on inverter,synthetic_zw,yes
+maintenance_fault,f56 chii,synthetic_zw,yes
+maintenance_fault,e012 meaning,synthetic_zw,yes
+maintenance_fault,error f56,synthetic_zw,yes
+maintenance_fault,deye error 12,synthetic_zw,yes
+maintenance_fault,f56 ndoita sei,synthetic_zw,yes
+maintenance_fault,growatt e012,synthetic_zw,yes
+maintenance_fault,f56 after load shedding,synthetic_zw,yes
+maintenance_fault,meaning f56,synthetic_zw,yes
+maintenance_fault,e012 ne beeping,synthetic_zw,yes
+maintenance_fault,f56 what to do,synthetic_zw,yes
+maintenance_fault,code 12 inverter,synthetic_zw,yes
+maintenance_fault,what is f56,synthetic_zw,yes
+maintenance_fault,ndibatsire e012,synthetic_zw,yes
+maintenance_fault,f56 no output,synthetic_zw,yes
+maintenance_fault,error ne red light,synthetic_zw,yes
+maintenance_fault,error f56 explain,synthetic_zw,yes
+maintenance_fault,e012 yakaratidza,synthetic_zw,yes
+maintenance_fault,f56 on 5kva,synthetic_zw,yes
+maintenance_fault,inverter inoratidza e012 nhasi,synthetic_zw,yes
+maintenance_fault,f56 error on deye,synthetic_zw,yes
+maintenance_fault,munogona kundibatsira ne e012 here,synthetic_zw,yes
+maintenance_fault,inverter yangu inoratidza error 56,synthetic_zw,yes
+maintenance_fault,e012 code on growatt,synthetic_zw,yes
+maintenance_fault,f56 meaning on inverter,synthetic_zw,yes
+maintenance_fault,ndirikuda kubatsirwa ne error code e012,synthetic_zw,yes
+maintenance_fault,inverter inoratidza f56 kana zesa yauya,synthetic_zw,yes
+maintenance_fault,error 12 on inverter,synthetic_zw,yes
+maintenance_fault,f56 beeping here,synthetic_zw,yes
+faq_batteries,lithium or gel,synthetic_zw,yes
+faq_batteries,lithium nguva yakadii,synthetic_zw,yes
+faq_batteries,add battery later,synthetic_zw,yes
+faq_batteries,kuwedzera battery,synthetic_zw,yes
+faq_batteries,lithium lifespan,synthetic_zw,yes
+faq_batteries,mix lithium gel,synthetic_zw,yes
+faq_batteries,gel ne lithium,synthetic_zw,yes
+faq_batteries,size battery 5kva,synthetic_zw,yes
+faq_batteries,5kwh hours mangani,synthetic_zw,yes
+faq_batteries,water gel battery,synthetic_zw,yes
+faq_batteries,kubhadharisa battery,synthetic_zw,yes
+faq_batteries,discharge lithium,synthetic_zw,yes
+faq_batteries,battery inopisa,synthetic_zw,yes
+faq_batteries,car battery solar,synthetic_zw,yes
+faq_batteries,battery ye mota,synthetic_zw,yes
+faq_batteries,lifespan lithium,synthetic_zw,yes
+faq_batteries,battery 100% inopera,synthetic_zw,yes
+faq_batteries,battery only,synthetic_zw,yes
+faq_batteries,parallel battery,synthetic_zw,yes
+faq_batteries,mune lithium ye 10kwh here,synthetic_zw,yes
+faq_batteries,battery inogona ku add here,synthetic_zw,yes
+faq_batteries,lithium inogara makore mangani,synthetic_zw,yes
+faq_batteries,gel battery inoda water here,synthetic_zw,yes
+faq_batteries,battery ye 5kwh inoita maawa mangani,synthetic_zw,yes
+faq_batteries,can i use two batteries here,synthetic_zw,yes
+faq_batteries,mune battery ye 200ah here,synthetic_zw,yes
+faq_batteries,battery inoratidza full asi inopera,synthetic_zw,yes
+faq_batteries,mune lithium ne gel here,synthetic_zw,yes
+faq_batteries,battery inogona ku parallel here,synthetic_zw,yes
+qa_panel_count,550w kwh,synthetic_zw,yes
+qa_panel_count,panel 550w watts,synthetic_zw,yes
+qa_panel_count,kuchenesa panels,synthetic_zw,yes
+qa_panel_count,brand panels,synthetic_zw,yes
+qa_panel_count,jinko panels,synthetic_zw,yes
+qa_panel_count,panels 5kva,synthetic_zw,yes
+qa_panel_count,panels mangani 5kw,synthetic_zw,yes
+qa_panel_count,different panels,synthetic_zw,yes
+qa_panel_count,kusanganisa panels,synthetic_zw,yes
+qa_panel_count,dust panels,synthetic_zw,yes
+qa_panel_count,panel warranty,synthetic_zw,yes
+qa_panel_count,mounting included,synthetic_zw,yes
+qa_panel_count,panels cloudy,synthetic_zw,yes
+qa_panel_count,mvuri panels,synthetic_zw,yes
+qa_panel_count,price 4 panels,synthetic_zw,yes
+qa_panel_count,canadian solar,synthetic_zw,yes
+qa_panel_count,grass roof,synthetic_zw,yes
+qa_panel_count,clean panels nguva,synthetic_zw,yes
+qa_panel_count,cable panels,synthetic_zw,yes
+qa_panel_count,mune panel ye 450w here,synthetic_zw,yes
+qa_panel_count,panel inobudisa how many volts,synthetic_zw,yes
+qa_panel_count,ma panel anoda sun here,synthetic_zw,yes
+qa_panel_count,panel inogona kubata mvuri here,synthetic_zw,yes
+qa_panel_count,mune panels e 600w here,synthetic_zw,yes
+qa_panel_count,panel ine hotspot here,synthetic_zw,yes
+qa_panel_count,ma panel anofanira ku clean nguva yakadii,synthetic_zw,yes
+qa_panel_count,panel inogona kushanda ne inverter ipi,synthetic_zw,yes
+qa_panel_count,mune panel ye trina here,synthetic_zw,yes
+qa_panel_count,panel inobudisa ma watts mangani masikati,synthetic_zw,yes
+faq_inverter_types,deye or sunsynk,synthetic_zw,yes
+faq_inverter_types,deye ne sunsynk,synthetic_zw,yes
+faq_inverter_types,mppt here,synthetic_zw,yes
+faq_inverter_types,parallel inverter,synthetic_zw,yes
+faq_inverter_types,growatt without battery,synthetic_zw,yes
+faq_inverter_types,growatt isina battery,synthetic_zw,yes
+faq_inverter_types,hybrid vs off grid,synthetic_zw,yes
+faq_inverter_types,hybrid ne off grid,synthetic_zw,yes
+faq_inverter_types,wifi here,synthetic_zw,yes
+faq_inverter_types,wifi monitoring,synthetic_zw,yes
+faq_inverter_types,borehole 5kva,synthetic_zw,yes
+faq_inverter_types,5kva ne borehole,synthetic_zw,yes
+faq_inverter_types,pure sine wave,synthetic_zw,yes
+faq_inverter_types,sine wave,synthetic_zw,yes
+faq_inverter_types,surge power 5kva,synthetic_zw,yes
+faq_inverter_types,fridge inverter,synthetic_zw,yes
+faq_inverter_types,generator input,synthetic_zw,yes
+faq_inverter_types,generator port,synthetic_zw,yes
+faq_inverter_types,zesa ne solar,synthetic_zw,yes
+faq_inverter_types,inverter ne zesa,synthetic_zw,yes
+faq_inverter_types,mune inverter ye 12kw here,synthetic_zw,yes
+faq_inverter_types,inverter inogona ku parallel here,synthetic_zw,yes
+faq_inverter_types,mppt inobatsira sei,synthetic_zw,yes
+faq_inverter_types,inverter ine wifi here,synthetic_zw,yes
+faq_inverter_types,inverter inogona kubata welding here,synthetic_zw,yes
+faq_inverter_types,inverter inoshanda ne generator here,synthetic_zw,yes
+faq_inverter_types,mune hybrid ne off grid here,synthetic_zw,yes
+faq_inverter_types,inverter inoda battery here,synthetic_zw,yes
+faq_inverter_types,inverter inogona kushanda isina zesa here,synthetic_zw,yes
+faq_inverter_types,mune inverter ye 3 phase here,synthetic_zw,yes
+qa_grid_feed,net metering,synthetic_zw,yes
+qa_grid_feed,sell zesa,synthetic_zw,yes
+qa_grid_feed,kutengesa zesa,synthetic_zw,yes
+qa_grid_feed,net metering requirements,synthetic_zw,yes
+qa_grid_feed,zera license,synthetic_zw,yes
+qa_grid_feed,zera approval,synthetic_zw,yes
+qa_grid_feed,zera license solar,synthetic_zw,yes
+qa_grid_feed,how net metering works,synthetic_zw,yes
+qa_grid_feed,net metering zimbabwe,synthetic_zw,yes
+qa_grid_feed,feed grid,synthetic_zw,yes
+qa_grid_feed,kupinda grid,synthetic_zw,yes
+qa_grid_feed,zetdc paperwork,synthetic_zw,yes
+qa_grid_feed,zetdc application,synthetic_zw,yes
+qa_grid_feed,homes net metering,synthetic_zw,yes
+qa_grid_feed,kumba net metering,synthetic_zw,yes
+qa_grid_feed,meter net metering,synthetic_zw,yes
+qa_grid_feed,zesa buys solar,synthetic_zw,yes
+qa_grid_feed,zesa inotenga,synthetic_zw,yes
+qa_grid_feed,net metering allowed,synthetic_zw,yes
+qa_grid_feed,sell back power,synthetic_zw,yes
+qa_grid_feed,mune net metering here,synthetic_zw,yes
+qa_grid_feed,zera inoda chii,synthetic_zw,yes
+qa_grid_feed,net metering ye home here,synthetic_zw,yes
+qa_grid_feed,munoita zera application here,synthetic_zw,yes
+qa_grid_feed,zesa inobvuma solar here,synthetic_zw,yes
+qa_grid_feed,net metering ye shop here,synthetic_zw,yes
+qa_grid_feed,mune paperwork ye zetdc here,synthetic_zw,yes
+qa_grid_feed,net metering inoda meter here,synthetic_zw,yes
+qa_grid_feed,munoita net metering ye farm here,synthetic_zw,yes
+qa_grid_feed,zesa inotenga magetsi here,synthetic_zw,yes
+faq_borehole_pumps,solar pump imarii,synthetic_zw,yes
+faq_borehole_pumps,borehole solar 1hp,synthetic_zw,yes
+faq_borehole_pumps,solar pump mvura,synthetic_zw,yes
+faq_borehole_pumps,install pump,synthetic_zw,yes
+faq_borehole_pumps,pump installation,synthetic_zw,yes
+faq_borehole_pumps,panels 1.5hp,synthetic_zw,yes
+faq_borehole_pumps,panels pump 1hp,synthetic_zw,yes
+faq_borehole_pumps,submersible pump,synthetic_zw,yes
+faq_borehole_pumps,pump mumvura,synthetic_zw,yes
+faq_borehole_pumps,pump usiku,synthetic_zw,yes
+faq_borehole_pumps,borehole without battery,synthetic_zw,yes
+faq_borehole_pumps,borehole isina battery,synthetic_zw,yes
+faq_borehole_pumps,solar borehole cost,synthetic_zw,yes
+faq_borehole_pumps,quote borehole,synthetic_zw,yes
+faq_borehole_pumps,deep well pump,synthetic_zw,yes
+faq_borehole_pumps,pump deep well,synthetic_zw,yes
+faq_borehole_pumps,pump vs generator,synthetic_zw,yes
+faq_borehole_pumps,pump ne generator,synthetic_zw,yes
+faq_borehole_pumps,pump load shedding,synthetic_zw,yes
+faq_borehole_pumps,pump zesa yadzima,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 2hp here,synthetic_zw,yes
+faq_borehole_pumps,solar pump inogona kushanda masikati here,synthetic_zw,yes
+faq_borehole_pumps,pump inoda panels mangani,synthetic_zw,yes
+faq_borehole_pumps,mune borehole pump ye 0.5hp here,synthetic_zw,yes
+faq_borehole_pumps,solar pump ye irrigation here,synthetic_zw,yes
+faq_borehole_pumps,pump inogona ku pump mvura yakawanda here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 1.5hp here,synthetic_zw,yes
+faq_borehole_pumps,solar borehole inoda battery here,synthetic_zw,yes
+faq_borehole_pumps,pump ye borehole inotora nguva yakadii,synthetic_zw,yes
+faq_borehole_pumps,mune solar pump ye farm here,synthetic_zw,yes
+faq_solar_geysers,geyser price,synthetic_zw,yes
+faq_solar_geysers,geyser marii,synthetic_zw,yes
+faq_solar_geysers,install geyser,synthetic_zw,yes
+faq_solar_geysers,geyser installation,synthetic_zw,yes
+faq_solar_geysers,size geyser 4,synthetic_zw,yes
+faq_solar_geysers,geyser vanhu vana,synthetic_zw,yes
+faq_solar_geysers,geyser cloudy,synthetic_zw,yes
+faq_solar_geysers,geyser mvuri,synthetic_zw,yes
+faq_solar_geysers,repair geyser,synthetic_zw,yes
+faq_solar_geysers,gadzira geyser,synthetic_zw,yes
+faq_solar_geysers,200l installed,synthetic_zw,yes
+faq_solar_geysers,geyser 200l,synthetic_zw,yes
+faq_solar_geysers,geyser vs electric,synthetic_zw,yes
+faq_solar_geysers,geyser ne magetsi,synthetic_zw,yes
+faq_solar_geysers,tube geyser,synthetic_zw,yes
+faq_solar_geysers,geyser tubes,synthetic_zw,yes
+faq_solar_geysers,connect geyser,synthetic_zw,yes
+faq_solar_geysers,geyser existing,synthetic_zw,yes
+faq_solar_geysers,heating time,synthetic_zw,yes
+faq_solar_geysers,geyser kupisa,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 100l here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kushanda usiku here,synthetic_zw,yes
+faq_solar_geysers,geyser inoda maintenance here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 300l here,synthetic_zw,yes
+faq_solar_geysers,geyser inopisa nguva yakadii,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye flat panel here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kubatana ne booster here,synthetic_zw,yes
+faq_solar_geysers,geyser inoshanda kana kune mvuri here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye solar here,synthetic_zw,yes
+faq_solar_geysers,geyser inoda kugadziriswa here,synthetic_zw,yes
+site_visit,site visit,synthetic_zw,yes
+site_visit,muuye kuzoona,synthetic_zw,yes
+site_visit,when site visit,synthetic_zw,yes
+site_visit,munouya riini,synthetic_zw,yes
+site_visit,appointment quote,synthetic_zw,yes
+site_visit,appointment kuona,synthetic_zw,yes
+site_visit,visit shop,synthetic_zw,yes
+site_visit,kuuya kuzoona,synthetic_zw,yes
+site_visit,free site visit,synthetic_zw,yes
+site_visit,site visit fee,synthetic_zw,yes
+site_visit,come house assessment,synthetic_zw,yes
+site_visit,muuye kumba,synthetic_zw,yes
+site_visit,site visit today,synthetic_zw,yes
+site_visit,nhasi site visit,synthetic_zw,yes
+site_visit,site visit before install,synthetic_zw,yes
+site_visit,site visit risati raiswa,synthetic_zw,yes
+site_visit,visit farm,synthetic_zw,yes
+site_visit,appointment farm,synthetic_zw,yes
+site_visit,technician check,synthetic_zw,yes
+site_visit,technician here,synthetic_zw,yes
+site_visit,munouya kuzoona system here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye shop,synthetic_zw,yes
+site_visit,munouya mangwana here,synthetic_zw,yes
+site_visit,site visit ye farm here,synthetic_zw,yes
+site_visit,ndirikuda kuti muuye kuzoona nhasi,synthetic_zw,yes
+site_visit,munouya kuzoona system yeku clinic here,synthetic_zw,yes
+site_visit,ndirikuda appointment ye site visit,synthetic_zw,yes
+site_visit,munouya kuzoona system yeku school here,synthetic_zw,yes
+site_visit,site visit ye borehole here,synthetic_zw,yes
+contact_info,opening time,synthetic_zw,yes
+contact_info,nguva dzekuvhura,synthetic_zw,yes
+contact_info,location yenyu,synthetic_zw,yes
+contact_info,saturday,synthetic_zw,yes
+contact_info,saturday vhura,synthetic_zw,yes
+contact_info,address yenyu,synthetic_zw,yes
+contact_info,address,synthetic_zw,yes
+contact_info,sunday,synthetic_zw,yes
+contact_info,sunday vhura,synthetic_zw,yes
+contact_info,closing time,synthetic_zw,yes
+contact_info,nguva dzekuvhara,synthetic_zw,yes
+contact_info,shop harare,synthetic_zw,yes
+contact_info,harare shop,synthetic_zw,yes
+contact_info,branch bulawayo,synthetic_zw,yes
+contact_info,bulawayo branch,synthetic_zw,yes
+contact_info,call you,synthetic_zw,yes
+contact_info,kufonera,synthetic_zw,yes
+contact_info,whatsapp number,synthetic_zw,yes
+contact_info,whatsapp yenyu,synthetic_zw,yes
+contact_info,munovhura maawa mangani,synthetic_zw,yes
+contact_info,shop yenyu iri kupi,synthetic_zw,yes
+contact_info,mune branch mu mutare here,synthetic_zw,yes
+contact_info,muri mu harare here,synthetic_zw,yes
+contact_info,address yeku shop,synthetic_zw,yes
+contact_info,mune branch mu gweru here,synthetic_zw,yes
+contact_info,munovhura lunch time here,synthetic_zw,yes
+contact_info,mune branch mu masvingo here,synthetic_zw,yes
+contact_info,what time open tomorrow,synthetic_zw,yes
+complaint,not happy,synthetic_zw,yes
+complaint,system haiite basa,synthetic_zw,yes
+complaint,promised no show,synthetic_zw,yes
+complaint,makati muchauya,synthetic_zw,yes
+complaint,faulty inverter,synthetic_zw,yes
+complaint,inverter ine fault,synthetic_zw,yes
+complaint,waiting quote 2 days,synthetic_zw,yes
+complaint,ndirikunetswa,synthetic_zw,yes
+complaint,bad installation,synthetic_zw,yes
+complaint,installation yakaipa,synthetic_zw,yes
+complaint,not responding,synthetic_zw,yes
+complaint,hamusi kupindura,synthetic_zw,yes
+complaint,paid no order,synthetic_zw,yes
+complaint,ndakabhadhara handina kuwana,synthetic_zw,yes
+complaint,battery not holding,synthetic_zw,yes
+complaint,battery haina kupera,synthetic_zw,yes
+complaint,price changed,synthetic_zw,yes
+complaint,makachinja price,synthetic_zw,yes
+complaint,refund,synthetic_zw,yes
+complaint,kudzoserwa mari,synthetic_zw,yes
+complaint,system yenyu inonetsa,synthetic_zw,yes
+complaint,ndakabhadhara asi hapana chinouya,synthetic_zw,yes
+complaint,inverter yakafa mushure mevhiki,synthetic_zw,yes
+complaint,installation yenyu haina kupera,synthetic_zw,yes
+complaint,hamusi kuuya kuzo service,synthetic_zw,yes
+complaint,mari yangu ndirikuda,synthetic_zw,yes
+complaint,battery inopera mushure mezuva,synthetic_zw,yes
+complaint,ndakabhadhara deposit hamusi kuuya,synthetic_zw,yes
+complaint,inverter inorira mushure mekunge maise,synthetic_zw,yes
+complaint,system yenyu haina kushanda,synthetic_zw,yes
+greeting,hey,synthetic_zw,yes
+greeting,hallo,synthetic_zw,yes
+greeting,mhoro mhoro,synthetic_zw,yes
+greeting,morning,synthetic_zw,yes
+greeting,mangwanani zvenyu,synthetic_zw,yes
+greeting,hey there,synthetic_zw,yes
+greeting,hope u well,synthetic_zw,yes
+greeting,makadii zvenyu,synthetic_zw,yes
+greeting,good afternoon,synthetic_zw,yes
+greeting,masikati akanaka,synthetic_zw,yes
+greeting,hello team,synthetic_zw,yes
+greeting,mhoroi team,synthetic_zw,yes
+greeting,howzit,synthetic_zw,yes
+greeting,uri sei,synthetic_zw,yes
+greeting,hie hie hie,synthetic_zw,yes
+greeting,evening,synthetic_zw,yes
+greeting,manheru akanaka,synthetic_zw,yes
+greeting,saw advert,synthetic_zw,yes
+greeting,ndaona advert,synthetic_zw,yes
+greeting,mhoro shamwari,synthetic_zw,yes
+greeting,hello there,synthetic_zw,yes
+greeting,good day,synthetic_zw,yes
+greeting,zwakanaka here,synthetic_zw,yes
+greeting,mangwanani akanaka,synthetic_zw,yes
+greeting,hie vanhu,synthetic_zw,yes
+greeting,mhoroi mhoroi,synthetic_zw,yes
+greeting,hey guys,synthetic_zw,yes
+greeting,masikati akanaka team,synthetic_zw,yes
+greeting,good morning team,synthetic_zw,yes
+thanks,thanx,synthetic_zw,yes
+thanks,ndatenda zvenyu,synthetic_zw,yes
+thanks,thanks a lot,synthetic_zw,yes
+thanks,ndatenda chaizvo,synthetic_zw,yes
+thanks,much appreciated,synthetic_zw,yes
+thanks,ndinotenda zvenyu,synthetic_zw,yes
+thanks,thanks response,synthetic_zw,yes
+thanks,ndatenda kupindura,synthetic_zw,yes
+thanks,thanks help,synthetic_zw,yes
+thanks,ok thanks,synthetic_zw,yes
+thanks,will do thanx,synthetic_zw,yes
+thanks,ndoitawo ndatenda,synthetic_zw,yes
+thanks,thanks quote,synthetic_zw,yes
+thanks,ndatenda nequote,synthetic_zw,yes
+thanks,alright thank you,synthetic_zw,yes
+thanks,maita basa,synthetic_zw,yes
+thanks,great thanks,synthetic_zw,yes
+thanks,ngiyabonga kakhulu,synthetic_zw,yes
+thanks,ndatenda nekukurumidza,synthetic_zw,yes
+thanks,thanks for the info,synthetic_zw,yes
+thanks,ndatenda ne info,synthetic_zw,yes
+thanks,cheers,synthetic_zw,yes
+thanks,ndatenda zvakanyanya,synthetic_zw,yes
+thanks,thanks again,synthetic_zw,yes
+thanks,ndatenda zvakare,synthetic_zw,yes
+thanks,appreciate your help,synthetic_zw,yes
+thanks,ndinotenda nerubatsiro rwenyu,synthetic_zw,yes
+thanks,okay maita basa,synthetic_zw,yes
+talk_to_human,talk to person,synthetic_zw,yes
+talk_to_human,kutaura nemunhu,synthetic_zw,yes
+talk_to_human,speak someone,synthetic_zw,yes
+talk_to_human,nemunhu here,synthetic_zw,yes
+talk_to_human,connect me,synthetic_zw,yes
+talk_to_human,human agent,synthetic_zw,yes
+talk_to_human,call me,synthetic_zw,yes
+talk_to_human,real person,synthetic_zw,yes
+talk_to_human,munhu chaiye,synthetic_zw,yes
+talk_to_human,someone call,synthetic_zw,yes
+talk_to_human,munhu wekufona,synthetic_zw,yes
+talk_to_human,sales person,synthetic_zw,yes
+talk_to_human,munhu sales,synthetic_zw,yes
+talk_to_human,transfer me,synthetic_zw,yes
+talk_to_human,ndipeiwo munhu,synthetic_zw,yes
+talk_to_human,human available,synthetic_zw,yes
+talk_to_human,munhu aripo,synthetic_zw,yes
+talk_to_human,talk directly,synthetic_zw,yes
+talk_to_human,nditaure nemunhu,synthetic_zw,yes
+talk_to_human,ndirikuda munhu wekutaura naye,synthetic_zw,yes
+talk_to_human,call me back,synthetic_zw,yes
+talk_to_human,ndifonerei later,synthetic_zw,yes
+talk_to_human,i need agent,synthetic_zw,yes
+talk_to_human,ndirikuda agent,synthetic_zw,yes
+talk_to_human,human here,synthetic_zw,yes
+talk_to_human,mune munhu here,synthetic_zw,yes
+talk_to_human,speak agent,synthetic_zw,yes
+talk_to_human,ndirikuda kutaura ne agent,synthetic_zw,yes
+talk_to_human,can i get a person,synthetic_zw,yes
+off_topic,fridges,synthetic_zw,yes
+off_topic,ma fridge,synthetic_zw,yes
+off_topic,school fees loan,synthetic_zw,yes
+off_topic,chikwereti cheschool,synthetic_zw,yes
+off_topic,hiring,synthetic_zw,yes
+off_topic,kutsvaga vanhu,synthetic_zw,yes
+off_topic,cars,synthetic_zw,yes
+off_topic,mota,synthetic_zw,yes
+off_topic,weather,synthetic_zw,yes
+off_topic,mamiriro ekunze,synthetic_zw,yes
+off_topic,starlink,synthetic_zw,yes
+off_topic,plumber,synthetic_zw,yes
+off_topic,plumber here,synthetic_zw,yes
+off_topic,christmas hours,synthetic_zw,yes
+off_topic,christmas vhura,synthetic_zw,yes
+off_topic,fix tv,synthetic_zw,yes
+off_topic,gadzira tv,synthetic_zw,yes
+off_topic,generators,synthetic_zw,yes
+off_topic,ma generator,synthetic_zw,yes
+off_topic,pizza,synthetic_zw,yes
+off_topic,muri kutengesa gas here,synthetic_zw,yes
+off_topic,mune ma tv here,synthetic_zw,yes
+off_topic,do you sell washing machines,synthetic_zw,yes
+off_topic,mune ma freezer here,synthetic_zw,yes
+off_topic,muri kuita delivery ye ma gas here,synthetic_zw,yes
+off_topic,do you fix radios,synthetic_zw,yes
+price,5kva hybrid inverter cost yacho,synthetic_zw,yes
+price,pliz send price list ye inverters,synthetic_zw,yes
+price,marii e 3kva ne battery rimwe,synthetic_zw,yes
+price,hw much 10kw system full,synthetic_zw,yes
+price,imarii panel rimwe 550w,synthetic_zw,yes
+price,cost ye lithium 5kwh pylontech,synthetic_zw,yes
+price,mari ye 8kw hybrid inverter,synthetic_zw,yes
+price,hw much for solar geyser 100l,synthetic_zw,yes
+price,imarii system inoita tv ne fridge,synthetic_zw,yes
+price,price ye 2 panels ne inverter,synthetic_zw,yes
+price,marii e dyness 5kwh,synthetic_zw,yes
+price,how much inverter 6kw,synthetic_zw,yes
+price,mutengo we 4 panels ne battery,synthetic_zw,yes
+price,hw much for 1.5kva small system,synthetic_zw,yes
+price,marii e freedom won 5kwh,synthetic_zw,yes
+price,imarii pump ye borehole 2hp,synthetic_zw,yes
+price,price ye 12kw inverter,synthetic_zw,yes
+price,marii e inverter ye shop,synthetic_zw,yes
+price,how much for 6 panels 550w,synthetic_zw,yes
+price,mutengo we system yeku salon,synthetic_zw,yes
+price,imarii ye hubble 5kwh,synthetic_zw,yes
+price,hw much for 3kva growatt,synthetic_zw,yes
+price,marii e 5 panels ne 3kva,synthetic_zw,yes
+price,price ye 2 batteries ne inverter,synthetic_zw,yes
+price,marii e 200ah lithium,synthetic_zw,yes
+price,how much 5kw system isina battery,synthetic_zw,yes
+price,mutengo we geyser 100l,synthetic_zw,yes
+price,imarii ye inverter ye 4kw,synthetic_zw,yes
+price,hw much for pump ne 4 panels,synthetic_zw,yes
+price,marii e 5kw hybrid ne 1 battery,synthetic_zw,yes
+sizing,quote yeku shop ne tv ne fridge,synthetic_zw,yes
+sizing,ndoda system yeku clinic,synthetic_zw,yes
+sizing,how many panels for 3hp pump,synthetic_zw,yes
+sizing,quote ye farm ne 2 boreholes,synthetic_zw,yes
+sizing,ndoda sizing yeku salon ne clipper,synthetic_zw,yes
+sizing,how many batteries for 10kva,synthetic_zw,yes
+sizing,quote yeku church ne projector,synthetic_zw,yes
+sizing,ndoda system yeku butchery ne 4 freezers,synthetic_zw,yes
+sizing,quote ye tuckshop ne 2 fridges,synthetic_zw,yes
+sizing,how many kva for 5 bedroom house,synthetic_zw,yes
+sizing,ndoda quote ye 10kw ne 15 panels,synthetic_zw,yes
+sizing,quote ye school ne 20 computers,synthetic_zw,yes
+sizing,ndoda system yeku cottage ne tv,synthetic_zw,yes
+sizing,quote ye 6kva ne 6 panels,synthetic_zw,yes
+sizing,how many panels for 4kva inverter,synthetic_zw,yes
+sizing,ndoda quote ye farm ne irrigation,synthetic_zw,yes
+sizing,quote ye 3 bed ne stove,synthetic_zw,yes
+sizing,ndoda sizing ye shop ne welding,synthetic_zw,yes
+sizing,quote ye 5kw ne 2 batteries ne 8 panels,synthetic_zw,yes
+sizing,how many batteries for freezer,synthetic_zw,yes
+sizing,ndoda quote ye clinic ne vaccine fridge,synthetic_zw,yes
+sizing,quote ye 8kva ne 10 panels,synthetic_zw,yes
+sizing,ndoda system yeku office ne 5 computers,synthetic_zw,yes
+sizing,how many panels for 2 freezers ne fridge,synthetic_zw,yes
+sizing,ndoda quote ye salon ne 2 dryers,synthetic_zw,yes
+sizing,quote ye 4kva ne 6 panels,synthetic_zw,yes
+sizing,ndoda system yeku bar ne fridge ne tv,synthetic_zw,yes
+sizing,how many kva for 2 bed ne borehole,synthetic_zw,yes
+sizing,ndoda quote ye 12kw ne 14 panels,synthetic_zw,yes
+sizing,quote ye farm ne lights ne pump,synthetic_zw,yes
+qa_stock,mune 6kva inverter here,synthetic_zw,yes
+qa_stock,do you stock dyness,synthetic_zw,yes
+qa_stock,mune freedom won 5kwh here,synthetic_zw,yes
+qa_stock,is 3kva mecer available,synthetic_zw,yes
+qa_stock,mune hubble am2 here,synthetic_zw,yes
+qa_stock,do you have 4kva hybrid,synthetic_zw,yes
+qa_stock,mune growatt 5kw here,synthetic_zw,yes
+qa_stock,is 2hp pump in stock,synthetic_zw,yes
+qa_stock,mune 12kw inverter here,synthetic_zw,yes
+qa_stock,do you have 250ah battery,synthetic_zw,yes
+qa_stock,mune panel ye 600w here,synthetic_zw,yes
+qa_stock,is 6 panels available,synthetic_zw,yes
+qa_stock,do you have 1hp pump,synthetic_zw,yes
+qa_stock,mune battery ye 200ah gel here,synthetic_zw,yes
+qa_stock,is 5kva voltronic available,synthetic_zw,yes
+qa_stock,do you have 8 panels ne inverter,synthetic_zw,yes
+qa_stock,mune luxpower 5kw here,synthetic_zw,yes
+qa_stock,is 10 panels available today,synthetic_zw,yes
+qa_stock,mune inverter ye 1.5kva here,synthetic_zw,yes
+qa_stock,do you stock goodwe,synthetic_zw,yes
+qa_stock,mune victron 3kva here,synthetic_zw,yes
+qa_stock,is 3 panels available,synthetic_zw,yes
+qa_stock,mune solis 8kw here,synthetic_zw,yes
+qa_stock,do you have lithium 15kwh,synthetic_zw,yes
+qa_stock,mune inverter ye 2kva here,synthetic_zw,yes
+qa_stock,is pump ne panels available,synthetic_zw,yes
+qa_stock,do you have 7 panels,synthetic_zw,yes
+qa_delivery,munoendesa ku chipinge here,synthetic_zw,yes
+qa_delivery,delivery ku mutoko imarii,synthetic_zw,yes
+qa_delivery,can u deliver to zvimba,synthetic_zw,yes
+qa_delivery,munoendesa ku shurugwi here,synthetic_zw,yes
+qa_delivery,delivery ku kariba imarii,synthetic_zw,yes
+qa_delivery,do you deliver to chivhu,synthetic_zw,yes
+qa_delivery,munoendesa ku nyanga here,synthetic_zw,yes
+qa_delivery,delivery ku murehwa imarii,synthetic_zw,yes
+qa_delivery,can u deliver to chegutu,synthetic_zw,yes
+qa_delivery,munoendesa ku beitbridge here,synthetic_zw,yes
+qa_delivery,delivery ku gokwe imarii,synthetic_zw,yes
+qa_delivery,munoendesa ku plumtree here,synthetic_zw,yes
+qa_delivery,delivery ku esigodini imarii,synthetic_zw,yes
+qa_delivery,can u deliver to chiredzi,synthetic_zw,yes
+qa_delivery,munoendesa ku karoi here,synthetic_zw,yes
+qa_delivery,do you deliver to gwanda,synthetic_zw,yes
+qa_delivery,munoendesa ku lupane here,synthetic_zw,yes
+qa_delivery,munoendesa ma panel ku nkayi here,synthetic_zw,yes
+qa_delivery,can u deliver to chinhoyi today,synthetic_zw,yes
+qa_delivery,munoendesa ku mhondoro here,synthetic_zw,yes
+qa_delivery,delivery ku mazowe imarii,synthetic_zw,yes
+qa_delivery,do you deliver to banket,synthetic_zw,yes
+qa_delivery,munoendesa ku rusape today here,synthetic_zw,yes
+qa_delivery,munoendesa ku binga here,synthetic_zw,yes
+qa_installation_included,munoita installation ku marondera here,synthetic_zw,yes
+qa_installation_included,installer weku chinhoyi here,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa mu mutare here,synthetic_zw,yes
+qa_installation_included,can you install in gweru,synthetic_zw,yes
+qa_installation_included,munoita installation ye 10 panels here,synthetic_zw,yes
+qa_installation_included,ndirikuda kuisa battery ne inverter,synthetic_zw,yes
+qa_installation_included,install team ku masvingo here,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa ku farm,synthetic_zw,yes
+qa_installation_included,installation fee ku kwekwe,synthetic_zw,yes
+qa_installation_included,munoita installation ye solar pump,synthetic_zw,yes
+qa_installation_included,kuisa system ku clinic here,synthetic_zw,yes
+qa_installation_included,do you install ku nyanga,synthetic_zw,yes
+qa_installation_included,munoita installation ye geyser ne panels,synthetic_zw,yes
+qa_installation_included,ndirikuda kuisa ku shop,synthetic_zw,yes
+qa_installation_included,installer for 8 panels here,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa ku church here,synthetic_zw,yes
+qa_installation_included,munoita installation ye inverter chete here,synthetic_zw,yes
+qa_installation_included,kuisa system ku school here,synthetic_zw,yes
+qa_installation_included,installation fee ku bindura,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa mu chitungwiza nhasi,synthetic_zw,yes
+qa_installation_included,installer ku kariba here,synthetic_zw,yes
+qa_installation_included,munoita installation ye 5kva ne 6 panels here,synthetic_zw,yes
+qa_installation_included,munouya kuzoisa ku murehwa here,synthetic_zw,yes
+qa_installation_included,munoita installation ye pump ne panels here,synthetic_zw,yes
+qa_installation_included,kuisa ku hotel here,synthetic_zw,yes
+qa_installation_included,installation team ku zvimba here,synthetic_zw,yes
+faq_installation_time,installation ye 10 panels inotora nguva yakadii,synthetic_zw,yes
+faq_installation_time,masikati maviri here,synthetic_zw,yes
+faq_installation_time,how long for 8 panels ne inverter,synthetic_zw,yes
+faq_installation_time,nguva yeku install pump,synthetic_zw,yes
+faq_installation_time,can you install nhasi,synthetic_zw,yes
+faq_installation_time,installation ye 3 batteries inotora nguva,synthetic_zw,yes
+faq_installation_time,munotanga masikati here,synthetic_zw,yes
+faq_installation_time,how long for salon install,synthetic_zw,yes
+faq_installation_time,install yeku farm inotora mazuva,synthetic_zw,yes
+faq_installation_time,installation ye shop inotora nguva yakadii,synthetic_zw,yes
+faq_installation_time,munogona ku install tomorrow here,synthetic_zw,yes
+faq_installation_time,how long for 12 panels,synthetic_zw,yes
+faq_installation_time,installation ye church inotora nguva,synthetic_zw,yes
+faq_installation_time,masikati here kana zuva rese,synthetic_zw,yes
+faq_installation_time,install ye clinic inotora nguva yakadii,synthetic_zw,yes
+faq_installation_time,how long for 5kva ne 8 panels,synthetic_zw,yes
+faq_installation_time,installation ye 4 panels inotora maawa,synthetic_zw,yes
+faq_installation_time,munotanga mangwanani here,synthetic_zw,yes
+faq_installation_time,install ye school inotora mazuva mangani,synthetic_zw,yes
+faq_installation_time,how long for geyser install,synthetic_zw,yes
+faq_installation_time,munouya kuzo install weekend here,synthetic_zw,yes
+faq_installation_time,install ye hotel inotora nguva yakadii,synthetic_zw,yes
+faq_installation_time,how long for pump ne panels,synthetic_zw,yes
+faq_installation_time,installation ye 6 panels inotora maawa,synthetic_zw,yes
+faq_installation_time,munotanga riini ku install nhasi,synthetic_zw,yes
+faq_installation_time,how long for 3kva ne 4 panels,synthetic_zw,yes
+faq_warranty,warranty ye dyness ndeyi,synthetic_zw,yes
+faq_warranty,inverter warranty makore mangani,synthetic_zw,yes
+faq_warranty,panel warranty makore,synthetic_zw,yes
+faq_warranty,warranty ye 10kwh battery,synthetic_zw,yes
+faq_warranty,warranty ye 8kw inverter,synthetic_zw,yes
+faq_warranty,warranty ye 550w panel,synthetic_zw,yes
+faq_warranty,inverter ikafa munotsiva here,synthetic_zw,yes
+faq_warranty,mune warranty ye 10 years here,synthetic_zw,yes
+faq_warranty,warranty ye 15kwh battery,synthetic_zw,yes
+faq_warranty,warranty ye 200ah,synthetic_zw,yes
+faq_warranty,warranty ye solar pump ndeyi,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye 10% here,synthetic_zw,yes
+faq_payment_deposit,ecocash only,synthetic_zw,yes
+faq_payment_deposit,layby ye 4 months here,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye battery ne inverter here,synthetic_zw,yes
+faq_payment_deposit,can i pay deposit ne swipe here,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye pump here,synthetic_zw,yes
+faq_payment_deposit,bond ne usd here,synthetic_zw,yes
+faq_payment_deposit,layby ye panel here,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye 40% here,synthetic_zw,yes
+faq_payment_deposit,usd ne ecocash here,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye 25% here,synthetic_zw,yes
+faq_payment_deposit,can i pay deposit ne usd here,synthetic_zw,yes
+faq_payment_deposit,pay deposit ne zig here,synthetic_zw,yes
+faq_payment_deposit,can i pay deposit ne bond here,synthetic_zw,yes
+faq_payment_deposit,usd ne swipe here,synthetic_zw,yes
+faq_payment_deposit,layby ye 3 months ne deposit,synthetic_zw,yes
+faq_payment_deposit,can i pay deposit ne transfer,synthetic_zw,yes
+faq_payment_deposit,layby ye 5 months here,synthetic_zw,yes
+faq_payment_deposit,usd ne bank transfer here,synthetic_zw,yes
+faq_payment_deposit,munodira deposit ye farm here,synthetic_zw,yes
+qa_financing,financing ye shop here,synthetic_zw,yes
+qa_financing,mune credit ye farm here,synthetic_zw,yes
+qa_financing,financing ye church here,synthetic_zw,yes
+qa_financing,mune credit ye school here,synthetic_zw,yes
+qa_financing,mune credit ye hotel here,synthetic_zw,yes
+qa_financing,financing ye office here,synthetic_zw,yes
+qa_financing,mune credit ye butchery here,synthetic_zw,yes
+qa_financing,financing ye salon here,synthetic_zw,yes
+qa_financing,mune credit ye 5kva system here,synthetic_zw,yes
+qa_financing,financing ye 10kw system here,synthetic_zw,yes
+qa_financing,mune credit ye battery here,synthetic_zw,yes
+qa_financing,financing ye pump here,synthetic_zw,yes
+qa_financing,mune credit ye shop ne 3 freezers here,synthetic_zw,yes
+maintenance_service,munoita service ye 3kva here,synthetic_zw,yes
+maintenance_service,service ye 8kw system,synthetic_zw,yes
+maintenance_service,munouya kuzo service ku farm here,synthetic_zw,yes
+maintenance_service,service ye clinic here,synthetic_zw,yes
+maintenance_service,munoita service ye school here,synthetic_zw,yes
+maintenance_service,service ye shop ne freezer,synthetic_zw,yes
+maintenance_service,munouya kuzo service ku church here,synthetic_zw,yes
+maintenance_service,service ye salon here,synthetic_zw,yes
+maintenance_service,munoita service ye hotel here,synthetic_zw,yes
+maintenance_service,service ye butchery here,synthetic_zw,yes
+maintenance_service,service ye 12kw system,synthetic_zw,yes
+maintenance_service,service ye 6kva here,synthetic_zw,yes
+maintenance_service,service ye 3 batteries here,synthetic_zw,yes
+maintenance_fault,inverter yangu inorira kana ndikaisa load,synthetic_zw,yes
+maintenance_fault,system yangu haina simba,synthetic_zw,yes
+maintenance_fault,panels haasi kubudisa,synthetic_zw,yes
+maintenance_fault,inverter inodzima nedzima,synthetic_zw,yes
+maintenance_fault,battery haisi kubata charge,synthetic_zw,yes
+maintenance_fault,inverter inopisa zvikuru,synthetic_zw,yes
+maintenance_fault,system yangu inoratidza warning,synthetic_zw,yes
+maintenance_fault,inverter yangu inoratidza red light ne beeping,synthetic_zw,yes
+maintenance_fault,no output from system,synthetic_zw,yes
+maintenance_fault,inverter yangu inodzima kana zesa yauya,synthetic_zw,yes
+maintenance_fault,battery inoratidza full asi haisi kushanda,synthetic_zw,yes
+maintenance_fault,panels haasi kubata mvuri,synthetic_zw,yes
+maintenance_fault,system yangu inonetsa,synthetic_zw,yes
+maintenance_fault,inverter inorira asi haisi kupa power,synthetic_zw,yes
+maintenance_fault,battery haisi kubhadharisa nepanel,synthetic_zw,yes
+maintenance_fault,inverter yangu inoratidza zero,synthetic_zw,yes
+maintenance_fault,system yangu inodzima kana ndikaisa fridge,synthetic_zw,yes
+maintenance_fault,inverter inopisa kana ndikaisa load,synthetic_zw,yes
+maintenance_fault,battery inopera nekukurumidza kana ndikaisa tv,synthetic_zw,yes
+maintenance_fault,system yangu inorira kana zesa yauya,synthetic_zw,yes
+maintenance_fault,inverter yangu haina kushanda,synthetic_zw,yes
+maintenance_fault,battery inoratidza 0%,synthetic_zw,yes
+maintenance_fault,panels haasi kubata chiedza,synthetic_zw,yes
+maintenance_fault,system yangu inodzima kana ndikaisa pump,synthetic_zw,yes
+maintenance_fault,inverter inorira kana ndikaisa pump,synthetic_zw,yes
+maintenance_fault,battery inopisa kana ndikaisa load,synthetic_zw,yes
+maintenance_fault,system yangu inoratidza low battery,synthetic_zw,yes
+maintenance_fault,inverter yangu inodzima mushure me 5 minutes,synthetic_zw,yes
+maintenance_fault,battery haisi kubata charge kana ndikaisa fridge,synthetic_zw,yes
+maintenance_fault,error 56 inverter,synthetic_zw,yes
+maintenance_fault,inverter yakaratidza error e012,synthetic_zw,yes
+maintenance_fault,f56 on deye here,synthetic_zw,yes
+maintenance_fault,e012 on growatt here,synthetic_zw,yes
+maintenance_fault,error code 12,synthetic_zw,yes
+maintenance_fault,inverter inoratidza 56,synthetic_zw,yes
+maintenance_fault,f56 ne beeping,synthetic_zw,yes
+maintenance_fault,e012 ne red light,synthetic_zw,yes
+maintenance_fault,error 56 chii,synthetic_zw,yes
+maintenance_fault,ndibatsire error 12,synthetic_zw,yes
+maintenance_fault,f56 after zesa,synthetic_zw,yes
+maintenance_fault,e012 after zesa,synthetic_zw,yes
+maintenance_fault,inverter inoratidza f56 kana ndikaisa load,synthetic_zw,yes
+maintenance_fault,error 56 on 5kw,synthetic_zw,yes
+maintenance_fault,f56 on 3kw,synthetic_zw,yes
+maintenance_fault,e012 on 8kw,synthetic_zw,yes
+maintenance_fault,f56 explanation,synthetic_zw,yes
+maintenance_fault,error 56 kana ndikaisa pump,synthetic_zw,yes
+maintenance_fault,e012 kana ndikaisa fridge,synthetic_zw,yes
+maintenance_fault,inverter inoratidza f56 after install,synthetic_zw,yes
+maintenance_fault,error 56 on victron,synthetic_zw,yes
+maintenance_fault,e012 on kodak,synthetic_zw,yes
+maintenance_fault,error 56 on sunsynk,synthetic_zw,yes
+faq_batteries,lithium inogona ku add here,synthetic_zw,yes
+faq_batteries,gel inoda water here,synthetic_zw,yes
+faq_batteries,mune lithium ye 15kwh here,synthetic_zw,yes
+faq_batteries,battery inogona ku parallel ne gel here,synthetic_zw,yes
+faq_batteries,mune battery ye 250ah here,synthetic_zw,yes
+faq_batteries,battery inogona kushanda ne inverter ipi,synthetic_zw,yes
+faq_batteries,battery inogara makore mangani,synthetic_zw,yes
+faq_batteries,battery inoda maintenance here,synthetic_zw,yes
+faq_batteries,battery inogona ku discharge 100% here,synthetic_zw,yes
+faq_batteries,battery inoratidza warning here,synthetic_zw,yes
+faq_batteries,battery inogona kushanda ne pump here,synthetic_zw,yes
+faq_batteries,battery inoda charge nguva yakadii,synthetic_zw,yes
+faq_batteries,battery inogona kubata fridge here,synthetic_zw,yes
+faq_batteries,battery inoda charge ne generator here,synthetic_zw,yes
+faq_batteries,battery inogona kubata pump here,synthetic_zw,yes
+faq_batteries,battery inoda charge ne zesa here,synthetic_zw,yes
+faq_batteries,battery inoda charge ne solar here,synthetic_zw,yes
+qa_panel_count,mune panel ye 400w here,synthetic_zw,yes
+qa_panel_count,panel inogona kubata mvura here,synthetic_zw,yes
+qa_panel_count,mune panels e longi here,synthetic_zw,yes
+qa_panel_count,panel inoda sun yakawanda here,synthetic_zw,yes
+qa_panel_count,panel inogona kubata dust here,synthetic_zw,yes
+qa_panel_count,mune panels e ja solar here,synthetic_zw,yes
+qa_panel_count,mune panel ye 500w here,synthetic_zw,yes
+qa_panel_count,panel inoda cleaning nguva yakadii,synthetic_zw,yes
+qa_panel_count,mune panels e qcells here,synthetic_zw,yes
+qa_panel_count,panel inogona kubata heat here,synthetic_zw,yes
+qa_panel_count,panel inogona kubata hail here,synthetic_zw,yes
+qa_panel_count,mune panels e jinko ne canadian here,synthetic_zw,yes
+qa_panel_count,mune panel ye 540w here,synthetic_zw,yes
+faq_inverter_types,mune inverter ye 5kw ne wifi here,synthetic_zw,yes
+faq_inverter_types,inverter inogona kubata pump ne fridge here,synthetic_zw,yes
+faq_inverter_types,mune inverter ye 8kw ne generator port here,synthetic_zw,yes
+faq_inverter_types,inverter inogona ku parallel ne imwe here,synthetic_zw,yes
+faq_inverter_types,mune inverter ye 10kw ne wifi here,synthetic_zw,yes
+faq_inverter_types,inverter inogona kubata welding ne pump here,synthetic_zw,yes
+faq_inverter_types,inverter inogona kubata fridge ne freezer here,synthetic_zw,yes
+faq_inverter_types,mune inverter ye 3kw ne mppt here,synthetic_zw,yes
+faq_inverter_types,inverter inogona kubata borehole ne salon here,synthetic_zw,yes
+faq_inverter_types,inverter inogona kubata clinic ne fridge here,synthetic_zw,yes
+qa_grid_feed,mune net metering ye farm here,synthetic_zw,yes
+qa_grid_feed,zera inoda chii kuti ndiise solar,synthetic_zw,yes
+qa_grid_feed,mune net metering ye shop here,synthetic_zw,yes
+qa_grid_feed,mune net metering ye school here,synthetic_zw,yes
+qa_grid_feed,zera license inobhadharwa here,synthetic_zw,yes
+qa_grid_feed,zesa inobvuma solar ye home here,synthetic_zw,yes
+qa_grid_feed,zera application inotora nguva yakadii,synthetic_zw,yes
+qa_grid_feed,zera inoda meter here,synthetic_zw,yes
+qa_grid_feed,zera inoda paperwork here,synthetic_zw,yes
+qa_grid_feed,zera inoda inspection here,synthetic_zw,yes
+qa_grid_feed,mune net metering ye 5kw here,synthetic_zw,yes
+qa_grid_feed,zera inoda fee here,synthetic_zw,yes
+qa_grid_feed,mune net metering ye 10kw here,synthetic_zw,yes
+qa_grid_feed,zera inoda form here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 3hp here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 4hp here,synthetic_zw,yes
+faq_borehole_pumps,pump inoda battery here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 0.75hp here,synthetic_zw,yes
+faq_borehole_pumps,solar pump inogona kubata mvura yakawanda here,synthetic_zw,yes
+faq_borehole_pumps,pump inogona kubata irrigation here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 1hp ne panels here,synthetic_zw,yes
+faq_borehole_pumps,pump inogona kubata farm here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 2hp ne 8 panels here,synthetic_zw,yes
+faq_borehole_pumps,pump inogona kubata garden here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 1.5hp ne battery here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 0.5hp ne panels here,synthetic_zw,yes
+faq_borehole_pumps,mune pump ye 3hp ne 12 panels here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 400l here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kushanda ne booster here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 500l here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kubatana ne electric here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 50l here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 200l ne tube here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 150l ne flat panel here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kubatana ne timer here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 100l ne tube here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kubatana ne geyser yekare here,synthetic_zw,yes
+faq_solar_geysers,mune geyser ye 300l ne flat panel here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kubatana ne inverter here,synthetic_zw,yes
+faq_solar_geysers,geyser inogona kubatana ne zesa here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye hotel,synthetic_zw,yes
+site_visit,munouya kuzoona school here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye clinic,synthetic_zw,yes
+site_visit,munouya kuzoona church here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye bar,synthetic_zw,yes
+site_visit,munouya kuzoona butchery here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye salon,synthetic_zw,yes
+site_visit,munouya kuzoona tuckshop here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye office,synthetic_zw,yes
+site_visit,munouya kuzoona farm here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye 5kva,synthetic_zw,yes
+site_visit,munouya kuzoona 10kw here,synthetic_zw,yes
+site_visit,ndirikuda site visit ye pump,synthetic_zw,yes
+site_visit,ndirikuda site visit ye geyser,synthetic_zw,yes
+contact_info,mune branch mu chinhoyi here,synthetic_zw,yes
+contact_info,munovhura saturday masikati here,synthetic_zw,yes
+contact_info,mune branch mu kwekwe here,synthetic_zw,yes
+contact_info,munovhura sunday masikati here,synthetic_zw,yes
+contact_info,mune branch mu marondera here,synthetic_zw,yes
+contact_info,munovhura public holidays here,synthetic_zw,yes
+contact_info,mune branch mu bindura here,synthetic_zw,yes
+contact_info,munovhura easter here,synthetic_zw,yes
+contact_info,mune branch mu vic falls here,synthetic_zw,yes
+contact_info,munovhura christmas here,synthetic_zw,yes
+contact_info,mune branch mu chitungwiza here,synthetic_zw,yes
+contact_info,munovhura new year here,synthetic_zw,yes
+contact_info,mune branch mu norton here,synthetic_zw,yes
+contact_info,munovhura good friday here,synthetic_zw,yes
+contact_info,mune branch mu ruwa here,synthetic_zw,yes
+contact_info,munovhura heroes day here,synthetic_zw,yes
+contact_info,mune branch mu epworth here,synthetic_zw,yes
+contact_info,munovhura early morning here,synthetic_zw,yes
+contact_info,munovhura late night here,synthetic_zw,yes
+contact_info,munovhura lunch here,synthetic_zw,yes
+complaint,ndakabhadhara asi hapana kuwana,synthetic_zw,yes
+complaint,inverter yakaoma mushure mevhiki,synthetic_zw,yes
+complaint,battery inopera mushure mezuva rimwe,synthetic_zw,yes
+complaint,makati muchauya kuzo install,synthetic_zw,yes
+complaint,ndakabhadhara asi system haina kuuya,synthetic_zw,yes
+complaint,inverter yakafa mushure mevhiki rimwe,synthetic_zw,yes
+complaint,battery haina kupera mushure mekunge maise,synthetic_zw,yes
+complaint,installation yenyu yakaoma,synthetic_zw,yes
+complaint,hamusi kupindura ma calls,synthetic_zw,yes
+complaint,ndakabhadhara asi hapana receipt,synthetic_zw,yes
+complaint,inverter inorira mushure mekunge ndabhadhara,synthetic_zw,yes
+complaint,battery inopera mushure mevhiki,synthetic_zw,yes
+complaint,hamusi kuuya kuzo tarisa,synthetic_zw,yes
+complaint,ndakabhadhara asi hapana delivery,synthetic_zw,yes
+complaint,inverter yakafa mushure mekunge maise,synthetic_zw,yes
+complaint,system yenyu haina kushanda mushure me install,synthetic_zw,yes
+complaint,makati muchauya kuzo service,synthetic_zw,yes
+complaint,ndakabhadhara asi hapana invoice,synthetic_zw,yes
+complaint,inverter inorira mushure mevhiki,synthetic_zw,yes
+complaint,battery haina kupera mushure me install,synthetic_zw,yes
+complaint,hamusi kupindura ma texts,synthetic_zw,yes
+complaint,ndakabhadhara asi hapana warranty,synthetic_zw,yes
+greeting,hie mhoroi,synthetic_zw,yes
+greeting,morning team,synthetic_zw,yes
+greeting,mangwanani team,synthetic_zw,yes
+greeting,afternoon team,synthetic_zw,yes
+greeting,masikati team,synthetic_zw,yes
+greeting,evening team,synthetic_zw,yes
+greeting,manheru team,synthetic_zw,yes
+greeting,hie sales,synthetic_zw,yes
+greeting,mhoro sales,synthetic_zw,yes
+greeting,hello support,synthetic_zw,yes
+greeting,hie boss,synthetic_zw,yes
+greeting,hello sir,synthetic_zw,yes
+greeting,hello madam,synthetic_zw,yes
+greeting,hie guys,synthetic_zw,yes
+greeting,mhoroi guys,synthetic_zw,yes
+thanks,ndatenda zvenyu chaizvo,synthetic_zw,yes
+thanks,thanks zvenyu,synthetic_zw,yes
+thanks,ndatenda nequote yenyu,synthetic_zw,yes
+thanks,ndatenda neprice list,synthetic_zw,yes
+thanks,thanks neprice list,synthetic_zw,yes
+thanks,ndatenda neinfo yenyu,synthetic_zw,yes
+thanks,ndatenda nekupindura,synthetic_zw,yes
+thanks,ndatenda nekuuya,synthetic_zw,yes
+thanks,ndatenda neku install,synthetic_zw,yes
+thanks,ndatenda nekubatsira,synthetic_zw,yes
+thanks,ndatenda nekufona,synthetic_zw,yes
+thanks,ndatenda nekutumira,synthetic_zw,yes
+talk_to_human,ndirikuda munhu wekubatsira,synthetic_zw,yes
+talk_to_human,ndirikuda kutaura ne sales,synthetic_zw,yes
+talk_to_human,ndirikuda kutaura ne support,synthetic_zw,yes
+talk_to_human,ndirikuda kutaura ne admin,synthetic_zw,yes
+talk_to_human,ndirikuda kutaura ne manager,synthetic_zw,yes
+talk_to_human,ndirikuda munhu wekufona,synthetic_zw,yes
+off_topic,mune ma kettle here,synthetic_zw,yes
+off_topic,mune ma heater here,synthetic_zw,yes
+off_topic,mune ma fan here,synthetic_zw,yes
+off_topic,mune ma iron here,synthetic_zw,yes
+off_topic,mune ma microwave here,synthetic_zw,yes
+off_topic,mune ma washing machine here,synthetic_zw,yes
+off_topic,mune ma dishwasher here,synthetic_zw,yes
+off_topic,mune ma vacuum here,synthetic_zw,yes
+off_topic,mune ma blender here,synthetic_zw,yes
+off_topic,mune ma radio here,synthetic_zw,yes
+off_topic,mune ma speaker here,synthetic_zw,yes
+off_topic,mune ma laptop here,synthetic_zw,yes
+off_topic,mune ma phone here,synthetic_zw,yes
+off_topic,mune ma tyre here,synthetic_zw,yes
+off_topic,mune ma bicycle here,synthetic_zw,yes
+off_topic,mune ma motorbike here,synthetic_zw,yes
+off_topic,mune ma truck here,synthetic_zw,yes
+off_topic,mune ma tractor here,synthetic_zw,yes
+off_topic,mune ma plough here,synthetic_zw,yes
+off_topic,mune ma water tank here,synthetic_zw,yes
+off_topic,mune ma pump ye swimming pool here,synthetic_zw,yes
+off_topic,mune ma decoder here,synthetic_zw,yes
+off_topic,mune ma wifi router here,synthetic_zw,yes
+buy_system,ready to order,synthetic_zw,yes
+buy_system,book me in,synthetic_zw,yes
+buy_system,whats next,synthetic_zw,yes
+buy_system,lets do it,synthetic_zw,yes
+buy_system,reserve mine pls,synthetic_zw,yes
+buy_system,ndoda kutenga nhasi,synthetic_zw,yes
+buy_system,ndipeiwo maitiro,synthetic_zw,yes
+buy_system,ndakuda 5kva,synthetic_zw,yes
+buy_system,ndirikuda kutenga,synthetic_zw,yes
+buy_system,"how much to start, ndobhadhara sei",synthetic_zw,yes
+buy_system,"im ready, ndipei invoice",synthetic_zw,yes
+buy_system,ngifuna ukuthenga,synthetic_zw,yes
+buy_system,"hi i saw the 5kva promo, want to take it",synthetic_zw,yes
+buy_system,"i have usd 1200 cash, what can that get me",synthetic_zw,yes
+buy_system,can i reserve the 10kw for saturday pickup,synthetic_zw,yes
+buy_system,send me the steps to buy the 5kva inverter set,synthetic_zw,yes
+buy_system,how do i lock the price before month end,synthetic_zw,yes
+buy_system,i want the same system my neighbour bought last month,synthetic_zw,yes
+buy_system,"im ready with the deposit, where do i send ecocash",synthetic_zw,yes
+buy_system,"we spoke on the phone about the 6kva, ready to proceed",synthetic_zw,yes
+buy_system,can i buy panels today and inverter next month,synthetic_zw,yes
+buy_system,"school board approved, we want the 15kw",synthetic_zw,yes
+buy_system,"ndakafunga zvakwana, ndoda 5kva ne 2 batteries",synthetic_zw,yes
+buy_system,"ndine mari yekutanga, ndoda system yeku shop",synthetic_zw,yes
+buy_system,"ndakwanisa kuunganidza, ndoda kutanga ne 3kva",synthetic_zw,yes
+buy_system,ndoda kutenga system yeku clinic yedu mu bindura,synthetic_zw,yes
+buy_system,"ndapera kufunga, ndoda 5kw ne 8 panels",synthetic_zw,yes
+buy_system,"mudzimai wangu abvuma, tava kutenga 3kva svondo rino",synthetic_zw,yes
+buy_system,"ndinoda kutenga nhasi, ndipeiwo invoice",synthetic_zw,yes
+buy_system,"ndapera kufunga, lets do the 8kw nema panels",synthetic_zw,yes
+buy_system,"shop yangu iri kwekwe, ndoda 5kva yeku freezers",synthetic_zw,yes
+buy_system,"ndine usd 1800, ndoda system yeku house ne borehole",synthetic_zw,yes
+buy_system,"mhuri yangu iri mu mbare, ndoda small system ye lights",synthetic_zw,yes
+buy_system,"quote yenyu ndayiona, ndoda kuenda mberi ne 3kva",synthetic_zw,yes
+buy_system,ngifuna i-5kva inverter,synthetic_zw,yes
+buy_system,ngifuna ukuthenga i-3kva system,synthetic_zw,yes
+buy_system,"Hi. I have been following your page for a while now. I have 4 kids and the load shedding is affecting their studies, so I finally decided to buy a 5kva system with 8 panels and one lithium battery. What is the first step?",synthetic_zw,yes
+buy_system,"Good morning. My shop in Chitungwiza sells frozen chicken and I lose stock every time ZESA goes. I want to buy a system that can run 2 freezers and a fridge plus lights. I have USD 2,500 saved. Can we start?",synthetic_zw,yes
+buy_system,I am a farmer in Mazowe and diesel for the generator is now too expensive. I want to buy a solar borehole pump and maybe panels for the house later. I have the money ready but I want to do it properly. Who do I talk to?,synthetic_zw,yes
+buy_system,"We are a small church in Highfield. We have a keyboard, speakers and lights and the ZESA bill is killing us. The elders agreed we should buy solar. What do you recommend and how soon can you install after we pay?",synthetic_zw,yes
+buy_system,Im a nurse at a clinic in Bindura and we need reliable power for the vaccine fridge. We got approval to buy the 3kva system with 6 panels. Please tell me what documents you need from us to start.,synthetic_zw,yes
+buy_system,"Hi team. I run a salon in Mutare and my clients complain when the dryer stops mid-session. Ive saved enough for the 5kva with lithium. Im ready to buy but I want installation done on a Sunday, is that possible?",synthetic_zw,yes
+buy_system,We are building a new house in Glen View and want solar from day one. Roof is IBR. We want a 10kw system that can run everything including the geyser. Can you send a quotation and book a site visit?,synthetic_zw,yes
+buy_system,Saw the ad on Facebook last night. I want the 5kva kit that was on special. I stay in Epworth and I can pay cash USD today if the price is still valid. Please confirm before I come.,synthetic_zw,yes
+buy_system,Good afternoon. I bought a small 1kva inverter from you last year but its too small for the house. This time I want to buy the 5kva hybrid with 6 panels and 1 lithium battery. I will keep the small one for my gate lights.,synthetic_zw,yes
+buy_system,"I have been saving since January and I now have USD 1,800. I need a system for a 3 bedroom house in Chinhoyi with a borehole. I am ready to buy but I want your honest advice on what fits the budget.",synthetic_zw,yes
+buy_system,We are a clinic in Masvingo and the council approved the solar budget. We want to buy the 6kva system with 10 panels and 2 batteries for the maternity wing. Please send us a formal quotation addressed to the clinic so we can process payment.,synthetic_zw,yes
+buy_system,Hi. I want to buy a solar geyser and a 3kva system at the same time for my house in Waterfalls. Can we do a package deal? I can pay by transfer.,synthetic_zw,yes
+buy_system,"Mhoroi. Ndiri kufunga kutenga system yekumba kwedu mu Budiriro. Tine fridge, tv, freezer uye ma lights. Handichadi kunetsana neZESA. Ndingade kuziva kuti ndotanga neiko kana ndoda kutenga nhasi.",synthetic_zw,yes
+buy_system,"Ndatenda nequote yamakanditumira svondo rakapera. Ndapera kufunga, ndoda kuenda mberi ne 5kva iyoyo. Ndiudzei kuti ndinobhadhara sei kuti musunge system yangu.",synthetic_zw,yes
+buy_system,"Ndine bhora rekutanga. Ndirikuda kutenga 3kva inverter ne 4 panels chete, battery ndichawedzera gare gare. Ndingaitirewo invoice nhasi here kuti ndibhadhare mangwana?",synthetic_zw,yes
+buy_system,Mhoro. Ndiri muchengeti wechikoro muMarondera. Chikoro chabvuma kutenga solar yeku office ne ma computers. Tinoda 6kva system. Ndingada kuti muite site visit pamberi pekutenga.,synthetic_zw,yes
+buy_system,Mhoroi team. Takapedza kuvaka imba muNorton uye tave kuda solar. Tine vana vadiki uye magetsi anongodzima. Tinoda 5kva ne 8 panels ne battery imwe. Ndiudzei kuti maitiro ekutenga ndeapi.,synthetic_zw,yes
+buy_system,"Ndakauya kuzoona ma inverter svondo rakapera, ndoda iyo 5kva Deye. Ndakwanisa kuunganidza mari yese. Ndiudzei kuti ndouya riini kuzotora kana muchi deliver.",synthetic_zw,yes
+buy_system,"Ndirikuda kutenga system yeku imba yevabereki vangu kumaruwa. Havana magetsi eZESA zvachose. Vanoda zvishoma chete, ma lights ne radio. Ndiudzei kuti system diki yandingaite ndeyipi.",synthetic_zw,yes
+buy_system,I am moving into my new house in Marondera next month and I want everything ready before then. Ndoda 8kw system ne panels ne two batteries. What do I need to do to start the order and how long before it's installed?,synthetic_zw,yes
+buy_system,My wife said enough after last week's 3 day outage. We want the 8kw hybrid with 2 batteries and 12 panels. Ndaona price paWhatsApp status yenyu. Can I come pay deposit tomorrow morning?,synthetic_zw,yes
+buy_system,"Tine butchery muGweru. We have 2 display freezers, 1 deep freezer and lights. ZESA is killing our margins. Please advise and send quote. Tingabhadhara 50% deposit and the rest on installation.",synthetic_zw,yes
+buy_system,I run a school in Bindura and the parents committee approved a budget. Tinoda 10kw system ye ma computers ne lights. Can you send a quotation addressed to the school so we can start the process?,synthetic_zw,yes
+buy_system,"Hi, im the one who called about the salon in masvingo. Ndapedza kufunga and im ready to buy the 5kva with lithium. Ndiudzei kuti ndinotanga neiko - do I pay deposit first or do you come for site visit first?",synthetic_zw,yes
+buy_system,ndoda 8kw,synthetic_zw,yes
+buy_system,order please,synthetic_zw,yes
+buy_system,im buying,synthetic_zw,yes
+buy_system,pencil me in,synthetic_zw,yes
+buy_system,ngifuna i-8kw,synthetic_zw,yes
+buy_system,sign me up,synthetic_zw,yes
+buy_system,ndoda 5kw,synthetic_zw,yes
+buy_system,put me down,synthetic_zw,yes
+buy_system,reserve mine,synthetic_zw,yes
+buy_system,ndotenga nhasi,synthetic_zw,yes
+buy_system,take my money,synthetic_zw,yes
+buy_system,im ready to pay the deposit today,synthetic_zw,yes
+buy_system,can i come pick up the inverter tomorrow,synthetic_zw,yes
+buy_system,how do i start the order process,synthetic_zw,yes
+buy_system,i want to pay and close this today,synthetic_zw,yes
+buy_system,i want to buy the same as my neighbour,synthetic_zw,yes
+buy_system,"ndine mari, ndoda 3kva ne 4 panels",synthetic_zw,yes
+buy_system,can i pay deposit and collect next week,synthetic_zw,yes
+buy_system,"im buying the 10kw, send me the invoice",synthetic_zw,yes
+buy_system,"ndoda system yeku shop, ndipei quote",synthetic_zw,yes
+buy_system,ready to proceed with the 6kva,synthetic_zw,yes
+buy_system,whats the process to buy,synthetic_zw,yes
+buy_system,"ndoda 5kva, ndipeiwo maitiro",synthetic_zw,yes
+buy_system,i want to order the full 8kw kit,synthetic_zw,yes
+buy_system,ngifuna ukuthenga i-5kva namuhla,synthetic_zw,yes
+buy_system,"i have the cash, ready to order",synthetic_zw,yes
+buy_system,im ready to buy the solar geyser,synthetic_zw,yes
+buy_system,can we do the deal today,synthetic_zw,yes
+buy_system,ndoda kutenga inverter ne battery chete,synthetic_zw,yes
+buy_system,"i want to buy panels first, inverter later",synthetic_zw,yes
+buy_system,ndirikuda kutenga 8 panels chete,synthetic_zw,yes
+buy_system,lets close the deal today,synthetic_zw,yes
+buy_system,ndoda 3kva yeku imba,synthetic_zw,yes
+buy_system,i want to order the 12kw,synthetic_zw,yes
+buy_system,"Hi. I run a hardware shop in Kwekwe and I need a system for lights, a fridge and a computer. I want to buy the 6kva with 8 panels. I can pay cash USD. Can I get a discount if I pay the full amount upfront?",synthetic_zw,yes
+buy_system,Good day. We are a funeral parlour in Bulawayo and we need reliable power for our fridges. I want to buy a 10kw system with 12 panels and 2 batteries. Please send me a quotation and let me know the payment terms.,synthetic_zw,yes
+buy_system,"I am a farmer in Gokwe and I need solar for my borehole pump. I already have a 1.5hp pump, can you supply the solar panels and controller only? I want to buy everything this week.",synthetic_zw,yes
+buy_system,My wife runs a salon in Chitungwiza and she needs a system for the dryer and clippers. I want to buy the 5kva with lithium. I can pay half deposit and the rest after installation. Is that possible?,synthetic_zw,yes
+buy_system,I am building a new house in Victoria Falls and I want solar from the start. The roof is IBR and faces east. I want a 10kw system with 16 panels and 2 batteries. Can you do the whole installation including wiring?,synthetic_zw,yes
+buy_system,We are a small clinic in Mutare and we need power for the vaccine fridge. I want to buy the 3kva system with 6 panels. The clinic board has approved the budget. Please send a quotation on the clinic letterhead.,synthetic_zw,yes
+buy_system,Hi. I saw your advert on WhatsApp status. I want to buy the 5kva kit that was on promotion. I live in Highfield and I can pay cash USD. Is the price still valid?,synthetic_zw,yes
+buy_system,"I am a builder in Epworth and I want to buy a 3kva system for my own house. I have 4 panels already, can you supply the inverter and battery only?",synthetic_zw,yes
+buy_system,Good afternoon. We are a church in Budiriro and we need solar for our sound system and lights. I want to buy the 5kva system with 8 panels and 1 battery. Can you install on a Saturday?,synthetic_zw,yes
+buy_system,Hi team. I am moving to a new house in Glen View and the previous owner took the solar. I want to buy a new 8kw system with panels and batteries. Can you do a site visit before I decide?,synthetic_zw,yes
+buy_system,I want to buy a solar geyser and a 5kva system for my house in Waterfalls. Can you give me a package price?,synthetic_zw,yes
+buy_system,"Mhoroi. Ndiri kufunga kutenga system yeku imba yangu muMbare. Tine fridge, tv ne ma lights. Ndinoda kuziva kuti ndotanga neiko kana ndine USD 900 chete.",synthetic_zw,yes
+buy_system,I have been following your page for months and I finally have the money. I want to buy the 10kw system for my new house in Borrowdale. I have 16 panels in mind and 2 lithium batteries. Can we meet this week to finalize?,synthetic_zw,yes
+order_status,any update,synthetic_zw,yes
+order_status,still waiting,synthetic_zw,yes
+order_status,order yangu iripi,synthetic_zw,yes
+order_status,where's my order,synthetic_zw,yes
+order_status,ngisalindile,synthetic_zw,yes
+order_status,delivery yangu?,synthetic_zw,yes
+order_status,no delivery yet,synthetic_zw,yes
+order_status,zviripi,synthetic_zw,yes
+order_status,kudii neorder yangu,synthetic_zw,yes
+order_status,nothing yet,synthetic_zw,yes
+order_status,any news,synthetic_zw,yes
+order_status,update pls,synthetic_zw,yes
+order_status,order status,synthetic_zw,yes
+order_status,"i paid on monday, where are my panels",synthetic_zw,yes
+order_status,ndakabhadhara svondo rakapera asi hapana chauya,synthetic_zw,yes
+order_status,order yangu ye 5kva yasvika here,synthetic_zw,yes
+order_status,when will my inverter arrive in gweru,synthetic_zw,yes
+order_status,"invoice inv-2041 yakabhadharwa, delivery riini",synthetic_zw,yes
+order_status,munaise panels riini kumba kwangu,synthetic_zw,yes
+order_status,"i was told friday, its now sunday",synthetic_zw,yes
+order_status,"ndakatumira ecocash nhasi, confirm receipt",synthetic_zw,yes
+order_status,installation booking yangu iri riini,synthetic_zw,yes
+order_status,do you have my order in the system,synthetic_zw,yes
+order_status,battery yangu yasvika here,synthetic_zw,yes
+order_status,"ndakabhadhara deposit, balance chauya here",synthetic_zw,yes
+order_status,yini isimo se-oda yami,synthetic_zw,yes
+order_status,my geyser was supposed to come tuesday,synthetic_zw,yes
+order_status,"ndakatumira invoice inv-2041, mune confirmation here",synthetic_zw,yes
+order_status,delivery ku chinhoyi yasvika here,synthetic_zw,yes
+order_status,installation team inouya riini,synthetic_zw,yes
+order_status,"order yangu ndeyeku mutare, iripi",synthetic_zw,yes
+order_status,"i paid usd 850, is my order confirmed",synthetic_zw,yes
+order_status,"ndakabhadhara nezig, order yangu iripi",synthetic_zw,yes
+order_status,panels dzangu dzakasvika ku depot here,synthetic_zw,yes
+order_status,can you confirm the installation date,synthetic_zw,yes
+order_status,i ordered 8 panels last week,synthetic_zw,yes
+order_status,my wife said no delivery came today,synthetic_zw,yes
+order_status,"ndakaita order ye 10kw, iripiko",synthetic_zw,yes
+order_status,"payment yakapera, system yangu iripi",synthetic_zw,yes
+order_status,you promised to call me back yesterday,synthetic_zw,yes
+order_status,"invoice yakabhadharwa, ndoda date yeku install",synthetic_zw,yes
+order_status,"order ye 3kva yakabhadharwa, chii chirikuitika",synthetic_zw,yes
+order_status,the delivery guy hasn't called,synthetic_zw,yes
+order_status,"ndakatumira mari yese, ndoda confirmation",synthetic_zw,yes
+order_status,has the truck left harare,synthetic_zw,yes
+order_status,Hi. I paid the full amount for the 5kva system on Friday afternoon. My reference is INV-2041. It's now Tuesday and I haven't received any message about delivery. Can you check and tell me exactly when the panels and inverter will arrive in Chitungwiza?,synthetic_zw,yes
+order_status,Mhoroi. Ndakabhadhara deposit ye 5kva system musi weChipiri. Nhasi ndiri kutsvaga kuziva kuti ma panels akabuda here muwarehouse. Ndirikuda kunzwisisa kuti delivery ichasvika riini kuGweru nekuti ndakasiya basa kuzomira.,synthetic_zw,yes
+order_status,Good afternoon. I ordered the 3kva with 4 panels on the 15th and I was told installation would be within 5 days. We are now on day 9. Please tell me honestly if there is a delay or if I should look elsewhere. My shop is losing money every day.,synthetic_zw,yes
+order_status,I sent the EcoCash for the 8kw inverter last Thursday and I have the confirmation SMS. Nobody has called me. I need to know if the money was received and when the unit will be delivered to my farm in Mazowe. Please respond today.,synthetic_zw,yes
+order_status,We are a clinic in Bindura and we paid the deposit for the vaccine fridge system on the 2nd. Our board is asking for an update every day. Can you send me a written confirmation of the delivery date so I can forward it to them?,synthetic_zw,yes
+order_status,Ndakabhadhara mari yese ye 10kw system svondo rakapera. Ndaona kuti ma panels akasvika ku depot yenyu muHarare asi hapana munhu akandifonera. Ndiudzei kuti ndinouya kuzotora riini kana muchi deliver kumba.,synthetic_zw,yes
+order_status,"Hello. My order number is INV-2047 for a 6kva system with 8 panels and one lithium battery. I paid USD 2,100 cash at your shop in Harare on Saturday. When can your team come for installation? I took leave from work for this week.",synthetic_zw,yes
+order_status,Mhoro. Takabhadhara invoice ye school system musi weMuvhuro. Chikoro chinoda kuona kuti system yasvika here kuti varidzi vechikoro vazive. Mungatiudzei kuti installation ichaitika riini muMarondera?,synthetic_zw,yes
+order_status,I ordered the solar geyser on the 8th and the sales guy said it would be delivered in 3 days. It's now the 19th. Can you please check if there is a problem with the order or if it was even placed? I have the receipt.,synthetic_zw,yes
+order_status,My husband paid for the 5kva system on Friday at the shop. He sent me a photo of the invoice INV-2053. The panels have not arrived at our house in Glen View and no one is answering the shop phone. Please advise.,synthetic_zw,yes
+order_status,Ndatanga kufona nhasi mangwanani asi hapana ari kupindura. Ndine order ye 8kva system ne 10 panels yandakabhadhara svondo rakapera. Ndiudzei kuti chii chirikuitika nekuti ndakaudzwa kuti delivery inotora masiku matatu chete.,synthetic_zw,yes
+order_status,Good morning. I am following up on my installation booking for the 10kw system in Waterfalls. The electrician said he would come last Wednesday but didn't show. I took two days off work. When is the actual confirmed date?,synthetic_zw,yes
+order_status,Ndakabhadhara deposit yeborehole pump system musi weSvondo. Ndirikuda kuziva kuti pump necontroller zvasvika here muHarare. Ndinoda kuisa pump before mwaka wekurima unotanga. Ndiudzei nguva chaiyo.,synthetic_zw,yes
+order_status,I was told by the sales lady that my 5kva inverter would be delivered to Kwekwe by Friday. It's Monday and the kombi driver says he has not received anything for me. Can you confirm dispatch?,synthetic_zw,yes
+order_status,Mhoroi. Ndakabhadhara invoice INV-2061 yema panel 8 ne inverter. Ndinoda kuziva kuti installation ichaitwa riini nekuti ndine vana vadiki uye magetsi ari kunetsa. Ndipeiwo date chaiyo.,synthetic_zw,yes
+order_status,I ordered the 3kva system for my mother's house in Epworth on the 5th. She says no one has called or visited. I paid USD 650 deposit. Please confirm whether the order is still active or if I should cancel and request refund.,synthetic_zw,yes
+order_status,Afternoon. We are a church in Budiriro and we paid the full amount for the sound system solar on the 12th. Our Sunday service is next week. Can you confirm that installation will happen before then? We need a firm answer.,synthetic_zw,yes
+order_status,Ndakatumira mari ye 5kva ne Ecocash musi weChipiri. Ndaona kuti mari yabuda asi hapana confirmation yakauya. Ndirikuda kuti mundiudze kana order yangu yakasungwa kana kuti ndiri kutadza nguva.,synthetic_zw,yes
+order_status,Hi. You told me my panels would be at the shop by Tuesday for pickup. I drove from Gweru on Wednesday and was told to come back next week. I am not happy. Can someone check what is actually happening with INV-2072?,synthetic_zw,yes
+order_status,"My installation was supposed to happen last weekend. The technician called to say he was sick, which I understand, but nobody has rescheduled. I have already paid 80% of the invoice. Please give me a new date today.",synthetic_zw,yes
+order_status,Mhoro. Ndatumira mari yeku 6kva system ne bank transfer musi weMuvhuro. Ndine proof yekubhadhara. Ndirikuda kuziva kana system yasvika ku shop uye kuti installation team inouya riini kuChinhoyi.,synthetic_zw,yes
+order_status,Ordered 10 panels and 1 lithium battery on the 1st. Paid in full via swipe. It's now the 14th and nothing. I don't want to be rude but I'm getting worried. Can you please check INV-2078?,synthetic_zw,yes
+order_status,Good evening. I am a farmer in Gokwe and I ordered a solar borehole pump three weeks ago. My whole planting season depends on this pump. Can you tell me honestly if it has been dispatched? I need to plan.,synthetic_zw,yes
+order_status,Ndakabhadhara deposit ye 8kw system ne two batteries. Salesman said site visit would be Saturday. Saturday came and went. Ndingade kuziva kuti ndiani ari kuona nyaya yangu kana kuti ndipeiwe mumwe munhu wekutaura naye.,synthetic_zw,yes
+order_status,"I was at your shop on Monday to collect the 200ah battery I ordered. The lady said come back Wednesday. I came Wednesday, still nothing. Now it's Friday. Can you please tell me if the battery is in the country or still on order?",synthetic_zw,yes
+order_status,Hi. My invoice is INV-2085 for a 5kva system with 6 panels and 1 battery. I paid the balance on the 10th. My children are writing exams and we need power. Please confirm when installation will happen.,synthetic_zw,yes
+order_status,Mhoroi team. Ndaona kuti delivery yangu ye 3kva system yakabhadharwa musi weChishanu. Nhasi ndiri kutsvaga kuziva kuti chii chiri kumisa. Ndirikuda kuti muitewo confirmation message kana muchi deliver.,synthetic_zw,yes
+order_status,We are a small school in Mutare. We paid for the 8kw system two weeks ago. Term is starting on Monday and the headmaster is asking for an update every day. Can you tell me exactly when the system will be installed?,synthetic_zw,yes
+order_status,I am very frustrated. I paid for the 5kva on the 3rd. I called on the 6th and was told 3 days. I called on the 10th and was told 3 more days. It's the 20th. Can a manager please tell me what is going on with my order?,synthetic_zw,yes
+order_status,Ndakatumira deposit ye 10kw system musi weSvondo. Munaise site visit riini? Ndinoda kuti muitewo invoice yekupedzisira kuti ndibhadhare balance before installation. Ndiudzei kuti chirongwa chakamira sei.,synthetic_zw,yes
+order_status,Hello. My wife paid USD 300 deposit for the 3kva system on the 7th. She has the receipt but no invoice. We are not sure if the order went through. Can you check and send me a proper invoice with a delivery date?,synthetic_zw,yes
+order_status,Good morning. I want to check the status of my installation for the 5kva in Chitungwiza. I was told last Tuesday that the team would come within 48 hours. It's now been 6 days. My prepaid meter is at zero and I'm buying candles.,synthetic_zw,yes
+order_status,Hi. I am a butcher in Kwekwe. I paid for a 5kva system with 8 panels last Wednesday to protect my freezers during load-shedding. Nothing has arrived and my stock is at risk. Can you at least tell me if the inverter has been dispatched?,synthetic_zw,yes
+order_status,Mhoroi. Ndakabhadhara invoice ye 10 panels ne inverter musi weChipiri. Ndirikuda kuti mundiudze kana truck yabuda muHarare. Ndine shop muMutare uye ndiri kutarisira kuti zvinhu zvisvike before weekend.,synthetic_zw,yes
+order_status,We run a lodge in Victoria Falls and we ordered the 12kw system with 2 batteries on the 4th. Our guests are complaining about the generator noise. Can you give me a specific installation date? I've sent three messages already.,synthetic_zw,yes
+order_status,Ndatumira mari yeku 3kva system ne zip yangu nebank. Ndine confirmation ye bank. Ndirikuda kuziva kana muchikwanisa ku deliver ma panels kuChinhoyi nhasi kana mangwana. Ndapeza nguva yakawanda ndichimirira.,synthetic_zw,yes
+order_status,Hi. I'm the client who came to your Marondera branch on Saturday with my son. We paid for the 5kva system and a solar geyser. The salesman said delivery Monday. Today is Wednesday and nothing. Can you look into this?,synthetic_zw,yes
+order_status,Ndakabhadhara deposit musi weMugovera we 8kw system. Ndirikuda kuziva kana invoice yekupedzisira yakagadzirwa uye kuti munouya riini kuinstall. Ndinoda kuisa before mwaka wechikoro unotanga.,synthetic_zw,yes
+order_status,Good afternoon. My name is on invoice INV-2091 for a 6kva inverter and 3 batteries. I paid in full on the 6th. Please tell me why no one has contacted me about installation. I've called three times and been told 'we'll call you'.,synthetic_zw,yes
+order_status,Hie. I ordered a solar geyser for my mother's house in Mbare on the 9th. She is elderly and can't keep boiling water with electricity. Can you tell me when the geyser will be installed? I am paying extra for a weekend install.,synthetic_zw,yes
+order_status,Mhoro. Ndirikuda kuziva kana delivery yema panel 10 yakarongwa. Ndatumira deposit musi weChitatu. Handina kumbonzwa chero munhu. Mungandiudzei kuti chirongwa chiri sei kana kuti ndodzokera kune imwe kambani.,synthetic_zw,yes
+order_status,"Hello. I'm following up on a 5kva system I ordered for my house in Norton. I paid USD 1,000 on the 11th and have the receipt. I was told installation would happen within a week. It's now day 10. Please give me a realistic timeline.",synthetic_zw,yes
+order_status,Ndakabhadhara full amount ye solar borehole pump musi weMuvhuro. Ndirikuda kuziva kana pump yasvika muHarare. Farm yangu iri kuMazowe uye ndinoda kuisa pump this week kana zvichikwanisika.,synthetic_zw,yes
+qa_discount,discount?,synthetic_zw,yes
+qa_discount,last price,synthetic_zw,yes
+qa_discount,any discount,synthetic_zw,yes
+qa_discount,can you reduce,synthetic_zw,yes
+qa_discount,ngifuna intengo yokugcina,synthetic_zw,yes
+qa_discount,"i'm paying cash, any discount",synthetic_zw,yes
+qa_discount,give me last price ye 5kva,synthetic_zw,yes
+qa_discount,discount ye bulk purchase here,synthetic_zw,yes
+qa_discount,ndikabhadhara cash mungandipe discount here,synthetic_zw,yes
+qa_discount,"can you do 1,200 for the 5kva",synthetic_zw,yes
+qa_discount,mungandipeiwo last price,synthetic_zw,yes
+qa_discount,"i'm a repeat customer, discount?",synthetic_zw,yes
+qa_discount,"price yenyu yakwira, can you do better",synthetic_zw,yes
+qa_discount,Hi. I want to buy 4 systems for my shops and I was wondering if there is a bulk discount. I can pay cash USD in full if the price is right. Please let me know what you can do for 4 x 5kva with panels.,synthetic_zw,yes
+qa_discount,Mhoroi. Ndiri kuda kutenga 3 systems for my rental flats in Budiriro. Ndichabhadhara cash yese. Mungandipeiwo discount yebulk nekuti ndiri kutenga zvakawanda. Ndiudzeiwo kuti last price yacho ndeyipi.,synthetic_zw,yes
+qa_discount,Good afternoon. I am a pensioner and my budget is tight. I have USD 900 saved. I really want the 3kva system but the price is a bit above what I have. Is there anything you can do for cash payment?,synthetic_zw,yes
+qa_discount,"Ndakafona svondo rakapera about 5kva. Price yamakandipa yanga iri USD 1,250. Ndingada kuziva kana muchikwanisa kuita 1,100 nekuti ndiri kubhadhara cash uye ndine mumwewo anoda kutenga.",synthetic_zw,yes
+qa_discount,Hello. We are a church and we want to buy two systems - one for the main hall and one for the children's wing. Can you do a package price? We can pay the full amount this week if the discount makes sense.,synthetic_zw,yes
+qa_discount,"I run a hardware shop in Chinhoyi and I refer a lot of customers to you. For my own system, can you give me a trade price? I'm looking at the 8kw with 10 panels and 2 batteries. Cash USD.",synthetic_zw,yes
+qa_discount,Hi team. Ndave kuda kutenga 10 panels chete asina inverter. Ndingawana discount here nekuti ndiri kutenga akawanda? Ndiri kubhadhara cash nhasi kana price yakanaka.,synthetic_zw,yes
+qa_discount,Mhoroi. Two of my neighbours have bought systems from you and they recommended I ask for the same price they got. I want the 5kva with 6 panels and one battery. Can you match what they paid and give me a small discount for cash?,synthetic_zw,yes
+qa_discount,Hi. I am buying for my parents in the village and I am paying from the UK. The price you gave me is higher than what I saw on your Facebook ad. Can you clarify and also tell me if there is a discount for payment via bank transfer?,synthetic_zw,yes
+qa_discount,Mhoro. Tine company yeku kwekwe inoda 6 systems for our shops. Tinoda kubhadhara cash yese kamwechete. Tinodawo kuziva kana muchipa invoice yekambani nekuti accounting inoda proof. Discount yacho ichaita sei?,synthetic_zw,yes
+qa_discount,discount yeku cash,synthetic_zw,yes
+qa_discount,best price pls,synthetic_zw,yes
+qa_discount,can u do better,synthetic_zw,yes
+qa_discount,negotiable?,synthetic_zw,yes
+qa_discount,ngicela isephulelo,synthetic_zw,yes
+qa_discount,lower the price small,synthetic_zw,yes
+qa_discount,any discount for cash,synthetic_zw,yes
+qa_discount,mungaderedza here,synthetic_zw,yes
+qa_discount,is that your final price,synthetic_zw,yes
+qa_discount,ntengo yekugcina,synthetic_zw,yes
+qa_discount,"i'm a repeat customer, what can you do",synthetic_zw,yes
+qa_discount,ndikabhadhara kamwechete muchandipa discount here,synthetic_zw,yes
+qa_discount,can you do a package price for 2 systems,synthetic_zw,yes
+qa_discount,mungandipa mutengo webulk here,synthetic_zw,yes
+qa_discount,"i saw it cheaper at another shop, can you match",synthetic_zw,yes
+qa_discount,"Hi. I want to buy the 5kva for my shop in Gweru. I have USD 1,000 cash on me. Can you accept that or are you firm on the price? I will collect today if yes.",synthetic_zw,yes
+qa_discount,Mhoroi. Ndine bhajeti ye USD 800 chete. Ndirikuda iyo 3kva ne ma panel. Mungandibatsirewo here kuti ndiite budget? Ndingabhadhara cash nhasi.,synthetic_zw,yes
+qa_discount,Good afternoon. My company wants to buy 8 systems for our branches across Harare and Bulawayo. We would like to negotiate a corporate rate. Can you send a proposal with volume pricing?,synthetic_zw,yes
+qa_discount,I am buying solar for my mother's house and my own house at the same time. Two 3kva systems. Can you do a discount for two units paid in cash? I will come with USD today if the price works.,synthetic_zw,yes
+qa_discount,Hello. We are a school in Marondera and we are working with a limited budget from the SDC. We want the 10kw system. Is there any discount you can offer for schools or for full upfront payment?,synthetic_zw,yes
+qa_discount,"Hi. I am a technician and I bring you a lot of installation jobs. For my personal 5kva system, can you give me a trade price? I can also refer customers if the price is right.",synthetic_zw,yes
+qa_discount,Mhoro. Muri kupa discount here kana munhu achitenga 4 panels ne inverter ne battery. Ndiri kubhadhara cash uye ndinoda kubhadhara kamwechete. Ndiudzeiwo kuti mutengo unogona kudzikira sei.,synthetic_zw,yes
+qa_discount,My neighbour bought the 5kva from you in January and she says she paid less than what you quoted me. Can you check her price and give me the same? She is in unit K in Chitungwiza.,synthetic_zw,yes
+qa_discount,"Hi team. I am ready to buy the 8kw but only if the price can come down a little. I have USD 2,200 cash and I can pay today. Please let me know if we can meet somewhere around that.",synthetic_zw,yes
+qa_discount,"Mhoroi. Tirikuda kutenga system ye clinic. Budget yedu yakazara ndeye USD 3,000 uye tiri kuongorora kuti tingaite sei. Mungandipa quotation yakadzikira here nekuti tiri kubhadhara cash?",synthetic_zw,yes
+qa_discount,Good evening. I saw your promo on WhatsApp last month. That price was lower than what I am quoted now. Can you honor the promo price for me? I can pay in full tomorrow.,synthetic_zw,yes
+qa_discount,"I run a farm in Bindura and I'm looking at 12 panels and a 5kva inverter. If I also buy a borehole pump system from you, do you bundle a discount? I'd like to do both at once with cash.",synthetic_zw,yes
+qa_discount,Hi. My husband and I want to buy two 5kva systems for our shops in Mutare and Rusape. We can pay cash for both together. What discount can you give for the two?,synthetic_zw,yes
+qa_discount,Ndatumira quote yeku 8kw kune mumwe wangu anoshanda kuSouth Africa. Akati mutengo wacho wakanyanya. Mungandipeiwo last price yekuti ndimutumire marii? Ari kubhadhara neUSD.,synthetic_zw,yes
+qa_discount,Ndiri kunzwa kuti muchangoburitsa promo. Ndirikuda kuziva kuti discount yacho inoshanda here pa 5kva system kana kuti pane zvimwe zvinoda kuwedzerwa. Ndine cash yekubhadhara nhasi.,synthetic_zw,yes
+qa_discount,Hello. I am a widow and I saved for a year for this 3kva system. The price is a bit above my savings by about 100 dollars. Is there anything you can do? I can pay cash and I can come to the shop myself.,synthetic_zw,yes
+qa_discount,We want to buy panels and inverter in bulk for a housing project in Norton. 20 houses. Each needs 3kva. Can you quote with a serious volume discount and payment terms? We are serious buyers.,synthetic_zw,yes
+qa_discount,"Mhoroi. Ndakafona last week and I was quoted USD 1,180 for the 5kva with 6 panels and battery. Today I am told 1,250. Why did the price change? Can you honor the original quote?",synthetic_zw,yes
+qa_discount,Hi. I'm willing to buy today if the price is right. I've been quoted USD 850 for a 3kva with 4 panels by another company. Can you beat or match that? I'm in Harare CBD.,synthetic_zw,yes
+qa_discount,"Good morning. My church in Budiriro has raised USD 1,500 from the congregation. We need the 5kva system with 8 panels. Can you work with that budget for the church?",synthetic_zw,yes
+qa_discount,"Ndirikuda kutenga iyo 10kw system ne 16 panels. Ndine usd 3,000. Mungandipa discount here kana ndikabhadhara cash yese kamwechete? Ndiudzeiwo last price yacho.",synthetic_zw,yes
+qa_discount,Hi. I own 3 tuckshops in Epworth and want to install solar in all of them. Each will use 3kva. I am a cash buyer. Can you give me a price for all 3 together?,synthetic_zw,yes
+qa_discount,Ndiri kuona kuti mamwe mashopu ari kupa 5kva ne 2 batteries for less. Mungandiongororerewo here kuti mutengo wenyu wakaenzana? Ndirikuda kutenga nhasi kana tikagona.,synthetic_zw,yes
+qa_discount,Hi. I am a nurse at a rural clinic and the staff are pooling money for a small system. We only have USD 700. Is there a starter package or a discount you can offer for clinic staff?,synthetic_zw,yes
+qa_discount,We're building 4 houses on a plot in Ruwa and want one system per house. All 4 bought together. Can you do a developer price? We can pay 50% deposit and the balance on completion.,synthetic_zw,yes
+qa_discount,Mhoro. Ndirikuda 5kva ye shop yangu muKwekwe. Ndine mari yese. Ndaona kuti muchiita promo yeku December. Promo iyoyo ichauya zvakare here kana kuti mungandipawo mukana wayo nhasi?,synthetic_zw,yes
+qa_discount,I saw your post about the December sale - 15% off. I am ready to buy a 5kva but today is January. Is there any way to still get that discount? I can pay today.,synthetic_zw,yes
+document_request,invoice pls,synthetic_zw,yes
+document_request,quotation needed,synthetic_zw,yes
+document_request,receipt yangu,synthetic_zw,yes
+document_request,proforma please,synthetic_zw,yes
+document_request,send quote,synthetic_zw,yes
+document_request,ndoda invoice,synthetic_zw,yes
+document_request,ngicela i-invoice,synthetic_zw,yes
+document_request,company docs,synthetic_zw,yes
+document_request,tax clearance yenyu,synthetic_zw,yes
+document_request,cr14 form,synthetic_zw,yes
+document_request,can you resend the quotation,synthetic_zw,yes
+document_request,ndipeiwo receipt yekubhadhara,synthetic_zw,yes
+document_request,i need a proforma for the bank,synthetic_zw,yes
+document_request,ndoda invoice yekambani,synthetic_zw,yes
+document_request,please email me the quote,synthetic_zw,yes
+document_request,ndipeiwo quotation yakanyorwa,synthetic_zw,yes
+document_request,need invoice for accounting,synthetic_zw,yes
+document_request,send company profile,synthetic_zw,yes
+document_request,ndinoda proforma invoice,synthetic_zw,yes
+document_request,Hi. I am ready to buy the 5kva system but my employer is paying for it. Can you send me a proforma invoice so I can submit it to finance? It needs to be on your letterhead with your bank details.,synthetic_zw,yes
+document_request,Mhoro. Takabhadhara invoice yechikoro svondorakapera. Chikoro chinoda receipt chaiyo yekuti mari yabuda. Mungaitirewo receipt inonzi yakabhadharwa nechikoro here?,synthetic_zw,yes
+document_request,"Good afternoon. We are a small company in Bulawayo and we need to buy solar for our office. Before we proceed we need your company documents - certificate of incorporation, tax clearance and bank confirmation letter - for our procurement team.",synthetic_zw,yes
+document_request,Hi. I sent the deposit yesterday via EcoCash. Can you send me a proper receipt with a reference number so I can forward it to my husband? He is the one who paid for it and wants proof.,synthetic_zw,yes
+document_request,Ndakafona neMuvhuro about 8kw system. Handina kumbowana quotation paWhatsApp. Mungaitumirewo pdf yequotation iyoyo kuti ndiongorore nemukadzi wangu uye kuti ndikwanise kuburitsa mari kubank?,synthetic_zw,yes
+document_request,"Good morning. My name is Mr. Moyo and I need a detailed quotation for a 10kw system with 16 panels and 2 batteries. It should include installation, cables and a small battery monitor. Send to my email on file please.",synthetic_zw,yes
+document_request,Mhoro. Ndinoda kuona kana muchikwanisa kutumira invoice yakadhindwa paWhatsApp. Ndinoda kuenda kune wangu wekubhanga kuti andikweretere. Invoice inofanira kuratidza zvakajeka zvinhu zviri kutengwa nemitengo yacho.,synthetic_zw,yes
+document_request,Hi. We're a clinic in Chinhoyi. The district office needs a formal quotation before they can release funds for the vaccine fridge solar. Can you email me a quotation addressed to the District Medical Officer?,synthetic_zw,yes
+document_request,Ndakabhadhara invoice INV-2077 musi weChipiri. Ndine confirmation SMS yeEcocash. Ndirikuda kuti munditumirewo invoice yakarongedzwa kuti ndiite proof ye mari yandakabhadhara.,synthetic_zw,yes
+document_request,"Good evening. I am a farmer in Mazowe and I need a quotation for a solar borehole system. Please include the pump specs, panels and mounting in the quote. I need it for my bank loan application.",synthetic_zw,yes
+document_request,Hi. Can you send me a proper invoice with your company TIN and VAT number? Our accountant cannot process the payment without those on the document. We are ready to pay as soon as we get it.,synthetic_zw,yes
+document_request,Mhoroi. Ndine chikoro chandiri kutungamira muBindura. Chikoro chinoda proforma invoice kuti chikwanise kubhadhara nebank transfer. Mungaitirewo proforma inoratidza 10kw system nemitengo yacho yakazara.,synthetic_zw,yes
+document_request,Ndakabhadhara cash USD 500 yedeposit. Munganditumirewo receipt neWhatsApp? Ndoda kuishandisa kune vamwe varidzi veimba kuti vaone kuti ndabhadhara chikamu chakakwana.,synthetic_zw,yes
+document_request,"I want to submit the quotation to my company's procurement. Can you send me a formal quote on letterhead with a validity period, the payment terms, and the warranty details? The quote needs to be for the 8kw with 10 panels.",synthetic_zw,yes
+document_request,Hi. I already paid for the system but I did not receive an invoice. Can you please send me a proper tax invoice with the products listed and the date of payment? I need it for my records.,synthetic_zw,yes
+document_request,"Mhoro. Tinoda quotation ye solar system yehotera. Tinodawo kuti muise ma specifications e inverter, ma panels, ma batteries uye installation charges zvakajeka. Tinenge tichipa kukambani yedu yekuuisa.",synthetic_zw,yes
+document_request,"Hi. My bank has approved a loan for the solar system but they need a formal quotation addressed to the bank, with the company bank details and a 30 day validity. Can you send this today?",synthetic_zw,yes
+document_request,Ndiri kuda kutumira invoice kune vabereki vangu vari kuUK. Vanoda kuona kuti chii chiri kutengwa uye kuti marii. Mungatumirewo invoice ine breakdown yakazara nemitengo mumadhora eUSD?,synthetic_zw,yes
+document_request,"Good morning. Can you send me the quotation again? The one you sent last week got deleted from my WhatsApp. I need it for the 5kva system with 8 panels and 1 battery, addressed to me.",synthetic_zw,yes
+document_request,Hi. We are a school in Marondera and our bursar needs a proper invoice with our school's name and address. Can you prepare it and send it as a PDF? The payment will be made by cheque from the school account.,synthetic_zw,yes
+document_request,Mhoro. Ndatumira deposit ye 5kva system musi weChishanu. Ndaifunga kuti muchanditumira receipt asi handina kuwana. Mungaitumire nhasi? Ndine appointment kubank mangwana uye ndinoda proof.,synthetic_zw,yes
+document_request,"Hi. I need the full company documents for a tender we are bidding for. We are installing solar at 3 rural clinics. Please send your company profile, certificate of incorporation, tax clearance, NSSA certificate and references. PDF format if possible.",synthetic_zw,yes
+document_request,"Ndiri kutenga system yekuimba yangu muGlen View. Ndinoda kuti mushandise invoice inoratidza mutengo wega wega wechinhu: inverter, panels, battery, installation ne cables. Ndinoda kuzviongorora ndisati ndabhadhara.",synthetic_zw,yes
+document_request,Hello. Can you confirm that you can issue a VAT invoice? Our company is VAT registered and we need to claim the input tax. We are buying a 10kw system for our warehouse in Kwekwe.,synthetic_zw,yes
+document_request,"Mhoroi. Ndine invoice yamakandipa asi haina nhamba dze company dzenyu dzakazara. Accounting yangu iri kuramba kubhadhara. Munganditumirewo invoice itsva ine TIN, VAT number ne bank details?",synthetic_zw,yes
+document_request,Hi. I am paying by bank transfer from South Africa for my mother's 3kva system in Mbare. Can you send me an invoice with your SA or USD account details? I will forward the proof of payment once done.,synthetic_zw,yes
+order_status,I paid the full amount for the 8kw system on the 15th and was told installation would be within three days. It's now the 24th and nobody has called me. Can you tell me what is happening?,synthetic_zw,yes
+order_status,"Mhoro, ndakabhadhara deposit ye 10kw system musi weMuvhuro uye ndakapiwa invoice INV-2083. Ndirikuda kuziva kuti nguva yekuisa system yangu yasvika here kana kuti ndichiri kumira.",synthetic_zw,yes
+order_status,We are the ones who ordered two 5kva systems for our shops in Mutare and Rusape. We paid on the 3rd. My husband asks me for an update every single day. When will delivery actually happen?,synthetic_zw,yes
+order_status,"I ordered 4 panels only, no inverter, on Monday at your Harare branch. The salesperson said they would reach my house in Glen View by Wednesday. It's Friday and still nothing has come.",synthetic_zw,yes
+order_status,Ngabhalisa i-6kva system ngoLwesihlanu futhi ngakhokha i-deposit. Angikatholi umlayezo kuvela kini. Ngingazi ukuthi i-oda yami isiphi manje?,synthetic_zw,yes
+order_status,My order was for 10 panels and one 200ah battery. When the delivery came yesterday there were only 8 panels and no battery at all. Can you check what happened and when the rest are coming?,synthetic_zw,yes
+order_status,I paid the balance for the 3kva system on the 12th by bank transfer and sent the proof on WhatsApp. No one confirmed receipt and no one has called me about installation in Chitungwiza.,synthetic_zw,yes
+order_status,"Mhoro, chikoro chedu chakabhadhara invoice ye 15kw system svondo rakapera. Bursar ari kutsvaga receipt yekuti mari yabuda. Mungaitumirewo confirmation pamwe nedate rekuti installation ichaitwa riini?",synthetic_zw,yes
+order_status,I was told the installation team for my farm in Mazowe would come on Saturday morning. They did not come and did not even call. I had arranged my workers to be there. Please reschedule and confirm.,synthetic_zw,yes
+order_status,My neighbour ordered the same 5kva as me on the same day and his was installed yesterday. Why is mine still not delivered? I am in Unit L and he is in Unit J. Please check my order.,synthetic_zw,yes
+order_status,"Ndakabhadhara USD 1,200 yese ye system yeku salon yangu. Saleslady akati ma panels achauya neChipiri. Nhasi Chitatu uye hapana kana munhu akandifonera. Ndiudzei kuti muchauya riini.",synthetic_zw,yes
+order_status,"The inverter arrived, the panels arrived, but the mounting rails and the battery cables were missing from the delivery. The installer says he cannot finish without them. When will you send the missing items?",synthetic_zw,yes
+order_status,I paid for the solar geyser on the 18th and was given a collection slip. I have come to the shop twice and been told it is not yet in. Can you confirm if it is in the country or still being shipped?,synthetic_zw,yes
+order_status,Mhoro. Ndakabhadhara deposit ye borehole solar pump neChipiri. Farm yangu iri kuChinhoyi. Ndirikuda kuziva kuti pump yabuda here muHarare uye kuti installation team inouya riini.,synthetic_zw,yes
+order_status,We ordered for our clinic in Masvingo and the district office wants a written progress report. Can you send me an email confirming the order was received and giving a realistic installation date?,synthetic_zw,yes
+order_status,Ndakatumira mari yese ye 8kw system ne EcoCash musi weMugovera. Handina kuwana confirmation message. Ndirikuda kuti mundiudze kana mari yenyu yasvika uye kuti order yangu yakatanga.,synthetic_zw,yes
+order_status,The installer came on Tuesday but said the roof was too steep for his ladder and that he would come back with equipment. He hasn't come back. It's now a week. Can you send a different team?,synthetic_zw,yes
+order_status,I ordered the 5kva system on the 7th and was told it would be installed before the school holidays. The children are home now and we still have no power. Please give me a firm date.,synthetic_zw,yes
+order_status,I paid for a 5kva system for my mother in Epworth. She is elderly and doesn't use WhatsApp. Can you call her directly when the team is on the way so she can open the gate? I am in South Africa.,synthetic_zw,yes
+order_status,Ngikhokhele i-inverter ye-5kva ngoMsombuluko. Ngifuna ukwazi ukuthi izofika nini eBulawayo futhi ubani ozongifonela uma isizofika.,synthetic_zw,yes
+order_status,"My order number is INV-3114. I paid in full on the 9th for 12 panels, an 8kw inverter and 2 lithium batteries. I have not received a single update. Can you tell me where things stand today?",synthetic_zw,yes
+order_status,"Hi, I am following up on my order of the solar fridge for the butchery in Kwekwe. I paid on the 5th. The freezer is running on a generator and diesel is expensive. Can you tell me when the fridge will arrive?",synthetic_zw,yes
+order_status,We had a booking for installation on the 20th at our school in Bindura. The team did not come and we had to cancel classes for nothing. Our board wants to know the new date and the reason for the delay.,synthetic_zw,yes
+order_status,I have been calling the shop number for three days and no one is answering. I paid USD 850 for a 3kva system on the 4th. Can you confirm the order is still active and tell me when it will be installed?,synthetic_zw,yes
+order_status,My installation was half done last week - the panels are up but the inverter is not connected and the wiring is hanging. The installer said he would come back the next day. He has not. I need someone here this week.,synthetic_zw,yes
+order_status,"Good afternoon, I paid for a 6kva system on behalf of my parents who live in Chivhu. They do not have a smartphone. Can you please call my number when the team is going so I can arrange someone to be at the house?",synthetic_zw,yes
+order_status,The prepaid meter is at zero and I'm using candles while waiting for my system. I paid on the 2nd and was told five working days. It is now three weeks. Please give me a truthful answer or let me speak to a manager.,synthetic_zw,yes
+order_status,Our church ordered the 10kw system and paid 80% deposit. The remaining 20% is due on installation. We are concerned because we have not heard from anyone about when the team is coming. Our crusade is in two weeks.,synthetic_zw,yes
+order_status,The delivery truck arrived but the driver did not have the mounting brackets. He said another truck would bring them. That was last week. The panels are still lying in the yard and the roofer is waiting for me. Please help.,synthetic_zw,yes
+order_status,We are installing solar at three of our shops in Harare CBD and Gweru. The first two orders were delivered quickly but the third one (invoice INV-3129) seems stuck. Can you check what's happening with the third order?,synthetic_zw,yes
+order_status,My husband paid for the system on his phone last week while he was in South Africa. The money left his account. I have no idea if you received it. Can you tell me the status and when the team can come?,synthetic_zw,yes
+order_status,I was promised a delivery confirmation SMS on the day the panels were dispatched. I never got one. The panels arrived but the inverter did not. Now I'm worried the rest of the order is lost. Can you check?,synthetic_zw,yes
+document_request,I need the installation certificate for the system you put in at my shop last month. My insurer is asking for proof of a certified installation before they will cover the equipment.,synthetic_zw,yes
+document_request,Mhoro. Ndine invoice yamakandipa asi zita racho rakanyorwa zvisiri izvo. Mungagadzirewo invoice itsva ine zita chaiyo rekambani yangu ndisati ndatumira kubhangi?,synthetic_zw,yes
+document_request,Please send me a datasheet for the 550w panels and the inverter you are quoting. My engineer wants to check the specs before we commit to the order for the clinic.,synthetic_zw,yes
+document_request,Ndakabhadhara mari yekupedzisira nezuro. Ndirikuda kuti munditumirewo statement inoratidza kuti hapana chandinoda kubhadhara uye kuti system ndeyangu zvizere.,synthetic_zw,yes
+document_request,Can you issue a letter confirming that my account is fully paid? I'm selling the house and the buyer's lawyer wants proof that the solar system has no outstanding balance attached to it.,synthetic_zw,yes
+document_request,"Hi. I want to submit the quotation to my employer for reimbursement. Can you reissue it with the quotation date, a reference number and the validity period clearly shown at the top?",synthetic_zw,yes
+document_request,"Mhoro, tinoda delivery note ine serial numbers dzema inverter ne batteries, kuti tizive kuti ndizvo chaizvo zvakasvika uye kuti tinochengetedza ma records echikoro.",synthetic_zw,yes
+document_request,My bank rejected the proforma because the account name does not match the company name on the quote. Can you redo both documents using exactly the same registered name?,synthetic_zw,yes
+document_request,Ndakapiwa invoice asi haina kutsanangura kuti delivery fee yakasiyana nemutengo wezvinhu. Ndinoda kuti mundinyorerewo invoice inoratidza zvinhu zvakasiyana nemari yekuendesa.,synthetic_zw,yes
+document_request,I need a copy of the signed contract we agreed on when I paid the deposit. I want to check the installation terms and the delivery date that was written down.,synthetic_zw,yes
+document_request,Hi. I'm applying for a home improvement loan and the bank wants a formal quotation that is not older than 14 days. Can you send a fresh one for the 5kva with 8 panels?,synthetic_zw,yes
+document_request,Mhoro. Chikoro chedu chiri kuda quotation ine reference number yekuti vana vechikoro vanokwanisa ku track. Mungaitirewo imwe itsva ye 10kw system ne ma computers?,synthetic_zw,yes
+document_request,We had a site visit last week and your technician promised to send a report with his recommendations. I still haven't received it and I need it to present to my committee.,synthetic_zw,yes
+document_request,Can you send me the warranty registration document for the inverter and batteries you installed? I want to keep it with the receipt in case I ever need to claim.,synthetic_zw,yes
+document_request,Ndakabhadhara deposit asi handina kuwana layby agreement yakanyorwa. Ndirikuda kuti munditumirewo gwaro rinoratidza kuti ndichabhadhara sei uye kuti system iri kuchengetwa here.,synthetic_zw,yes
+document_request,I lost the original receipt for my final payment. Can you print a duplicate and send it as a PDF? My employer's accounts department needs it before the end of the month.,synthetic_zw,yes
+document_request,"Mhoroi. Tinoda invoice inoratidza kuti system yacho inogona kubhadharwa neUSD kana ZiG, uye kuti rate yacho inotorwa pazuva ripi. Accounting yedu inoda kuziva izvi.",synthetic_zw,yes
+document_request,Please send me the after-sales contact document and the emergency number I should call if the inverter gives a fault at night. I want to stick it on the wall next to the unit.,synthetic_zw,yes
+document_request,"Ndakabhadhara deposit ye 3kva system svondo rakapera. Ndirikuda kuti munditumirewo invoice inoratidza deposit yabhadharwa uye balance yasara, kuti ndikwanise kuronga mari yekupedzisa.",synthetic_zw,yes
+document_request,Can you email me a quotation in both USD and ZiG so I can compare with what other suppliers are offering? The company I work for pays in ZiG.,synthetic_zw,yes
+document_request,"Mhoro. Ndinoda copy ye site visit report yamakaita pamba pangu, pamwe nemufananidzo wemba yekuti ndikwanise kuishandisa kune wangu wekubhanga.",synthetic_zw,yes
+document_request,I need a credit note for the panels I returned last week. The accounts team says they cannot release the refund without a proper credit note referencing my original invoice.,synthetic_zw,yes
+document_request,Hi. Can you send the customs clearance documents for the panels you delivered? The transporter says they need them if the load is stopped at the border.,synthetic_zw,yes
+document_request,Ndine invoice yekutanga asi ndakachinja pfungwa ndikawedzera battery. Ndirikuda invoice itsva inoratidza zvinhu zvese pamwechete kuti ndisave nemagwaro maviri akasiyana.,synthetic_zw,yes
+document_request,"Our procurement officer wants a quotation that includes your company registration number, VAT number and physical address at the bottom. Can you send one addressed to the school?",synthetic_zw,yes
+document_request,"Mhoro. Ndirikuda kuti munditumirewo letter inotaura kuti muchakwanisa kuisa system yangu nenguva, nekuti mukuru wangu webasa anoda proof ndisati ndatora leave.",synthetic_zw,yes
+document_request,"Can you send the installation handover document with the readings, panel serial numbers and the date of commissioning? I want to file it with the property papers.",synthetic_zw,yes
+document_request,Ndakabhadhara yese yeku 10kw system. Ndirikuda receipt ine nhamba yekuti ndikwanise kupa vana veku bursary kuti vaone kuti ndakabhadhara chikoro system.,synthetic_zw,yes
+document_request,Hi. I want to claim the solar from my insurance after the storm. Can you send me a document listing the full system with serial numbers and the date of purchase?,synthetic_zw,yes
+document_request,"Mhoro, ndine gwaro rekuti ndakabhadhara deposit asi harina kusaina. Ndirikuda kuti mundipewo copy yakasainwa nevose vari vaviri kuti zvive pachena.",synthetic_zw,yes
+document_request,"Please send me a quotation that separates the cost of the inverter, panels, battery, mounting and labour. My committee wants to see the breakdown before they approve.",synthetic_zw,yes
+document_request,Ndakabhadhara neEcoCash asi receipt yandakapiwa haina nhamba yekutanga. Ndirikuda receipt itsva ine reference yakazara kuti ndikwanise kuishandisa kune vamwe varidzi vekambani.,synthetic_zw,yes
+document_request,Can you send me the document showing the expected annual generation of the system you quoted? I want to compare it with what my neighbour's system is producing.,synthetic_zw,yes
+document_request,"Mhoro. Ndirikuda letter yekubva kwauri inotsanangura kuti system yandakaiswa inoshandisa ZERA-approved components here, nekuti ndiri kunyorera mvumo yekuwedzera ma panel.",synthetic_zw,yes
+warranty_claim,inverter yangu yakafa mushure memwedzi mitatu chete,synthetic_zw,yes
+warranty_claim,"panel cracked, i need replacement",synthetic_zw,yes
+warranty_claim,the mppt inside died after 4 months,synthetic_zw,yes
+warranty_claim,inverter beeping since installation,synthetic_zw,yes
+warranty_claim,"ndakawana fault pa inverter, ndirikuda replacement",synthetic_zw,yes
+warranty_claim,My 5kva inverter started showing fault 56 three months after you installed it. I have the receipt. Can you arrange a replacement under warranty? I can't afford to buy another one.,synthetic_zw,yes
+warranty_claim,Mhoro. Battery ye 5kwh yandakabhadhara muna January haina kupera kana kusvika gore. Ndirikuda kuti muiongorore here kana kuti muchitsiva pasi pewaranti.,synthetic_zw,yes
+warranty_claim,One of the four panels you supplied has a visible crack and the output has dropped. I have photos. Can you send someone to assess it and arrange replacement under warranty?,synthetic_zw,yes
+warranty_claim,Hi. My inverter keeps tripping after 6 months of use. I called the technician twice and he says he will come but he does not. Can I just bring the unit to your shop for a warranty check?,synthetic_zw,yes
+warranty_claim,"Ndakabhadhara system yekuimba muna March. Nhasi inverter yacho inoratidza red light uye haina output. Ndirikuda kuti mundibatsire ne warranty claim, ndine receipt ne serial number.",synthetic_zw,yes
+warranty_claim,The lithium battery you installed in December is swelling and the app shows only 40% capacity. This is dangerous. Please arrange a warranty replacement urgently because my family is sleeping in that room.,synthetic_zw,yes
+warranty_claim,"Mhoro, ndakaiswa system muna June. Fan ye inverter yava kunetsa uye inopisa. Ndirikuda kuti mundiongorore pasi pewaranti isati yapera mwedzi mishoma.",synthetic_zw,yes
+warranty_claim,Hi. The display on the inverter has gone completely blank but the system seems to be working. Is that covered by the warranty and can a technician come and look at it?,synthetic_zw,yes
+warranty_claim,"Ndatumira system yangu yeku 5kva muna February. Nhasi inverter inorira uye inodzima kana ndikaisa fridge. Ndirikuda kuti muite warranty claim, ndinotya kuti inopfuta.",synthetic_zw,yes
+warranty_claim,I bought the inverter from you in August and the WiFi dongle stopped working last week. The system still runs but I can't monitor it. Is the dongle under warranty or do I buy a new one?,synthetic_zw,yes
+warranty_claim,Mhoro. Basa rekuisa system rakaiswa nemunhu wenyu rakasiya denga richipinda mvura. Mvura iri kudonha pa inverter. Ndirikuda kuti muite warranty claim pa installation.,synthetic_zw,yes
+warranty_claim,"Hi. The technician who installed my system chipped three roof tiles and left without telling me. When it rained, water came into the ceiling. I want this fixed under your installation warranty.",synthetic_zw,yes
+warranty_claim,Ndakabhadhara 10kw system muna April. Muna September battery imwe haina kubata charge. Ndirikuda kuti muite ongororo uye kuti mutsive pasi pewaranti.,synthetic_zw,yes
+warranty_claim,"My solar geyser stopped heating after five months. The element seems to be dead. Can you send a plumber under warranty, or do I need to pay for the call out?",synthetic_zw,yes
+warranty_claim,Mhoro. Borehole pump yandakaiswa muna May haina kubuda mvura kubva nezuro. Ndirikuda kuti muite warranty claim uye kuti muongorore pump ne controller.,synthetic_zw,yes
+warranty_claim,Hi. The replacement inverter you gave me under warranty is also faulty. It started beeping on day two. This is the second unit. Can we discuss a different model or a refund?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara system yeku shop muna March. CCTV camera imwe haina kushanda kubva pazuva rekutanga. Ndirikuda kuti mutsive pasi pewaranti.,synthetic_zw,yes
+warranty_claim,My panels are producing less than half of what they used to. A technician said two panels have internal damage but he did not write anything. I need a written warranty claim assessment please.,synthetic_zw,yes
+warranty_claim,Mhoro. Inverter yangu yakaoma mushure memvura yekunaya muna January. Ndinoda kuziva kuti warranty inobata mvura here kana kuti ini ndinofanira kubhadhara repair.,synthetic_zw,yes
+warranty_claim,The 5kwh battery you supplied in February now drops from 100% to 20% in under an hour. I have the app screenshots. Can someone come and test it under warranty?,synthetic_zw,yes
+warranty_claim,"Mhoro, ndakaiswa system muna January. Nhasi inverter yacho inoratidza code F56 uye haina kubuda magetsi. Ndirikuda kuti muite warranty claim, ndine receipt yese.",synthetic_zw,yes
+warranty_claim,Hi. The mounting brackets you used have started rusting after only eight months. This is a coastal area and I was told they were galvanised. Is this covered and can they be replaced?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara solar geyser muna April. Kubva muna August haina kupisa mvura. Ndakaongorora kuti element yakaoma. Ndirikuda kuti muite warranty repair.,synthetic_zw,yes
+warranty_claim,The electrician who installed my system left the earth wire disconnected. I only found out when a technician from another company came to look at something else. This is dangerous and I want it fixed under warranty.,synthetic_zw,yes
+warranty_claim,Mhoro. Battery yangu yeku 200ah yakaoma mushure memwedzi mishoma. Ndirikuda kuti mundiongorore uye kuti mutsive pasi pewaranti kana zviratidza kuti ndeye manufacturing fault.,synthetic_zw,yes
+warranty_claim,My inverter was replaced under warranty in June. The replacement is now doing the same thing - it switches off randomly in the afternoon. Can we look at a permanent solution rather than another swap?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara borehole pump muna March. Kubva muna July haina kumira kana kushanda. Ndirikuda kuti muite warranty claim uye kuti muongorore pump ne solar controller.,synthetic_zw,yes
+warranty_claim,Hi. One of the panels you sold me has a hot spot that I can see with my phone camera. The output on that string dropped. I need a written assessment and a replacement please.,synthetic_zw,yes
+warranty_claim,Mhoro. System yangu yeku clinic yakaiswa muna February. Battery imwe haina kubata charge kubva muna August. Ndirikuda kuti muite warranty claim nekuti clinic inovimba nemagetsi acho.,synthetic_zw,yes
+warranty_claim,The inverter fan is making a loud grinding noise and the unit is very hot. It's 7 months old. Can you send a technician under warranty before something burns?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara 8kw inverter muna May. Inoratidza warning light uye haina kubuda magetsi. Ndakafona kare ndikaudzwa kuti muchandifonera asi hapana. Ndirikuda warranty claim nhasi.,synthetic_zw,yes
+warranty_claim,Hi. The lithium battery you installed in September will not charge past 70%. The app shows a cell imbalance warning. Can I get a warranty inspection at your shop or at my house?,synthetic_zw,yes
+warranty_claim,Mhoro. Panel rimwe rakaputsika mushure memhepo muna November. Ndinoda kuziva kuti warranty inobata here kana kuti ini ndinofanira kubhadhara replacement.,synthetic_zw,yes
+warranty_claim,My 3kva inverter started giving an overload warning even though I am running the same appliances as before. It's eight months old. I need this checked under warranty please.,synthetic_zw,yes
+warranty_claim,Ndakabhadhara system ye salon muna March. Kubva muna September inverter inodzima kana ndikaisa dryer. Ndirikuda kuti muchiongorora pasi pewaranti.,synthetic_zw,yes
+warranty_claim,Hi. Your installer used cable that is too thin for the panels you supplied. The cables are heating up. I was told the installation carries a warranty. Can someone come and correct this?,synthetic_zw,yes
+warranty_claim,Mhoro. Battery ye 5kwh yandakabhadhara muna April yakavhara nyaya yekubhadharisa. Ndirikuda kuibhuka ndoiuya nayo kuzoongororwa pasi pewaranti.,synthetic_zw,yes
+warranty_claim,My inverter started beeping after a ZESA surge. The panels and battery are fine but there is no output. I was told the inverter has surge protection. Can this be assessed under warranty?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara solar pump muna February. Motor inonetsa kubuda uye inopisa. Ndirikuda warranty claim uye kuti mundiudze kuti ndoendesa kupi pump yacho.,synthetic_zw,yes
+warranty_claim,Hi. The installer from your team drilled through a water pipe in my wall and did not tell me. I only discovered it weeks later. I want this repaired and I believe it falls under the installation warranty.,synthetic_zw,yes
+warranty_claim,Mhoro. Inverter yekuimba yangu yakaiswa muna June. Muna October yakaramba kubatidza. Ndirikuda kuti muite warranty claim uye kuti mundipewo replacement unit nekukasika.,synthetic_zw,yes
+warranty_claim,The battery monitor you installed is showing readings that do not match what the inverter displays. Two months old. Is the monitor faulty and is it covered under warranty?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara 10kw system muna March. Muna September inverter imwe yakaramba kushanda. Ndirikuda kuti muite ongororo uye kuti mutsive pasi pewaranti.,synthetic_zw,yes
+warranty_claim,Hi. My panels were installed at an angle the technician promised would be fine. Now during the rainy season they are collecting water and the frame is bending. Can this be corrected under the installation warranty?,synthetic_zw,yes
+warranty_claim,Mhoro. Battery yeku 10kwh yandakabhadhara muna May yave kupera nekukasira. Ndirikuda kuti muite battery test pasi pewaranti uye kuti mundiudze zviri kuitika.,synthetic_zw,yes
+warranty_claim,The inverter you sold me in April is showing a battery communication error. I have checked the cables myself. The battery is the same one you supplied. Can someone come and diagnose under warranty?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara 6kva system muna January. Fan ye inverter inorira zvikuru uye inopisa. Ndirikuda kuti mundiongorore pasi pewaranti ndisati ndava nenjodzi.,synthetic_zw,yes
+warranty_claim,Hi. My solar geyser developed a leak at the tank after four months. The plumber you sent last time said it was installation. Can I get a warranty repair or replacement of the tank?,synthetic_zw,yes
+warranty_claim,Mhoro. Inverter yangu inoratidza red light uye inodzima kana ZESA yadzoka. Yakaiswa muna February. Ndirikuda kuti muite warranty claim uye kuti muongorore zvinokonzeresa.,synthetic_zw,yes
+warranty_claim,I bought two panels from you and one of them produces a lot less than the other. I have a meter. It's only five months old. Can I bring it in for warranty testing?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara system ye farm muna April. Pump yeborehole yakaiswa nemunhu wenyu haina kushanda nemazuva maviri. Ndirikuda kuti muite warranty claim.,synthetic_zw,yes
+warranty_claim,Hi. The inverter you installed in August started displaying a warning that I don't understand. I sent a photo on WhatsApp last week and no one has come back to me. Is it under warranty?,synthetic_zw,yes
+warranty_claim,Mhoro. Ndakabhadhara inverter muna March. Nhasi inoratidza error uye haina kubuda magetsi. Ndirikuda kuti mundibatsire ne warranty claim nhasi nekuti ndine vana vadiki.,synthetic_zw,yes
+warranty_claim,My battery bank is only 10 months old and one battery is much hotter than the others. The installer said it was normal but I don't trust it. Can this be inspected under warranty?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara 5kva system muna June. Muna November inverter yakatanga kudzima kana ndikaisa load. Ndirikuda kuti mundiongorore pasi pewaranti ndisati ndabhadhara repair.,synthetic_zw,yes
+warranty_claim,Hi. The installation team damaged my ceiling while running cables. They said they would fix it but no one has come. I want this repaired under the installation warranty.,synthetic_zw,yes
+warranty_claim,Mhoro. Panel rimwe rakanaya mvura mukati nekuti glass yakatsemuka. Handina kumbobata. Ndirikuda kuti muite warranty claim uye kuti mundiudze kuti muchatsiva sei.,synthetic_zw,yes
+warranty_claim,The replacement battery you gave me under warranty in September has the same problem - it does not hold charge. This is the second one. Can we discuss an upgrade or a refund?,synthetic_zw,yes
+warranty_claim,Hi. The installer from your team used a roof mount that has already rusted. The panels are fine but the mount is weak. I was told the installation is guaranteed. Can it be redone?,synthetic_zw,yes
+warranty_claim,Mhoro. Battery ya 5kwh inoratidza 100% asi inopera mumaawa maviri chete. Ndakaiswa muna March. Ndirikuda warranty test uye kuti mundiudze zviri kuitika.,synthetic_zw,yes
+warranty_claim,My inverter switched off completely during a storm two months after installation. There was a surge. The technician says the surge protection may not have worked. Is the unit under warranty?,synthetic_zw,yes
+warranty_claim,Ndakabhadhara system ye clinic muna January. Kubva muna August inverter inongodzima. Ndirikuda kuti muite ongororo pasi pewaranti nekuwedzera surge protection kana zvichidikanwa.,synthetic_zw,yes
+warranty_claim,Hi. I bought the solar fridge from you in February for my butchery. It is now not cooling properly and I've lost stock twice. Is it under warranty and can you repair or replace it?,synthetic_zw,yes
+upgrade_system,ndinoda kuwedzera ma panel maviri,synthetic_zw,yes
+upgrade_system,can i add another battery,synthetic_zw,yes
+upgrade_system,want a bigger inverter,synthetic_zw,yes
+upgrade_system,ndoda kuwedzera battery imwe,synthetic_zw,yes
+upgrade_system,need to expand my system,synthetic_zw,yes
+upgrade_system,Mhoro. I have a 3kva system you installed two years ago. It's been great but we now have a freezer and I need a bit more power. Can I upgrade to a 5kva using the same panels and battery?,synthetic_zw,yes
+upgrade_system,Ndakaiswa 5kva system muna 2023. Ndinoda kuwedzera ma panel maviri ne battery imwe nekuti vana vave kushandisa zvinhu zvakawanda. Ndiudzei kuti zvinobhadharwa sei.,synthetic_zw,yes
+upgrade_system,Hi. I have your 5kva inverter with 4 panels and one lithium battery. I want to add two more panels and a second battery because we've bought a deep freezer. Can the inverter handle that?,synthetic_zw,yes
+upgrade_system,Good morning. I bought a 1kva system from you in 2022 for lights only. Now I want to run a fridge and tv. Can I upgrade to a 3kva and keep the small inverter for the gate and borehole?,synthetic_zw,yes
+upgrade_system,Mhoro. Ndine system yekuimba yandakabhadhara muna 2023. Ndinoda kuwedzera inverter yeku 8kw ne ma panel mana ekutanga. Ndiudzei kuti muchanditsivira here kana kuti ndinowedzera imwe.,synthetic_zw,yes
+upgrade_system,My shop has grown and the 3kva is no longer enough. I want to upgrade to a 5kva or 6kva and add 4 more panels. Can I trade in my old inverter or do I sell it myself?,synthetic_zw,yes
+upgrade_system,Ndakaiswa 3kva system muna 2022 ne battery ye gel. Ndinoda kuwedzera lithium battery uye ma panel. Ndiudzeiwo kuti inverter yangu inogona kushanda ne lithium here.,synthetic_zw,yes
+upgrade_system,Hi. We have a 5kva inverter from you with 6 panels. We want to add a solar geyser and two more panels. Does the existing inverter have room for the extra panels or do we need a second one?,synthetic_zw,yes
+upgrade_system,Good afternoon. I have a 10kwh battery from you but only a 5kva inverter. I want to move to an 8kva or 10kva so we can run the geyser and the stove during load-shedding. What do you advise?,synthetic_zw,yes
+upgrade_system,Ndakabhadhara 5kw system muna 2023. Ndinoda kuwedzera ma panel mana ne battery imwe nekuti tave kushandisa pump yemunda. Ndiudzeiwo kana inverter inokwanisa.,synthetic_zw,yes
+upgrade_system,Hi. My farm has expanded and my old 8kw system cannot keep up. I want to upgrade to 15kw with additional panels. Can you assess the existing setup and let me know what can be reused?,synthetic_zw,yes
+upgrade_system,Mhoro. Ndine system yeku clinic yakaiswa muna 2022. Ndinoda kuwedzera battery imwe chete kuti vaccine fridge isa peri simba usiku. Ndiudzeiwo kuti inoda kuiswa sei.,synthetic_zw,yes
