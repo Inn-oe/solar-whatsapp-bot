@@ -306,7 +306,7 @@ class _Transformer:
 
 
 class _Remote:
-    """Sentence embeddings computed by the separate embedding service (embedding_service/, e.g. a free Hugging
+    """Sentence embeddings computed by the separate embedding service (your own hosted service, e.g. a free Hugging
     Face Space), so the model never has to fit in this server's memory.
     Set NLU_BACKEND=remote, NLU_REMOTE_URL and NLU_REMOTE_KEY."""
     name = "remote"
@@ -445,7 +445,7 @@ class Engine:
         log.info("NLU trained: %s", {k: v for k, v in info.items() if k != "accuracy"})
         return dict(info)
 
-    # ---- a model trained elsewhere (train_local.py) and shipped as a file
+    # ---- a model trained elsewhere (train_model_enhanced.ipynb) and shipped as a file
     def save(self, path, digest=""):
         """Write the trained quick (TF-IDF) model to one file, so a server with too little memory to train can
         simply load it."""

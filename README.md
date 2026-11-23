@@ -115,10 +115,7 @@ buttons, the reply goes out as text with the choices written in.
 See the docstring of `app.py`. New ones: `NLU_BACKEND` (`tfidf`, `transformer` or `remote`), `NLU_MODEL`,
 `NLU_REMOTE_URL`, `NLU_REMOTE_KEY`, `NLU_REMOTE_TIMEOUT` (seconds, default 4).
 
-**Remote embeddings (for small servers).** `embedding_service/` is a tiny API that runs the transformer on a free
-Hugging Face Space (Gradio SDK, 16 GB RAM). Set `EMBED_API_KEY` as a secret on the Space, then on the bot set
-`NLU_BACKEND=remote`, `NLU_REMOTE_URL=https://<user>-<space>.hf.space` and `NLU_REMOTE_KEY=<same key>`. The quick
-model answers while the service wakes up or if it is ever unreachable.
+**Remote embeddings (optional).** `NLU_BACKEND=remote` sends the text to an embedding service you host yourself (`NLU_REMOTE_URL`, `NLU_REMOTE_KEY`); the quick model answers whenever it is unreachable. The service itself is not part of this repository.
 **AI fallback (large language model).** When the quick model is unsure, `llm.py` asks an LLM to pick one of the
 bot's intents (it never writes the reply itself). It works with any OpenAI-compatible API: set `LLM_API_KEY`, and
 optionally `LLM_API_URL` (default Mistral, `https://api.mistral.ai/v1`; Groq `https://api.groq.com/openai/v1`;
@@ -188,13 +185,16 @@ Update the numbers in `tiers.json` when supplier prices move.
 Render's free 512 MB server runs out of memory while *training* (the bot is killed and the ERP shows "bot not
 reachable"), but *loading* a trained model needs very little. So train on your PC and ship the model as a file:
 
-1. Close heavy programs (training needs ~250 MB). In the Render dashboard open `giebee-db` ▸ Connections and copy the
-   **External Database URL**.
-2. `$env:DATABASE_URL = "postgresql://..."` then `.venv\Scripts\python train_local.py`
-   (without `DATABASE_URL` it trains on the starter phrases only). It prints the held-out accuracy and writes
-   `models/nlu_model.pkl` (about 3.5 MB).
-3. `git add models/nlu_model.pkl; git commit -m "Retrained model"; git push` — Render deploys and the bot loads the file
-   at start-up instead of training. The ERP Train page tells you if staff changed phrases after the model was trained.
+1. Close heavy programs (training needs ~250 MB). Optional: for the phrases staff added on the Train page, copy the
+   **External Database URL** (Render `giebee-db` ▸ Connections) and set it before starting Jupyter:
+   `$env:DATABASE_URL = "postgresql://..."` (it is only read, never changed). Without it the notebook trains on the
+   starter phrases (seed + Q&A sheet).
+2. `pip install jupyterlab` in `.venv`, start `jupyter lab` from this folder, open **`train_model_enhanced.ipynb`**
+   and choose *Run All*. It loads the phrases, adds your terminology (glossary, reviewed CSV phrases), measures held-out
+   accuracy, tries several settings, trains, and writes `models/nlu_model.pkl` (the old file is copied aside first).
+3. `git add models/nlu_model.pkl models/nlu_train_report.json; git commit -m "Retrained model"; git push` — Render
+   deploys and the bot loads the file at start-up instead of training. The ERP Train page tells you if staff changed
+   phrases after the model was trained.
 
 While the file is present, **Train now** only reloads it (it cannot train on the server). After upgrading to a
 server with enough memory, set `NLU_PRETRAINED=off` on the bot (or delete the file) and Train now works again.

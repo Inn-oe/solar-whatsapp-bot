@@ -134,7 +134,7 @@ MODEL_FILE = Path(os.getenv("NLU_MODEL_FILE") or Path(__file__).resolve().parent
 
 
 def _pretrained_info(intents, ok, examples):
-    """Use the model file trained on the owner's PC (train_local.py) when there is one: a small server cannot
+    """Use the model file trained on the owner's PC (train_model_enhanced.ipynb) when there is one: a small server cannot
     train, but loading is cheap. Returns the summary, or None to train here as usual.
     NLU_PRETRAINED=off ignores the file (after upgrading to a server with enough memory)."""
     global _intents

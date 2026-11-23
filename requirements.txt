@@ -3,7 +3,7 @@ requests==2.32.5
 gunicorn==23.0.0
 sqlalchemy==2.0.44
 psycopg2-binary==2.9.11
-scikit-learn==1.9.1     # pinned: models/nlu_model.pkl (train_local.py) must be loaded by the same version
+scikit-learn==1.9.1     # pinned: models/nlu_model.pkl (train_model_enhanced.ipynb) must be loaded by the same version
 numpy==2.5.5
 scipy==1.18.1
 # transformer (sentence-embedding) backend, used when NLU_BACKEND=transformer; if it cannot load the bot

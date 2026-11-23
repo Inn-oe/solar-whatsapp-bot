@@ -1,4 +1,4 @@
-"""A model trained on the owner's PC (train_local.py) is saved to a file and loaded by the bot instead of training."""
+"""A model trained on the owner's PC (train_model_enhanced.ipynb) is saved to a file and loaded by the bot instead of training."""
 import pytest
 
 import brain
