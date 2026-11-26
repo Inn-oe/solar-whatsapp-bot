@@ -2295,3 +2295,75 @@ off_topic,can you book me a flight to johannesburg,synthetic_zw,yes
 off_topic,what is the population of zimbabwe,synthetic_zw,yes
 off_topic,where can i watch the soccer game tonight,synthetic_zw,yes
 off_topic,how many days until christmas,synthetic_zw,yes
+document_request,"Mhoro. Ndakabhadhara cash pa showroom yenyu musi weMugovera. Handina kuwana receipt. Ndirikuda kuti munditumirewo receipt ine nhamba yekuti ndiite proof kubasa kwangu.",synthetic_zw,yes
+document_request,"Can you send me the signed delivery note for the panels that arrived last week? My insurer wants proof of the exact equipment delivered and the date it was received.",synthetic_zw,yes
+document_request,"Ndine quotation yamakandipa muna August. Ndirikuda kuti muite imwe itsva inoratidza 8kw system ne ma panel gumi nemaviri ne ma battery maviri, nekuti ndakachinja pfungwa.",synthetic_zw,yes
+document_request,"Please send a statement of account for my order. I want to see the deposit I paid, the balance remaining and any delivery charges before I make the final payment.",synthetic_zw,yes
+document_request,"Hi. I need the equipment register for my installation, the serial numbers of the inverter, batteries and panels, so I can file it with my property documents.",synthetic_zw,yes
+upgrade_system,"add 2 more panels",synthetic_zw,yes
+upgrade_system,"bigger inverter needed",synthetic_zw,yes
+upgrade_system,"kuwedzera battery",synthetic_zw,yes
+upgrade_system,"upgrade quote pls",synthetic_zw,yes
+upgrade_system,"want 10kw now",synthetic_zw,yes
+upgrade_system,"Can the 5kva take 4 more panels",synthetic_zw,yes
+upgrade_system,"Ndinoda kuwedzera panel imwe chete",synthetic_zw,yes
+upgrade_system,"is my inverter able to handle more panels",synthetic_zw,yes
+upgrade_system,"We want to add a second battery",synthetic_zw,yes
+upgrade_system,"how do i upgrade from 3kva to 5kva",synthetic_zw,yes
+upgrade_system,"ndoda kusimudzira system yangu kusvika 8kw",synthetic_zw,yes
+upgrade_system,"can i add a geyser to my solar",synthetic_zw,yes
+upgrade_system,"ngifuna ukwengeza ibhetri yesibili",synthetic_zw,yes
+upgrade_system,"i want to add cctv to my system",synthetic_zw,yes
+upgrade_system,"Can I trade in my old inverter",synthetic_zw,yes
+upgrade_system,"what do i need for more panels",synthetic_zw,yes
+upgrade_system,"my 3kva is too small now",synthetic_zw,yes
+upgrade_system,"can i add more batteries to my bank",synthetic_zw,yes
+upgrade_system,"want to move from gel to lithium",synthetic_zw,yes
+upgrade_system,"ndoda kuwedzera ma panel matatu",synthetic_zw,yes
+upgrade_system,"need a parallel inverter",synthetic_zw,yes
+upgrade_system,"is adding panels cheaper than new system",synthetic_zw,yes
+upgrade_system,"Hie. I bought the 5kva from you last year with 6 panels. My wife now runs a dryer in the house and the inverter trips. What is the cheapest way to upgrade without changing everything?",synthetic_zw,yes
+upgrade_system,"Mhoro. Ndine system yeku shop yandakabhadhara muna 2023. Ndatenga freezer yechipiri uye inverter inoramba kushanda pandinoisa zvese. Ndirikuda kukwira kusvika 8kw.",synthetic_zw,yes
+upgrade_system,"We installed your 3kva at our church two years ago. The congregation has grown and we now have a keyboard, bass amp and a projector. What do we need to add so the system does not switch off?",synthetic_zw,yes
+upgrade_system,"Ndakabhadhara 5kva system muna 2022 ne ma panel mana. Ndirikuda kuwedzera ma panel e 550w seaya ari kutengeswa nhasi. Ndiudzeiwo kana inverter yangu inogamuchira ma panel e watt yakakwirira.",synthetic_zw,yes
+upgrade_system,"Good morning. I bought a 5kwh lithium from you in March. I want to add a second identical battery to double the backup time. Can two of those batteries run in parallel on my existing 5kva?",synthetic_zw,yes
+upgrade_system,"My mother's house in Highfield has your old 2kva system. She now has a fridge and a small freezer. I want to upgrade the inverter and add panels without replacing the roof mounts. Is that possible?",synthetic_zw,yes
+upgrade_system,"Ndiri kufunga kuwedzera CCTV pa system yangu yeku shop. Ndine 5kva ne ma panel 8. Ndirikuda kuziva kuti ndinoda kuwedzera ma panel here kana kuti inverter iripo inokwanisa.",synthetic_zw,yes
+upgrade_system,"Hello. We bought a 10kw system in 2023 and have been very happy. We are now building a cottage at the back of the property and want to extend the solar to cover it too. What are our options?",synthetic_zw,yes
+upgrade_system,"Hi. My son bought a house that already has your 5kva system with 4 panels. He wants to add a borehole pump and a geyser. Can we send someone to assess what the existing setup can carry before we buy anything?",synthetic_zw,yes
+upgrade_system,"Ndakaiswa inverter ye 3kva ne battery imwe muna 2022. Ndinoda kuwedzera imwe battery kuti ndikwanise kushandisa fridge usiku hwese kana ZESA yadzima. Ndiudzeiwo kuti inoda imwe inverter here.",synthetic_zw,yes
+upgrade_system,"Morning. We are a clinic in Gweru and our 5kva system is overloaded when the steriliser runs. We need to move up to 8kva and add panels. Can you quote the upgrade only, not a full new system?",synthetic_zw,yes
+upgrade_system,"I have your 8kw inverter with 12 panels and 2 lithium batteries. I want to add a welding machine to the workshop. Will the existing inverter handle it, or do I need to upgrade to 12kw?",synthetic_zw,yes
+upgrade_system,"Mhoro. Ndakabhadhara 5kw system muna 2021. Ndava nemba yekuwedzera kuseri kweimba huru. Ndirikuda kuti muwedzere ma panel ne inverter yechipiri, asi handidi kuisa waya itsva dzese.",synthetic_zw,yes
+upgrade_system,"Hi. We bought the 5kva kit from you for our tuckshop. Business is good and we now have two fridges, a freezer and a microwave. The inverter goes off when the freezer kicks in. What upgrade do you advise?",synthetic_zw,yes
+upgrade_system,"Ndakaiswa system muna 2020. Ma panel achiri kushanda asi inverter inongodzima. Ndirikuda kutsiva inverter ne imwe hombe uye kuwedzera battery. Ndiudzeiwo kuti ma panel ekare anogona kushanda ne inverter itsva.",synthetic_zw,yes
+upgrade_system,"Good morning. My husband installed a 3kva system for me three years ago. I have since bought an iron and a microwave. I don't want to buy a whole new system, I just want to be able to use them. What's the smallest upgrade?",synthetic_zw,yes
+upgrade_system,"Hi. I want to change my four 450w panels to 550w panels. Can I keep the same inverter and just replace the panels, or will the higher voltage damage the unit?",synthetic_zw,yes
+upgrade_system,"Mhoro. Tine system yeku lodge yedu muNyanga. Mwaka unouya wevashanyi wave kuwedzera uye tinoda kuwedzera ma panel ne battery kuti tisavhiringidze vaenzi. Mungauye kuzoona here?",synthetic_zw,yes
+upgrade_system,"We have the 5kva with 6 panels at our farmhouse. We want to add a second borehole and a small irrigation pump. What is the best way to extend the system without replacing the inverter?",synthetic_zw,yes
+upgrade_system,"Ndakabhadhara system yeku salon yangu muna 2022. Ndine dryer imwe chete uye inverter inoramba kushanda pandinoisa. Ndirikuda kuwedzera inverter kana kutsiva ne 8kw. Ndiudzeiwo zvinodhura zvakadii.",synthetic_zw,yes
+upgrade_system,"Hello. I am moving house in March and I want to take my 5kva system with me. I want to add a bigger inverter and more panels at the new place in Ruwa. Do you handle relocations and upgrades together?",synthetic_zw,yes
+upgrade_system,"Hi. We bought a 10kwh battery last year and only a 5kva inverter. We now want to run the geyser and stove during load-shedding. Can the battery work with a bigger inverter or do we need another battery too?",synthetic_zw,yes
+upgrade_system,"Mhoro. Ndine 3kva system yandakabhadhara muna 2023. Ndinoda kuwedzera ma panel maviri chete nekuti ndatenga freezer. Ndiudzeiwo kuti inverter inokwanisa here uye kuti ndinoda battery yekuwedzera here.",synthetic_zw,yes
+upgrade_system,"Our school has your 8kw system from 2022. We are adding a computer lab with 15 machines. Can we add panels and a second inverter in parallel, or do we have to replace the existing one?",synthetic_zw,yes
+upgrade_system,"Hi. I have a small 1kva inverter for lights only. I want to keep it for the gate and garage and add a proper 5kva for the house. Can both systems share the same panels or do they need separate arrays?",synthetic_zw,yes
+upgrade_system,"Ndakaiswa 5kva ne ma panel matanhatu muna 2021. Ndinoda kuwedzera battery yechipiri kuti ndikwanise kuombera usiku kana ZESA yadzima. Ndiudzeiwo kuti ndinotanga neiko.",synthetic_zw,yes
+upgrade_system,"Good afternoon. I want to add a solar geyser to the 8kw system you installed. The geyser will run off the inverter during the day. Can the existing system carry it, or do I need to add more panels first?",synthetic_zw,yes
+upgrade_system,"Mhoro. Ndakabhadhara 5kva system muna 2022. Ndine fridge ne tv asi ndinoda kuwedzera iron. Ndirikuda kuti mundiudze kuti ndinoda inverter hombe kana kuti ndinogona kuwedzera battery chete.",synthetic_zw,yes
+upgrade_system,"Hi. We have your 5kva in the main house and we want to extend solar to a granny cottage at the back. Do we need a second inverter and battery for the cottage or can we run a cable from the main system?",synthetic_zw,yes
+upgrade_system,"Ndakaiswa system muna 2023 ne ma panel e 450w. Ndiri kuona kuti ma panel matsva e 550w ari kutengeswa. Ndinoda kuwedzera maviri e 550w. Ndiudzeiwo kana kusanganisa ma watt akasiyana kuri kunetsa.",synthetic_zw,yes
+upgrade_system,"Morning. Our butchery has been running on your 8kw system for two years. We want to add a cold room. What is the realistic upgrade, and can the existing batteries support the extra load at night?",synthetic_zw,yes
+upgrade_system,"Hi. I want to add a WiFi monitoring dongle to my old inverter so I can see what is happening from work. Is that possible on the model you sold me in 2021, and is there a newer unit if not?",synthetic_zw,yes
+upgrade_system,"Ndine system yekuimba yandakabhadhara muna 2022. Ndatenga laptop yemwana uye anoda kuishandisa masikati ese. Ndirikuda kuwedzera ma panel maviri kuti ndisapedze battery masikati.",synthetic_zw,yes
+upgrade_system,"Good evening. We bought the 3kva from you and it has served us well. My brother is building next door and wants to buy a bigger system. I want to upgrade mine and pass this one to him. Can we work something out?",synthetic_zw,yes
+upgrade_system,"Hi. We bought a 10kwh battery from you last year and only a 5kva inverter. We now want to run the geyser and stove during load-shedding. Can the battery work with a bigger inverter or do we need another battery too?",synthetic_zw,yes
+upgrade_system,"Mhoro. Tine system yechikoro yakaiswa muna 2021. Tinoda kuwedzera ma panel mana ne battery imwe nekuti tave kubatsirawo vanhu vemumusha nemagetsi eku charger foni.",synthetic_zw,yes
+upgrade_system,"Afternoon. I have your 5kva with 8 panels on an IBR roof. I want to add another 4 panels on a flat slab section. Can the same inverter take two different arrays on separate roof sections?",synthetic_zw,yes
+upgrade_system,"Ndakabhadhara 10kw system muna 2023. Ndine ma panel gumi nemaviri uye battery imwe chete. Ndinoda kuwedzera battery yechipiri. Ndiudzeiwo kuti inoda kuiswa ne technician here kana kuti ndinogona kuzviita ndega.",synthetic_zw,yes
+upgrade_system,"Hi. My current system covers the house but not the borehole. I want to add panels and a pump controller so the borehole runs on solar too. Can we do that without touching the house circuit?",synthetic_zw,yes
+upgrade_system,"Hi. I want to add a second 5kwh battery to my system but my inverter is a Growatt 5kva. Do I have to buy the same brand of battery or can I mix with a Dyness?",synthetic_zw,yes
+upgrade_system,"Mhoro. Ndakaiswa 5kva system muna 2020. Ndava nemota yekuchaja uye ndinoda kuwedzera ma panel kuti ndikwanise kuichaja masikati. Ndiudzeiwo kuti ndinoda kuwedzera inverter here.",synthetic_zw,yes
+upgrade_system,"We bought a 5kva system for our guest house in Masvingo. We now have four more rooms and guests complain when the aircon trips the inverter. What upgrade do you recommend and can it be done in phases?",synthetic_zw,yes
+upgrade_system,"Hi. I want to add CCTV cameras to my property and run them off the solar. I have a 3kva system with 4 panels. Do I need to add panels, battery, or both to keep the cameras running all night?",synthetic_zw,yes
+qa_brand,"Which is better between Deye and Sunsynk for a 5kva hybrid? I want to buy once and not regret. Please give me your honest opinion and not just what is in stock.",synthetic_zw,yes
+qa_brand,"Mhoro. Ndirikuda kuziva kuti Growatt ne Mecer ndepi iri nani pa inverter ye 3kva, nekuti mutengo wavo wakasiyana uye handidi kutenga chakaipa.",synthetic_zw,yes
