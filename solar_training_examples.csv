@@ -2367,3 +2367,481 @@ upgrade_system,"We bought a 5kva system for our guest house in Masvingo. We now 
 upgrade_system,"Hi. I want to add CCTV cameras to my property and run them off the solar. I have a 3kva system with 4 panels. Do I need to add panels, battery, or both to keep the cameras running all night?",synthetic_zw,yes
 qa_brand,"Which is better between Deye and Sunsynk for a 5kva hybrid? I want to buy once and not regret. Please give me your honest opinion and not just what is in stock.",synthetic_zw,yes
 qa_brand,"Mhoro. Ndirikuda kuziva kuti Growatt ne Mecer ndepi iri nani pa inverter ye 3kva, nekuti mutengo wavo wakasiyana uye handidi kutenga chakaipa.",synthetic_zw,yes
+qa_brand,deye or sunsynk which one is better,synthetic_zw,yes
+qa_brand,my friend says all these chinese brands are rubbish is it true,synthetic_zw,yes
+qa_brand,which brand lasts long in zimbabwe with our load shedding,synthetic_zw,yes
+qa_brand,hw about growatt vs victron for home use,synthetic_zw,yes
+qa_brand,i have a shop in mutare which inverter brand do u recommend,synthetic_zw,yes
+qa_brand,is mecer still good or it's now old fashioned,synthetic_zw,yes
+qa_brand,between felicity and luxpower which one is reliable,synthetic_zw,yes
+qa_brand,what lithium brand is best pylontech or dyness,synthetic_zw,yes
+qa_brand,jinko panels vs canadian solar which lasts longer,synthetic_zw,yes
+qa_brand,my brother in bulawayo says goodwe is the best u agree,synthetic_zw,yes
+qa_brand,which brand does the clinic across town use for their solar,synthetic_zw,yes
+qa_brand,ko solis ne deye ndedzipi dzakanaka,synthetic_zw,yes
+qa_brand,ndanzwa kuti victron ndiyo yepamusoro asi unodhura,synthetic_zw,yes
+qa_brand,ma panels e canadian solar akaoma here kana kuti jinko ndiyo iri better,synthetic_zw,yes
+qa_brand,ngifuna ukwazi ukuthi yiphi i brand engcono kuma inverter i deye noma i sunsynk,synthetic_zw,yes
+qa_brand,sunsynk kana deye,synthetic_zw,yes
+qa_brand,victron here,synthetic_zw,yes
+qa_brand,mecer good,synthetic_zw,yes
+qa_brand,is kodak inverter still being sold here and is it any good,synthetic_zw,yes
+qa_brand,i am opening a butchery in kwekwe and my installer says growatt is fine but my cousin in the uk says victron only who do i listen to,synthetic_zw,yes
+qa_brand,we are a school in marondera with 5kva inverter and 4 batteries our head says we must buy pylontech again but i saw freedom won is also good which one wont give us problems,synthetic_zw,yes
+qa_brand,my husband wants deye because it is cheap but i want sunsynk because everyone on the whatsapp groups talks about it we have 8kw load at home in glen view please advise,synthetic_zw,yes
+qa_brand,ndiri kuda 5kva ye shop yangu mu mbare vanhu vanoti luxpower iri better than felicity iwe unoti chii,synthetic_zw,yes
+qa_brand,mukoma wangu anoti ma inverter eku china haana kusimba asi ndiona vanhu vachishandisa deye ndizvo here,synthetic_zw,yes
+qa_brand,my installer is pushing solis but i heard goodwe is better for our zesa problems which one should i take for a clinic in gweru,synthetic_zw,yes
+qa_brand,is it true that jinko panels are now fake in zimbabwe i want to buy 550w but im scared,synthetic_zw,yes
+qa_brand,which battery brand is used by the big shops in harare pylontech or dyness,synthetic_zw,yes
+qa_brand,felicity or luxpower,synthetic_zw,yes
+qa_brand,someone told me kodak is just a name and mecer is the same machine inside is that true,synthetic_zw,yes
+faq_savings_payback,my zesa bill is around usd 80 per month how much will i save with solar,synthetic_zw,yes
+faq_savings_payback,how many years before i get my money back,synthetic_zw,yes
+faq_savings_payback,is it worth it for just lights and tv,synthetic_zw,yes
+faq_savings_payback,my neighbour says he still pays zesa after installing solar how true is that,synthetic_zw,yes
+faq_savings_payback,i spend usd 150 on diesel for generator every month will solar really help,synthetic_zw,yes
+faq_savings_payback,as a shop owner i lose a lot when fridges are off during load shedding does solar pay back,synthetic_zw,yes
+faq_savings_payback,i am a pensioner is it really worth spending my money on solar,synthetic_zw,yes
+faq_savings_payback,how long to recover money if i install for borehole pump,synthetic_zw,yes
+faq_savings_payback,ndine shop mu highfield fridge inouraya zvinhu nguva zesa inoenda solar inobatsira here,synthetic_zw,yes
+faq_savings_payback,ndoda kuziva kuti mushure menguva yakadii ndinenge ndadzoserwa mari yangu,synthetic_zw,yes
+faq_savings_payback,i run a salon in gweru the dryers use a lot is solar worth the investment,synthetic_zw,yes
+faq_savings_payback,my friend installed 5kva and says he now saves usd 60 monthly is that realistic,synthetic_zw,yes
+faq_savings_payback,ngifuna ukwazi ukuthi ngizosindisa malini uma ngifaka i solar ekhaya,synthetic_zw,yes
+faq_savings_payback,we have a church in chitungwiza and the zesa bill is killing us will solar pay back,synthetic_zw,yes
+faq_savings_payback,tell me honestly when will i break even if i buy 8kw system for my home,synthetic_zw,yes
+faq_savings_payback,will it pay back,synthetic_zw,yes
+faq_savings_payback,savings roughly,synthetic_zw,yes
+faq_savings_payback,is it worth it,synthetic_zw,yes
+faq_savings_payback,payback years,synthetic_zw,yes
+faq_savings_payback,i have a farm in chinhoyi and the borehole pump runs on zesa if i put 3kva solar will i see the difference in my bill,synthetic_zw,yes
+faq_savings_payback,my wife says solar is a waste of money because we still buy tokens please explain if we really save anything,synthetic_zw,yes
+faq_savings_payback,mari yangu inoenda kuna zesa mwedzi woga woga solar ichandibatsira here kana kuti ndichiri kubhadhara,synthetic_zw,yes
+faq_savings_payback,i am a landlord in budiriro tenants vanoshandisa zesa yakawanda if i install solar will it reduce my costs or its just a story,synthetic_zw,yes
+faq_savings_payback,compare solar with generator i am tired of buying petrol every week for my shop in masvingo,synthetic_zw,yes
+faq_savings_payback,how much do i save if i only want to run fridge and freezer at my butchery in kwekwe,synthetic_zw,yes
+faq_savings_payback,how long to break even,synthetic_zw,yes
+faq_savings_payback,my zesa bill is usd 200 for the shop what will my new bill be after 5kva solar,synthetic_zw,yes
+faq_savings_payback,i am 67 years old and my son says i must not waste my pension on solar but i am tired of load shedding is it worth it,synthetic_zw,yes
+faq_savings_payback,if i buy 5kwh battery and 550w panels how many years before i recover the usd 800 i will spend,synthetic_zw,yes
+qa_payment_methods,can i pay with ecocash,synthetic_zw,yes
+qa_payment_methods,do u accept usd cash,synthetic_zw,yes
+qa_payment_methods,can i swipe my card there at the shop,synthetic_zw,yes
+qa_payment_methods,is it safe to send ecocash who do i send to,synthetic_zw,yes
+qa_payment_methods,can i pay part in zig and part in usd,synthetic_zw,yes
+qa_payment_methods,my company wants to pay by cheque is that ok,synthetic_zw,yes
+qa_payment_methods,i am in south africa can i pay from here for my mother's system,synthetic_zw,yes
+qa_payment_methods,do u take innbucks or one money,synthetic_zw,yes
+qa_payment_methods,can i do bank transfer or rtgs from my account,synthetic_zw,yes
+qa_payment_methods,ndoda kubhadhara ne ecocash mune nhamba here,synthetic_zw,yes
+qa_payment_methods,ndiri ku uk ndoda kubhadharira hanzvadzi yangu iri ku harare mari yacho,synthetic_zw,yes
+qa_payment_methods,how do i pay if i am in bulawayo and the shop is in harare,synthetic_zw,yes
+qa_payment_methods,ngicela ukwazi ukuthi ningayithatha i ecocash noma i cash,synthetic_zw,yes
+qa_payment_methods,i want to pay at the shop not online is that possible,synthetic_zw,yes
+qa_payment_methods,can i pay with zig coins and if so what rate do u use,synthetic_zw,yes
+qa_payment_methods,ecocash,synthetic_zw,yes
+qa_payment_methods,usd cash ok,synthetic_zw,yes
+qa_payment_methods,swipe possible,synthetic_zw,yes
+qa_payment_methods,innbucks,synthetic_zw,yes
+qa_payment_methods,my brother in england wants to pay for my 5kva system can he send money from there and how,synthetic_zw,yes
+qa_payment_methods,i have a company account can i pay by bank transfer and get a receipt same day,synthetic_zw,yes
+qa_payment_methods,ndinogona kubhadhara ne one money here uye mari yacho inosvika rini,synthetic_zw,yes
+qa_payment_methods,i want to pay deposit ne ecocash but balance ndoda kupa cash pa shop is that allowed,synthetic_zw,yes
+qa_payment_methods,is it safe to send money to a personal ecocash number or must i use the company one,synthetic_zw,yes
+qa_payment_methods,we are a church in epworth and we want to pay by cheque from our account do u accept,synthetic_zw,yes
+qa_payment_methods,rtgs ok,synthetic_zw,yes
+qa_payment_methods,can i pay in zig at the shop and what is the rate today,synthetic_zw,yes
+qa_payment_methods,ecocash here,synthetic_zw,yes
+qa_payment_methods,my daughter is in dubai and she wants to pay for my solar how can she send the money,synthetic_zw,yes
+qa_payment_methods,if i pay by ecocash how do i know u received it i dont want to lose my money,synthetic_zw,yes
+qa_refund,i changed my mind after paying can i get my money back,synthetic_zw,yes
+qa_refund,i ordered the wrong size inverter can i return it,synthetic_zw,yes
+qa_refund,my system has not been delivered yet i want to cancel and get a refund,synthetic_zw,yes
+qa_refund,what is your refund policy before i pay,synthetic_zw,yes
+qa_refund,i sent money by mistake can u reverse it,synthetic_zw,yes
+qa_refund,is the deposit refundable if i change my mind,synthetic_zw,yes
+qa_refund,the product never worked from day one i want my money back,synthetic_zw,yes
+qa_refund,how long does a refund take if i cancel,synthetic_zw,yes
+qa_refund,ndakabhadhara asi ndoda kukanzura ndodzoserwa mari here,synthetic_zw,yes
+qa_refund,my relative paid for me in south africa but i want to cancel now what happens,synthetic_zw,yes
+qa_refund,ngifuna imali yami ibuyiswe ngoba angisayidingi i solar,synthetic_zw,yes
+qa_refund,i paid deposit last week but my wife says we must wait can i get refund,synthetic_zw,yes
+qa_refund,the panels u delivered are not what i ordered i want to return them and get refund,synthetic_zw,yes
+qa_refund,can i get a refund if the battery dies within warranty period,synthetic_zw,yes
+qa_refund,ndakatumira mari ne om yangu asi ndoda kudzosa ndisati ndatora system,synthetic_zw,yes
+qa_refund,refund possible,synthetic_zw,yes
+qa_refund,money back,synthetic_zw,yes
+qa_refund,can i cancel,synthetic_zw,yes
+qa_refund,deposit refundable,synthetic_zw,yes
+qa_refund,i paid usd 800 for 5kva but my installer says the inverter is too small for my house can i return and get refund,synthetic_zw,yes
+qa_refund,my mother paid by ecocash for a battery but now she says she doesnt want it can we get refund,synthetic_zw,yes
+qa_refund,i ordered 550w panels but u brought 450w i want my money back not a replacement,synthetic_zw,yes
+qa_refund,ndakabhadhara deposit yema panels asi handisi kuzoda system ikozvino mari yangu inodzoka here,synthetic_zw,yes
+qa_refund,i paid ne ecocash last month but the system is not yet installed ndoda refund because i am moving to south africa,synthetic_zw,yes
+qa_refund,the inverter they gave me is making noise and they say it is normal i want refund,synthetic_zw,yes
+qa_refund,how many days do u take to refund if someone cancels before delivery,synthetic_zw,yes
+qa_refund,i paid for 5kwh battery but i want to change to 3kwh can u refund the difference,synthetic_zw,yes
+qa_refund,mari yangu inodzoka here,synthetic_zw,yes
+qa_refund,my husband paid without telling me and i dont want the solar can i get the money back,synthetic_zw,yes
+qa_refund,i sent usd 300 by mistake to ur ecocash instead of another shop can u send it back,synthetic_zw,yes
+qa_roof,asbestos roof ok?,synthetic_zw,yes
+qa_roof,denga re asbestos?,synthetic_zw,yes
+qa_roof,IBR roof chete?,synthetic_zw,yes
+qa_roof,uphahla lwe asbestos?,synthetic_zw,yes
+qa_roof,my roof is flat slab can u mount panels,synthetic_zw,yes
+qa_roof,roof facing south will solar still work,synthetic_zw,yes
+qa_roof,"old roof here, will panels make it weak",synthetic_zw,yes
+qa_roof,ndine imba yekurenda ndinogona here kuisa solar,synthetic_zw,yes
+qa_roof,denga rangu rinopinda mvura solar inogona here,synthetic_zw,yes
+qa_roof,do u drill the roof kana kuti munongoisa sei,synthetic_zw,yes
+qa_roof,i have a double storey house in glen view and i am worried about how u will carry panels up there and if the roof can handle the weight,synthetic_zw,yes
+qa_roof,my roof is too small for 8 panels i want 5kva system can u put some on the carport instead,synthetic_zw,yes
+qa_roof,"the roof is old asbestos and my landlord says we cant drill it, can we do ground mounting or carport for the panels",synthetic_zw,yes
+qa_roof,"we stay in a rented house in budiriro and the landlord doesnt want holes in the roof, is there a way to install without drilling",synthetic_zw,yes
+qa_roof,"denga remba yangu rakasakara uye rine makore mazhinji, ndinotya kuti panel dzichawira pasi, munogona here kuisa pa ground kana carport",synthetic_zw,yes
+qa_roof,"my roof is tiles but rine mvura inopinda kana kuchinaya, if u put panels will the leakage get worse or munogona kugadzira denga first",synthetic_zw,yes
+qa_night,works at night?,synthetic_zw,yes
+qa_night,usiku inoshanda here,synthetic_zw,yes
+qa_night,night iri battery inobata here,synthetic_zw,yes
+qa_night,ebusuku iyasebenza?,synthetic_zw,yes
+qa_night,will my fridge run at night,synthetic_zw,yes
+qa_night,"lights and tv in evening, battery enough?",synthetic_zw,yes
+qa_night,battery will last until morning?,synthetic_zw,yes
+qa_night,clinic yedu inoda magetsi usiku solar inogona here,synthetic_zw,yes
+qa_night,shop yangu inoda security lights usiku solar inobatsira here,synthetic_zw,yes
+qa_night,what happens at 2am if battery yapera,synthetic_zw,yes
+qa_night,we have load shedding starting at 6pm every day and i want to know if the battery will carry the fridge and tv until morning,synthetic_zw,yes
+qa_night,"i have a borehole pump for my farm in chinhoyi, can i run it at night using the battery or must i wait for sun",synthetic_zw,yes
+qa_night,"my wife is a nurse at a clinic in gweru and they need lights at night for emergencies, will a 5kva system with 5kwh battery last the whole night",synthetic_zw,yes
+qa_night,"i run a shop in kwekwe and i need security lights from 7pm to 5am, how many batteries do i need so the lights dont go off at midnight",synthetic_zw,yes
+qa_night,"kana zesa yaenda manheru, battery inogona here kusvitsa mangwanani kana ndichishandisa fridge netv",synthetic_zw,yes
+qa_night,"my clinic in epworth needs night power for the maternity ward, solar inongoshanda here usiku kana kuti tinoda generator",synthetic_zw,yes
+faq_how_long_it_lasts,panels last how long?,synthetic_zw,yes
+faq_how_long_it_lasts,lithium battery inogara years mangani,synthetic_zw,yes
+faq_how_long_it_lasts,ibhetri ihlala iminyaka emingaki,synthetic_zw,yes
+faq_how_long_it_lasts,gel battery life is how many years,synthetic_zw,yes
+faq_how_long_it_lasts,inverter lasts how long before replacing,synthetic_zw,yes
+faq_how_long_it_lasts,will system still work after 10 years,synthetic_zw,yes
+faq_how_long_it_lasts,"hama yangu battery yakaora mushure memakore maviri, yangu ichagara here",synthetic_zw,yes
+faq_how_long_it_lasts,warranty inopera mangani uye battery chaiyo inogara yakadii,synthetic_zw,yes
+faq_how_long_it_lasts,solar geyser inogara makore mangani,synthetic_zw,yes
+faq_how_long_it_lasts,"i want to buy 550w panels but i am worried they will only last 5 years, my friend says jinko panels can do 20 years is that true",synthetic_zw,yes
+faq_how_long_it_lasts,"for lithium battery pylontech, how many years before i must replace it, i dont want to buy every 2 years like my gel battery",synthetic_zw,yes
+faq_how_long_it_lasts,"my cousin installed a 5kwh battery and it died after 2 years, i want to know if that is normal or he was given a fake one",synthetic_zw,yes
+faq_how_long_it_lasts,"i am a farmer and i need the borehole pump to last many years, what is the real lifespan of a solar pump and the panels",synthetic_zw,yes
+faq_how_long_it_lasts,"ndine 5kva inverter yekare yakaita makore mashanu ichiri kushanda, ndoda kuziva kuti itsva inogara makore mangani",synthetic_zw,yes
+faq_how_long_it_lasts,"my gel battery yakaora after 2 years, i want lithium now but how many years before i replace it and is the warranty real",synthetic_zw,yes
+faq_is_it_genuine,deye original?,synthetic_zw,yes
+faq_is_it_genuine,ma panels echokwadi here,synthetic_zw,yes
+faq_is_it_genuine,serial number iripo here,synthetic_zw,yes
+faq_is_it_genuine,i deye yamaqiniso?,synthetic_zw,yes
+faq_is_it_genuine,i heard fake panels are in harare how do i know,synthetic_zw,yes
+faq_is_it_genuine,do u have proof of authenticity for ur inverters,synthetic_zw,yes
+faq_is_it_genuine,are they brand new or refurbished,synthetic_zw,yes
+faq_is_it_genuine,ma battery enyu i real lithium here kana kuti ivanhu vanongotaura,synthetic_zw,yes
+faq_is_it_genuine,"sei ma price enyu akaderera pane vamwe, mune fake here",synthetic_zw,yes
+faq_is_it_genuine,where do u import from and can i check ne manufacturer,synthetic_zw,yes
+faq_is_it_genuine,"i want to buy a deye 5kva but my friend says there are fake deye inverters in zimbabwe, how can i be sure yours is original",synthetic_zw,yes
+faq_is_it_genuine,"before i pay usd 800 for a 5kwh battery, i need to know if it is real lithium and if it comes with a serial number i can check with the manufacturer",synthetic_zw,yes
+faq_is_it_genuine,"i saw a 550w panel for usd 120 somewhere else, your price is higher, is it because yours are original and theirs are fake",synthetic_zw,yes
+faq_is_it_genuine,"i am a shop owner in mutare and i want to buy 8kw inverter, please tell me where u import from and if the warranty is from the manufacturer or from u",synthetic_zw,yes
+faq_is_it_genuine,"ndanzwa kuti kune ma panels emanyepo ari kutengeswa mu harare, ndoda kuziva kuti ese ari mu shop menyu nde echokwadi here uye ane serial number here",synthetic_zw,yes
+faq_is_it_genuine,"my brother in the uk says i must ask for the serial number and check ne manufacturer before i pay, can u provide that for the deye inverter",synthetic_zw,yes
+qa_shade,muti uri kumberi,synthetic_zw,yes
+qa_shade,masikati chete,synthetic_zw,yes
+qa_shade,flats next door,synthetic_zw,yes
+qa_shade,gum tree west,synthetic_zw,yes
+qa_shade,"denga rine chimney, shade inoita here",synthetic_zw,yes
+qa_shade,"one string in shade, does it kill the array",synthetic_zw,yes
+qa_shade,neighbour's palm tree inobata ma panels mangwanani,synthetic_zw,yes
+qa_shade,"shade from satellite dish, is it serious",synthetic_zw,yes
+qa_shade,"block of flats iri kuma east, morning sun inobatwa here",synthetic_zw,yes
+qa_shade,"shade in winter vs summer, which is worse",synthetic_zw,yes
+qa_shade,"i have a tall gum tree on the west side of my yard in highfield, from 3pm the roof is in shade, will my 5kva system still produce enough to charge the battery",synthetic_zw,yes
+qa_shade,"ndine imba iri kuseri kwegomo mu mutare, zuva rinobuda kuma 10am, ndinoda kuziva kuti solar ichakwanisa here kana ndikaisa ma panel",synthetic_zw,yes
+qa_shade,"my neighbour's church building is very tall and casts shade on my roof every afternoon, my installer says i must cut my mango tree instead, what do u advise",synthetic_zw,yes
+qa_shade,"ndinoda kuziva kuti ma panel anofanira kuva papi kana denga rine shade yakawanda, ndapota ndibatsirei",synthetic_zw,yes
+qa_shade,"umthunzi womuthi omkhulu uyangikhathaza, kungcono ngisike umuthi noma ngithuthe ama panel",synthetic_zw,yes
+qa_clouds,rain all week?,synthetic_zw,yes
+qa_clouds,hail crack panels?,synthetic_zw,yes
+qa_clouds,makore nhasi,synthetic_zw,yes
+qa_clouds,mvura here,synthetic_zw,yes
+qa_clouds,does it charge at all on a grey day,synthetic_zw,yes
+qa_clouds,"drizzle whole day, battery ichazara here",synthetic_zw,yes
+qa_clouds,"june july mornings, less power?",synthetic_zw,yes
+qa_clouds,"misty mornings mu mutare, solar inoshanda here",synthetic_zw,yes
+qa_clouds,"thunderstorm afternoon, ndinofanira here kudzima",synthetic_zw,yes
+qa_clouds,mushure memvura yakawanda solar inoshanda here,synthetic_zw,yes
+qa_clouds,"we are in bulawayo and the rainy season is starting, i have a 5kva system with 5kwh battery, will it still charge enough for the fridge at night",synthetic_zw,yes
+qa_clouds,"my neighbour's panel cracked after hail last november, does the warranty cover hail damage and should i buy covers",synthetic_zw,yes
+qa_clouds,"ndine purazi ku chinhoyi uye ndinotya mwaka wemvura, borehole pump inogona here kushanda kana makore akawanda",synthetic_zw,yes
+qa_clouds,"lightning struck my neighbour's inverter last year, i want to know if u install surge protection and what happens to the panels during a storm",synthetic_zw,yes
+qa_clouds,uma lina izulu usuku lonke i solar iyashaja ibhetri noma cha?,synthetic_zw,yes
+faq_cctv_security,cctv on 3kva?,synthetic_zw,yes
+faq_cctv_security,cameras drain battery?,synthetic_zw,yes
+faq_cctv_security,ma bolts ekuvhara,synthetic_zw,yes
+faq_cctv_security,alarm pa load shedding?,synthetic_zw,yes
+faq_cctv_security,ma camera mangani pa 1kva,synthetic_zw,yes
+faq_cctv_security,"electric fence energizer on solar, ok?",synthetic_zw,yes
+faq_cctv_security,"tuckshop mu highfield needs cameras, solar possible",synthetic_zw,yes
+faq_cctv_security,"farm needs motion lights, mune here",synthetic_zw,yes
+faq_cctv_security,munotengesa ma camera here kana kuti magetsi chete,synthetic_zw,yes
+faq_cctv_security,"salon in gweru wants cameras, works at night?",synthetic_zw,yes
+faq_cctv_security,"i want to add cctv to my existing 3kva solar system in budiriro, will 4 cameras and a dvr drain the battery at night",synthetic_zw,yes
+faq_cctv_security,"my panels were stolen last year and i now want anti theft brackets and an alarm, do u install these and do they work when zesa is off",synthetic_zw,yes
+faq_cctv_security,"we run a clinic in epworth and need cameras at the gate and maternity ward at night, can a 5kva system with 5kwh battery handle cameras plus lights",synthetic_zw,yes
+faq_cctv_security,"ndine gate motor uye ndinoda kuziva kuti inogona here kushanda ne solar kana zesa yaenda, uye munogona here kuisa alarm inoshandisa battery",synthetic_zw,yes
+faq_cctv_security,i cctv kanye ne alarm kungasebenza nge solar uma i zesa icimile?,synthetic_zw,yes
+qa_used_equipment,used deye safe?,synthetic_zw,yes
+qa_used_equipment,yakare inoshanda here,synthetic_zw,yes
+qa_used_equipment,trade in here?,synthetic_zw,yes
+qa_used_equipment,battery yekare?,synthetic_zw,yes
+qa_used_equipment,is refurbished deye safe for my shop,synthetic_zw,yes
+qa_used_equipment,"my uncle ari kutengesa 5kva, good idea?",synthetic_zw,yes
+qa_used_equipment,"used panels from a farm, ok here",synthetic_zw,yes
+qa_used_equipment,munogadzira ma battery here,synthetic_zw,yes
+qa_used_equipment,used system from someone going to uk,synthetic_zw,yes
+qa_used_equipment,second hand battery inogona here kushanda,synthetic_zw,yes
+qa_used_equipment,"i want to buy a used 8kw inverter from someone in harare, how can i check if it is stolen or refurbished before i pay",synthetic_zw,yes
+qa_used_equipment,"ndine ma gel batteries mana ekare, ndinoda kuziva kuti munogona here kutenga kana kuti trade in ne lithium",synthetic_zw,yes
+qa_used_equipment,"i saw a second hand 5kwh battery for usd 350 in bulawayo, the seller says it is 1 year old, how can i test it before paying",synthetic_zw,yes
+qa_used_equipment,"ndinoda kutenga system yekare kubva kushamwari yangu, ndinofanira here kutarisa serial number kana kuti ndingotenga chete",synthetic_zw,yes
+qa_used_equipment,ngifuna ukuthenga i second hand inverter kodwa angazi ukuthi ingaba yebiwe noma cha,synthetic_zw,yes
+goodbye,ok bye,synthetic_zw,yes
+goodbye,bye,synthetic_zw,yes
+goodbye,tatenda,synthetic_zw,yes
+goodbye,siya zvakanaka,synthetic_zw,yes
+goodbye,chisarai,synthetic_zw,yes
+goodbye,toboonana,synthetic_zw,yes
+goodbye,ngiyabonga,synthetic_zw,yes
+goodbye,sala kahle,synthetic_zw,yes
+goodbye,hamba kahle,synthetic_zw,yes
+goodbye,ok thanks bye,synthetic_zw,yes
+goodbye,later,synthetic_zw,yes
+goodbye,cool bye,synthetic_zw,yes
+goodbye,ok ok bye,synthetic_zw,yes
+goodbye,fine bye,synthetic_zw,yes
+goodbye,ndaenda,synthetic_zw,yes
+goodbye,ndichaenda,synthetic_zw,yes
+goodbye,bye now,synthetic_zw,yes
+goodbye,ok see u,synthetic_zw,yes
+goodbye,sharp bye,synthetic_zw,yes
+goodbye,cool later,synthetic_zw,yes
+goodbye,henyu bye,synthetic_zw,yes
+goodbye,ok tatenda,synthetic_zw,yes
+goodbye,mazvita bye,synthetic_zw,yes
+goodbye,ta ta,synthetic_zw,yes
+goodbye,ok night,synthetic_zw,yes
+goodbye,bye bye,synthetic_zw,yes
+goodbye,ndabva,synthetic_zw,yes
+goodbye,ndoenda,synthetic_zw,yes
+goodbye,salani,synthetic_zw,yes
+goodbye,ngisuka,synthetic_zw,yes
+goodbye,ok sharp,synthetic_zw,yes
+goodbye,later then,synthetic_zw,yes
+goodbye,ok done,synthetic_zw,yes
+goodbye,zvakanaka,synthetic_zw,yes
+goodbye,ok bye i will come back tomorrow,synthetic_zw,yes
+goodbye,ndatenda ndichafonera mangwana,synthetic_zw,yes
+goodbye,i'll think about it and come back,synthetic_zw,yes
+goodbye,ok thanks for your help bye,synthetic_zw,yes
+goodbye,ndichaenda ikozvino ndichakufonera,synthetic_zw,yes
+goodbye,siya zvakanaka ndichakubata gare gare,synthetic_zw,yes
+goodbye,ok i will come back next week,synthetic_zw,yes
+goodbye,ndinofanira kuenda but ndichadzoka,synthetic_zw,yes
+goodbye,thank u i will call u later,synthetic_zw,yes
+goodbye,ok bye my wife will come tomorrow,synthetic_zw,yes
+goodbye,ndatenda zvikuru musvike zvakanaka,synthetic_zw,yes
+goodbye,i will discuss with my husband and come back,synthetic_zw,yes
+goodbye,ok i will think about it and text u,synthetic_zw,yes
+goodbye,chisarai zvakanaka ndichakufonera,synthetic_zw,yes
+goodbye,sala kahle ngizobuya kusasa,synthetic_zw,yes
+goodbye,ok im going to work will come back,synthetic_zw,yes
+goodbye,ndatenda ndoda kuenda ikozvino,synthetic_zw,yes
+goodbye,thanks bye i will come with my son,synthetic_zw,yes
+goodbye,ok later i will send my brother,synthetic_zw,yes
+goodbye,ndichaona nemurume wangu ndodzoka,synthetic_zw,yes
+goodbye,fine i will come back on saturday,synthetic_zw,yes
+goodbye,ok bye i will whatsapp u later,synthetic_zw,yes
+goodbye,ndatenda ndichakubata pfungwa,synthetic_zw,yes
+goodbye,ok good bye i will decide and come back,synthetic_zw,yes
+affirm,yes,synthetic_zw,yes
+affirm,ehe,synthetic_zw,yes
+affirm,hongu,synthetic_zw,yes
+affirm,yebo,synthetic_zw,yes
+affirm,ok go ahead,synthetic_zw,yes
+affirm,ndizvozvo,synthetic_zw,yes
+affirm,sure send it,synthetic_zw,yes
+affirm,yes please,synthetic_zw,yes
+affirm,yah,synthetic_zw,yes
+affirm,ya,synthetic_zw,yes
+affirm,ok,synthetic_zw,yes
+affirm,correct,synthetic_zw,yes
+affirm,true,synthetic_zw,yes
+affirm,exactly,synthetic_zw,yes
+affirm,sure,synthetic_zw,yes
+affirm,of course,synthetic_zw,yes
+affirm,no problem,synthetic_zw,yes
+affirm,fine,synthetic_zw,yes
+affirm,go ahead,synthetic_zw,yes
+affirm,send it,synthetic_zw,yes
+affirm,i agree,synthetic_zw,yes
+affirm,ndizvo,synthetic_zw,yes
+affirm,ndizvo chaizvo,synthetic_zw,yes
+affirm,sahi,synthetic_zw,yes
+affirm,kulungile,synthetic_zw,yes
+affirm,yebo impela,synthetic_zw,yes
+affirm,ok ok,synthetic_zw,yes
+affirm,yes yes,synthetic_zw,yes
+affirm,alright,synthetic_zw,yes
+affirm,ok sure,synthetic_zw,yes
+affirm,definitely,synthetic_zw,yes
+affirm,100 percent,synthetic_zw,yes
+affirm,sharp,synthetic_zw,yes
+affirm,sharp sharp,synthetic_zw,yes
+affirm,yes go,synthetic_zw,yes
+affirm,ehe ehe,synthetic_zw,yes
+affirm,yes u can go ahead and send me the details,synthetic_zw,yes
+affirm,ehe ndinobvuma musando,synthetic_zw,yes
+affirm,hongu ndizvozvo ndoda izvozvo,synthetic_zw,yes
+affirm,ok i agree with u go ahead,synthetic_zw,yes
+affirm,sure send it i will check,synthetic_zw,yes
+affirm,ndizvozvo chaizvo ndinoda system iyoyo,synthetic_zw,yes
+affirm,yes please i want it,synthetic_zw,yes
+affirm,ehe i am interested go ahead,synthetic_zw,yes
+affirm,yebo ngiyavuma qhubekani,synthetic_zw,yes
+affirm,ok that is fine go ahead,synthetic_zw,yes
+affirm,yes i understand please continue,synthetic_zw,yes
+affirm,ndinobvuma ndizvozvo,synthetic_zw,yes
+affirm,sure i am ready send me the invoice,synthetic_zw,yes
+affirm,ehe ndatenda ndizvo,synthetic_zw,yes
+affirm,ok no problem u can proceed,synthetic_zw,yes
+affirm,yes go ahead i will pay later,synthetic_zw,yes
+affirm,ndizvo chaizvo ndinoda kuziva zvimwe,synthetic_zw,yes
+affirm,yebo impela ngiyaqhubeka,synthetic_zw,yes
+affirm,alright that works for me,synthetic_zw,yes
+affirm,yes please send the details,synthetic_zw,yes
+affirm,ok i am happy go ahead,synthetic_zw,yes
+affirm,ehe ndinoda izvozvo,synthetic_zw,yes
+affirm,sure i agree with u,synthetic_zw,yes
+affirm,yes that is correct please continue,synthetic_zw,yes
+deny,no,synthetic_zw,yes
+deny,aiwa,synthetic_zw,yes
+deny,hapana,synthetic_zw,yes
+deny,cha,synthetic_zw,yes
+deny,not today,synthetic_zw,yes
+deny,handidi,synthetic_zw,yes
+deny,not interested,synthetic_zw,yes
+deny,no thanks maybe later,synthetic_zw,yes
+deny,nope,synthetic_zw,yes
+deny,no no,synthetic_zw,yes
+deny,aiwa aiwa,synthetic_zw,yes
+deny,hapana cha,synthetic_zw,yes
+deny,not now,synthetic_zw,yes
+deny,cha cha,synthetic_zw,yes
+deny,no thanks,synthetic_zw,yes
+deny,not really,synthetic_zw,yes
+deny,nope not now,synthetic_zw,yes
+deny,handidi ikozvino,synthetic_zw,yes
+deny,hai,synthetic_zw,yes
+deny,no ways,synthetic_zw,yes
+deny,not at all,synthetic_zw,yes
+deny,negative,synthetic_zw,yes
+deny,no i pass,synthetic_zw,yes
+deny,hatidi,synthetic_zw,yes
+deny,no man,synthetic_zw,yes
+deny,aiwa handidi,synthetic_zw,yes
+deny,nope sorry,synthetic_zw,yes
+deny,not for me,synthetic_zw,yes
+deny,no i dont,synthetic_zw,yes
+deny,haiwa,synthetic_zw,yes
+deny,cha hangu,synthetic_zw,yes
+deny,no sorry,synthetic_zw,yes
+deny,later maybe,synthetic_zw,yes
+deny,not yet,synthetic_zw,yes
+deny,ngahatshi,synthetic_zw,yes
+deny,no i am not interested right now,synthetic_zw,yes
+deny,aiwa handidi ikozvino ndichafunga,synthetic_zw,yes
+deny,hapana i dont need it today,synthetic_zw,yes
+deny,cha i will pass for now,synthetic_zw,yes
+deny,not now maybe next month,synthetic_zw,yes
+deny,handidi system ikozvino,synthetic_zw,yes
+deny,no thanks i already have someone,synthetic_zw,yes
+deny,aiwa cha ndinoda,synthetic_zw,yes
+deny,i am not interested please dont send,synthetic_zw,yes
+deny,hapana handina interest,synthetic_zw,yes
+deny,cha handidi ikozvino,synthetic_zw,yes
+deny,no i dont want it,synthetic_zw,yes
+deny,aiwa handikwanisi ikozvino,synthetic_zw,yes
+deny,not today i will come back later,synthetic_zw,yes
+deny,no thanks i changed my mind,synthetic_zw,yes
+deny,handidi chaizvo,synthetic_zw,yes
+deny,haiwa handidi,synthetic_zw,yes
+deny,i pass for now thanks,synthetic_zw,yes
+deny,no i am ok,synthetic_zw,yes
+deny,cha hatidi,synthetic_zw,yes
+deny,not interested at all,synthetic_zw,yes
+deny,aiwa ndichafunga,synthetic_zw,yes
+deny,no please stop,synthetic_zw,yes
+deny,hapana handidi,synthetic_zw,yes
+bot_identity,am i talking to a robot,synthetic_zw,yes
+bot_identity,uri munhu here,synthetic_zw,yes
+bot_identity,is this a real person,synthetic_zw,yes
+bot_identity,ndiani uyu,synthetic_zw,yes
+bot_identity,who are you,synthetic_zw,yes
+bot_identity,ngikhuluma nobani,synthetic_zw,yes
+bot_identity,is this ai,synthetic_zw,yes
+bot_identity,are u a bot,synthetic_zw,yes
+bot_identity,uri bot here,synthetic_zw,yes
+bot_identity,are u human,synthetic_zw,yes
+bot_identity,who is this,synthetic_zw,yes
+bot_identity,ndiwe ani,synthetic_zw,yes
+bot_identity,ubani wena,synthetic_zw,yes
+bot_identity,is this a person,synthetic_zw,yes
+bot_identity,robot here,synthetic_zw,yes
+bot_identity,are u real,synthetic_zw,yes
+bot_identity,who am i talking to,synthetic_zw,yes
+bot_identity,munhu here,synthetic_zw,yes
+bot_identity,bot here,synthetic_zw,yes
+bot_identity,ndi bot here,synthetic_zw,yes
+bot_identity,are u a machine,synthetic_zw,yes
+bot_identity,is this auto,synthetic_zw,yes
+bot_identity,uri computer here,synthetic_zw,yes
+bot_identity,who is typing,synthetic_zw,yes
+bot_identity,ngubani lo,synthetic_zw,yes
+bot_identity,are u a robot,synthetic_zw,yes
+bot_identity,human or bot,synthetic_zw,yes
+bot_identity,ndiani ari pano,synthetic_zw,yes
+bot_identity,is this a robot,synthetic_zw,yes
+bot_identity,uri munhu chaiye here,synthetic_zw,yes
+bot_identity,machine here,synthetic_zw,yes
+bot_identity,are u ai,synthetic_zw,yes
+bot_identity,who is this person,synthetic_zw,yes
+bot_identity,ndiwe bot here,synthetic_zw,yes
+bot_identity,is this a real human,synthetic_zw,yes
+bot_identity,ubani igama,synthetic_zw,yes
+bot_identity,am i talking to a robot or a real person,synthetic_zw,yes
+bot_identity,uri munhu here kana kuti bot,synthetic_zw,yes
+bot_identity,is this a real person or ai,synthetic_zw,yes
+bot_identity,ndiani uyu ari kutaura neni,synthetic_zw,yes
+bot_identity,who are you and where are u from,synthetic_zw,yes
+bot_identity,ngikhuluma nobani la,synthetic_zw,yes
+bot_identity,is this ai or a human being,synthetic_zw,yes
+bot_identity,are u a bot or someone typing,synthetic_zw,yes
+bot_identity,uri munhu here ndapota,synthetic_zw,yes
+bot_identity,is this a real person i am talking to,synthetic_zw,yes
+bot_identity,ndiwe ani nhasi,synthetic_zw,yes
+bot_identity,are u a robot or a human,synthetic_zw,yes
+bot_identity,who is this i am chatting with,synthetic_zw,yes
+bot_identity,ubani wena futhi uvelaphi,synthetic_zw,yes
+bot_identity,is this an automated message,synthetic_zw,yes
+bot_identity,uri computer here kana munhu,synthetic_zw,yes
+bot_identity,am i chatting with a machine,synthetic_zw,yes
+bot_identity,ndiani ari kundipindura,synthetic_zw,yes
+bot_identity,are u real or a bot,synthetic_zw,yes
+bot_identity,who am i talking to please,synthetic_zw,yes
+bot_identity,uri bot here kana munhu chaiye,synthetic_zw,yes
+bot_identity,ngubani lo engikhuluma naye,synthetic_zw,yes
+bot_identity,is this a real person or a robot,synthetic_zw,yes
+bot_identity,ndiwe munhu here kana bot,synthetic_zw,yes
